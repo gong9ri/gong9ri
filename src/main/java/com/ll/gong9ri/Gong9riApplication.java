@@ -9,5 +9,5 @@ public class Gong9riApplication {
     public static void main(String[] args) {
         SpringApplication.run(Gong9riApplication.class, args);
     }
-
+        // develop 확인
 }
