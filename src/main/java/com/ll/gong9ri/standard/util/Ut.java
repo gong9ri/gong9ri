@@ -58,6 +58,7 @@ public class Ut {
 		}
 	}
 
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class json {
 		public static Object toStr(Map<String, Object> map) {
 			try {
