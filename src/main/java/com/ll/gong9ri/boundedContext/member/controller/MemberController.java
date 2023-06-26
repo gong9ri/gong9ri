@@ -23,6 +23,12 @@ public class MemberController {
 	private final MemberService memberService;
 	private final Rq rq;
 
+	@PreAuthorize("isAnonymous()")
+	@GetMapping("/login")
+	public String showLogin() {
+		return "usr/member/login";
+	}
+
 	@GetMapping("/join")
 	public String joinForm() {
 		return "usr/member/joinForm";
