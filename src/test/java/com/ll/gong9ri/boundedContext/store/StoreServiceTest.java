@@ -50,5 +50,8 @@ class StoreServiceTest {
 		assertThat(rsMember.getData().getGrantedAuthorities())
 			.contains(new SimpleGrantedAuthority(AuthLevel.STORE.getValue()));
 		assertThat(storeService.searchByName(username)).isNotEmpty();
+
+		assertThat(storeService.findByMemberId(rsMember.getData().getId()).get().getMember().getId())
+			.isEqualTo(rsMember.getData().getId());
 	}
 }
