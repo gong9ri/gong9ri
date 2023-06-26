@@ -3,11 +3,13 @@ package com.ll.gong9ri.boundedContext.member.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.ll.gong9ri.base.event.EventAfterStoreJoinAccept;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final MemberRepository memberRepository;
+	private final ApplicationEventPublisher publisher;
 
 	@Value("${custom.store.storeNamePrefix}")
 	private String storeNamePrefix;
@@ -66,10 +69,10 @@ public class MemberService {
 	}
 
 	@Transactional
-	public RsData<Member> storeJoin(String storeName, String password) {
-		storeName = storeNamePrefix + storeName;
-		if (findByUsername(storeName).isPresent()) {
-			return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(storeName));
+	public RsData<Member> storeJoin(final String storeName, String password) {
+		final String storeDBName = storeNamePrefix + storeName;
+		if (findByUsername(storeDBName).isPresent()) {
+			return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(storeDBName));
 		}
 
 		if (StringUtils.hasText(password))
@@ -78,12 +81,14 @@ public class MemberService {
 		Member member = Member
 			.builder()
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
-			.username(storeName)
+			.username(storeDBName)
 			.password(password)
 			.authLevel(AuthLevel.STORE)
 			.build();
 
 		memberRepository.save(member);
+
+		publisher.publishEvent(new EventAfterStoreJoinAccept(member, storeName));
 
 		return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
 	}
