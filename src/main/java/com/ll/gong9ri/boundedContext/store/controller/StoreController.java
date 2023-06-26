@@ -17,7 +17,7 @@ public class StoreController {
 	private final Rq rq;
 	private StoreService storeService;
 
-	@PreAuthorize("isAuthenticated() and hasAuthority('STORE')")
+	@PreAuthorize("isAuthenticated() and hasAuthority('store')")
 	@GetMapping("/me")
 	public String storeMyPage() {
 		return "usr/store/me";
