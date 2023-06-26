@@ -20,7 +20,7 @@ class GroupBuyChatMessageServiceTest {
 	@DisplayName("샘플메시지 테스트")
 	void sampleMessageInsert() throws Exception{
 		//when
-	    String id = groupBuyChatMessageService.sendChat("샘플메시지").getId();
+	    String id = groupBuyChatMessageService.sendChat("샘플메시지", "1").getId();
 
 	    //then
 		Optional<GroupBuyChatMessage> message = groupBuyChatMessageService.findById(id);

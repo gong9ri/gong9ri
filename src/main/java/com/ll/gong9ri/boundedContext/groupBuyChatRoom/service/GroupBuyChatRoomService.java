@@ -1,7 +1,9 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatRoom.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.repository.GroupBuyChatRoomRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -11,4 +13,15 @@ import lombok.RequiredArgsConstructor;
 public class GroupBuyChatRoomService {
 
 	private final GroupBuyChatRoomRepository groupBuyChatRoomRepository;
+
+	@Transactional
+	public Long createChatRoom(){
+		GroupBuyChatRoom chatRoom = GroupBuyChatRoom.builder()
+			.build();
+
+		return groupBuyChatRoomRepository.save(chatRoom).getId();
+	}
+	public GroupBuyChatRoom findById(Long chatRoomId) {
+		return groupBuyChatRoomRepository.findById(chatRoomId).orElseThrow();
+	}
 }

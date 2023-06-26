@@ -1,6 +1,6 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,10 +8,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
+import lombok.NoArgsConstructor;
 
 @Document(collection = "messages")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 public class GroupBuyChatMessage {
@@ -25,5 +26,5 @@ public class GroupBuyChatMessage {
 	private String content;
 	private Boolean isSeller;
 
-	private Date createDate;
+	private LocalDateTime createDate;
 }
