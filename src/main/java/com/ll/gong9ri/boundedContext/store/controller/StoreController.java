@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StoreController {
 	private final Rq rq;
-	private StoreService storeService;
+	private final StoreService storeService;
 
 	@PreAuthorize("isAuthenticated() and hasAuthority('store')")
 	@GetMapping("/me")
