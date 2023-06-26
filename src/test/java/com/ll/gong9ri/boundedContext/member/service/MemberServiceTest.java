@@ -6,8 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
 @SpringBootTest
@@ -34,5 +36,9 @@ class MemberServiceTest {
 		assertThat(rsMember.isSuccess()).isTrue();
 		assertThat(rsMember.getData().getUsername()).isNotEqualTo(username);
 		assertThat(rsMember.getData().getUsername()).contains("GONG9");
+		assertThat(rsMember.getData().getGrantedAuthorities())
+			.contains(new SimpleGrantedAuthority(AuthLevel.STORE.getValue()));
+		assertThat(rsMember.getData().getGrantedAuthorities())
+			.doesNotContain(new SimpleGrantedAuthority(AuthLevel.ADMIN.getValue()));
 	}
 }
