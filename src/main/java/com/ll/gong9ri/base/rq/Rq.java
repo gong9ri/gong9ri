@@ -16,8 +16,10 @@ import com.ll.gong9ri.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 @RequestScope
 public class Rq {
 	private final MemberService memberService;
@@ -90,6 +92,13 @@ public class Rq {
 	// 302 + 메세지
 	public String redirectWithMsg(String url, String msg) {
 		return "redirect:" + urlWithMsg(url, msg);
+	}
+
+	// 302 + 에러 메시지
+	public <T> String redirectWithErrorMsg(String url, RsData<T> rsData) {
+		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(rsData.getMsg()));
+
+		return "redirect:" + url;
 	}
 
 	private String urlWithMsg(String url, String msg) {
