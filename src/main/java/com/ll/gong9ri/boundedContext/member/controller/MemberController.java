@@ -42,7 +42,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/store")
-	@PreAuthorize("isAnonymous()") // TODO: isStore?
+	@PreAuthorize("isAnonymous() and not hasAuthority('store')")
 	public String storeJoin(@Valid StoreJoinDTO dto) {
 		final RsData<Member> rsStore = memberService.storeJoin(dto.getUsername(), dto.getPassword());
 
