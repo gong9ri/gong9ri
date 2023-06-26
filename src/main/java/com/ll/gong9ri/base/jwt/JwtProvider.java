@@ -1,36 +1,25 @@
 package com.ll.gong9ri.base.jwt;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ll.gong9ri.standard.util.Ut;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
-	private SecretKey cachedSecretKey;
+	private final SecretKey jwtSecretKey;
 
-	@Value("${custom.jwt.secretKey}")
-	private String secretKeyPlain;
-
-	private SecretKey _getSecretKey() {
-		return Keys.hmacShaKeyFor(Base64.getEncoder().encodeToString(secretKeyPlain.getBytes()).getBytes());
-	}
-
-	public SecretKey getSecretKey() {
-		if (cachedSecretKey == null)
-			cachedSecretKey = _getSecretKey();
-
-		return cachedSecretKey;
+	private SecretKey getSecretKey() {
+		return jwtSecretKey;
 	}
 
 	public String genToken(Map<String, Object> claims, int expirationSeconds) {

@@ -18,13 +18,6 @@ class JwtTest {
 	private JwtProvider jwtProvider;
 
 	@Test
-	@DisplayName("secretKey is valid")
-	void secretKeyValidTest() throws Exception {
-		assertThat(jwtProvider.getSecretKey()).isNotNull();
-		assertThat(jwtProvider.getSecretKey()).isEqualTo(jwtProvider.getSecretKey());
-	}
-
-	@Test
 	@DisplayName("generate Access Token ")
 	void genAccessTokenTest() {
 		Map<String, Object> claims = new HashMap<>();
