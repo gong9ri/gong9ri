@@ -2,6 +2,8 @@ package com.ll.gong9ri.boundedContext.store;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +53,9 @@ class StoreServiceTest {
 			.contains(new SimpleGrantedAuthority(AuthLevel.STORE.getValue()));
 		assertThat(storeService.searchByName(username)).isNotEmpty();
 
-		assertThat(storeService.findByMemberId(rsMember.getData().getId()).get().getMember().getId())
+		Optional<Store> oStore = storeService.findByMemberId(rsMember.getData().getId());
+		assertThat(oStore).isNotEmpty();
+		assertThat(oStore.get().getMember().getId())
 			.isEqualTo(rsMember.getData().getId());
 	}
 }
