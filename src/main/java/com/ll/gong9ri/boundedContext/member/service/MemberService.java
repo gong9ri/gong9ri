@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.entity.ProviderTypeCode;
 import com.ll.gong9ri.boundedContext.member.repository.MemberRepository;
@@ -47,6 +48,7 @@ public class MemberService {
 			.providerTypeCode(providerTypeCode)
 			.username(username)
 			.password(password)
+			.authLevel(AuthLevel.MEMBER)
 			.build();
 
 		memberRepository.save(member);
@@ -78,6 +80,7 @@ public class MemberService {
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
 			.username(storeName)
 			.password(password)
+			.authLevel(AuthLevel.STORE)
 			.build();
 
 		memberRepository.save(member);
