@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.dto.MemberJoinDTO;
-import com.ll.gong9ri.boundedContext.member.dto.StoreJoinDTO;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.service.MemberService;
+import com.ll.gong9ri.boundedContext.store.dto.StoreJoinDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
