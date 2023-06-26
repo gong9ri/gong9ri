@@ -25,6 +25,11 @@ public class StoreService {
 	}
 
 	@Transactional(readOnly = true)
+	public Optional<Store> findByMemberId(final Long memberId) {
+		return storeRepository.findByMemberId(memberId);
+	}
+
+	@Transactional(readOnly = true)
 	public Optional<Store> findByName(final String name) {
 		return storeRepository.findByName(name);
 	}
