@@ -26,8 +26,11 @@ public class Member extends BaseEntity {
 	// TODO: DB values
 	@Enumerated(EnumType.STRING)
 	private ProviderTypeCode providerTypeCode;
-	@Column(unique = true)
+	@Enumerated(EnumType.STRING)
+	private AuthLevel authLevel;
+	@Column(unique = true, nullable = false)
 	private String username;
+	@Column(nullable = false)
 	private String password;
 
 	public List<? extends GrantedAuthority> getGrantedAuthorities() {
