@@ -92,4 +92,14 @@ public class MemberService {
 
 		return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
 	}
+
+	public RsData<Member> setNickname(Member member, final String nickname) {
+		member = member.toBuilder()
+			.nickname(nickname)
+			.build();
+
+		memberRepository.save(member);
+
+		return RsData.successOf(member);
+	}
 }

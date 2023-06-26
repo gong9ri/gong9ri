@@ -41,4 +41,14 @@ class MemberServiceTest {
 		assertThat(rsMember.getData().getGrantedAuthorities())
 			.doesNotContain(new SimpleGrantedAuthority(AuthLevel.ADMIN.getValue()));
 	}
+
+	@Test
+	@DisplayName("member set nickname test")
+	void setNicknameTest() throws Exception {
+		final String username = "okoko1112";
+		final String nickname = "asdas";
+		RsData<Member> rsMember = memberService.join(username, username + username);
+		rsMember = memberService.setNickname(rsMember.getData(), nickname);
+		assertThat(rsMember.getData().getNickname()).isEqualTo(nickname);
+	}
 }

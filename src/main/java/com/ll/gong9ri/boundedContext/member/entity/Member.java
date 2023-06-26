@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
@@ -31,6 +31,7 @@ public class Member extends BaseEntity {
 	private String username;
 	@Column(nullable = false)
 	private String password;
+	private String nickname;
 
 	/**
 	 * 내 권한 보다 낮은 권한들을 전부 획득하여 리턴합니다.
@@ -41,9 +42,5 @@ public class Member extends BaseEntity {
 		return Arrays.stream(AuthLevel.values()).filter(e -> e.getCode() <= authLevel.getCode())
 			.map(e -> (GrantedAuthority)(new SimpleGrantedAuthority(e.getValue())))
 			.toList();
-	}
-
-	public String getNickname() {
-		return "%1$4s".formatted(Long.toString(getId(), 36)).replace(' ', '0');
 	}
 }

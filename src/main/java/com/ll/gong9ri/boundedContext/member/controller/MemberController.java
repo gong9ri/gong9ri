@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.member.dto.MemberJoinDTO;
+import com.ll.gong9ri.boundedContext.member.dto.MemberInfoForm;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.service.MemberService;
 import com.ll.gong9ri.boundedContext.store.dto.StoreJoinDTO;
@@ -29,29 +29,27 @@ public class MemberController {
 		return "usr/member/login";
 	}
 
-	@GetMapping("/join")
-	public String joinForm() {
-		return "usr/member/joinForm";
-	}
-
-	@PostMapping("/member")
-	@PreAuthorize("isAnonymous()")
-	public String storeJoin(@Valid MemberJoinDTO dto) {
-		final RsData<Member> rsStore = memberService.join(dto.getUsername(), dto.getPassword());
-
-		return rq.redirectWithMsg("/", rsStore);
-	}
-
 	@GetMapping("/storeForm")
 	public String storeJoinForm() {
 		return "usr/member/storeForm";
 	}
 
 	@PostMapping("/store")
-	@PreAuthorize("isAnonymous() and not hasAuthority('store')")
+	@PreAuthorize("not hasAuthority('store')")
 	public String storeJoin(@Valid StoreJoinDTO dto) {
 		final RsData<Member> rsStore = memberService.storeJoin(dto.getUsername(), dto.getPassword());
 
 		return rq.redirectWithMsg("/", rsStore);
 	}
+
+	@PostMapping("/nickname")
+	@PreAuthorize("isAuthenticated()")
+	public String setNickname(@Valid MemberInfoForm form) {
+		final RsData<Member> rsMember = memberService.setNickname(rq.getMember(), form.getNickname());
+		if (rsMember.isFail())
+			return rq.historyBack(rsMember);
+
+		return rq.redirectWithMsg("/", rsMember);
+	}
+
 }
