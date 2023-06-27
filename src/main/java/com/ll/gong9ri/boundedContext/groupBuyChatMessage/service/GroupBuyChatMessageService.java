@@ -9,8 +9,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipants;
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantsService;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.repository.GroupBuyChatMessageRepository;
 
@@ -23,7 +23,7 @@ public class GroupBuyChatMessageService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 	private final GroupBuyChatMessageRepository groupBuyChatMessageRepository;
-	private final ChatRoomParticipantsService chatRoomParticipantsService;
+	private final ChatRoomParticipantService chatRoomParticipantService;
 
 	public GroupBuyChatMessage sendChat(String content, String roomId) {
 		GroupBuyChatMessage groupBuyChatMessage = GroupBuyChatMessage.builder()
@@ -56,7 +56,7 @@ public class GroupBuyChatMessageService {
 	 */
 	public List<GroupBuyChatMessage> getNewChatMessagesByRoomId(String roomId, Long participantId, String offset) {
 
-		Optional<ChatRoomParticipants> participant = chatRoomParticipantsService.findById(participantId);
+		Optional<ChatRoomParticipant> participant = chatRoomParticipantService.findById(participantId);
 
 		ObjectId lastObjectId = offset != null ? new ObjectId(offset) : new ObjectId("000000000000000000000000");
 
@@ -66,7 +66,7 @@ public class GroupBuyChatMessageService {
 		// TODO: 분리하기
 		if (!chatMessages.isEmpty()) {
 			String newOffset = chatMessages.get(chatMessages.size() - 1).getId();
-			chatRoomParticipantsService.updateOffset(participant.orElseThrow(), newOffset);
+			chatRoomParticipantService.updateOffset(participant.orElseThrow(), newOffset);
 		}
 
 		return chatMessages;

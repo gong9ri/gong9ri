@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
-public class ChatRoomParticipants extends BaseEntity {
+public class ChatRoomParticipant extends BaseEntity {
 
 	@ManyToOne()
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)

@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.*;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipants;
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantsService;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
@@ -33,7 +33,7 @@ class GroupBuyChatMessageServiceTest {
 	@Autowired
 	private GroupBuyChatMessageService groupBuyChatMessageService;
 	@Autowired
-	private ChatRoomParticipantsService chatRoomParticipantsService;
+	private ChatRoomParticipantService chatRoomParticipantService;
 	@Autowired
 	private GroupBuyChatRoomService groupBuyChatRoomService;
 	@Autowired
@@ -59,7 +59,7 @@ class GroupBuyChatMessageServiceTest {
 		final String username = "testUser1";
 		RsData<Member> rsMember = memberService.join(username, username + username);
 		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom();
-		ChatRoomParticipants participant = chatRoomParticipantsService.createNewParticipant(groupBuyChatRoom,
+		ChatRoomParticipant participant = chatRoomParticipantService.createNewParticipant(groupBuyChatRoom,
 			rsMember.getData());
 
 		final String roomId = String.valueOf(groupBuyChatRoom.getId());

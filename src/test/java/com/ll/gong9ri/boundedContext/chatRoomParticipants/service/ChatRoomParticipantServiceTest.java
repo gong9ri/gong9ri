@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipants;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class ChatRoomParticipantsServiceTest {
+class ChatRoomParticipantServiceTest {
 
 	@Autowired
-	private ChatRoomParticipantsService chatRoomParticipantsService;
+	private ChatRoomParticipantService chatRoomParticipantService;
 	@Autowired
 	private MemberService memberService;
 	@Autowired
@@ -45,10 +45,10 @@ class ChatRoomParticipantsServiceTest {
 		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom();
 
 		// when
-		ChatRoomParticipants newParticipant = chatRoomParticipantsService.createNewParticipant(groupBuyChatRoom,
+		ChatRoomParticipant newParticipant = chatRoomParticipantService.createNewParticipant(groupBuyChatRoom,
 			rsMember.getData());
 		final String newOffset = "111111111111111111111111";
-		chatRoomParticipantsService.updateOffset(newParticipant, newOffset);
+		chatRoomParticipantService.updateOffset(newParticipant, newOffset);
 
 		// then
 		assertThat(newParticipant.getChatOffset()).isEqualTo(newOffset);
