@@ -7,3 +7,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+custom:
+  baseUrl: http://localhost:8080

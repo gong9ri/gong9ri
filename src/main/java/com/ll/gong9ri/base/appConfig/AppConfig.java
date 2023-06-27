@@ -11,7 +11,15 @@ public class AppConfig {
 	private static String defaultImageUploadURL;
 
 	@Value("${custom.image.upload-dir}")
-	public void setLikeablePersonFromMax(String defaultImageUploadURL) {
+	public void setDefaultImageUploadURL(String defaultImageUploadURL) {
 		AppConfig.defaultImageUploadURL = defaultImageUploadURL;
+	}
+
+	@Getter
+	private static String baseUrl;
+
+	@Value("${custom.baseUrl}")
+	public void setBaseUrl(String baseUrl) {
+		AppConfig.baseUrl = baseUrl;
 	}
 }
