@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.productImage.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import jakarta.persistence.*;
@@ -44,9 +45,21 @@ public class Product extends BaseEntity {
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
 
-	public void addProductOption(ProductOption productOption) {
-		productOption.setProduct(this);
+	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);
 	}
 
+	public static Product of(final Store store, final ProductDTO productDTO) {
+		return new Product(
+				builder()
+						.store(store)
+						.name(productDTO.getName())
+						.price(productDTO.getPrice())
+						.description(productDTO.getDescription())
+						.productImages(productDTO.getImages())
+						.optionOne(productDTO.getOptionOneName())
+						.optionTwo(productDTO.getOptionTwoName())
+						.maxPurchaseNum(productDTO.getMaxPurchaseNum())
+		);
+	}
 }

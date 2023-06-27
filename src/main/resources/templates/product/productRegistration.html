@@ -5,30 +5,31 @@
     <title>상품 등록</title>
 </head>
 <body>
-<script>
-    function registration(form) {
-        if (confirm('등록하시겠습니까?')) {
-            form.submit();
-        }
-    }
 
-    function addDetailOption(detailsId) {
-        const details = document.getElementById(detailsId);
-        let optCnt = details.childElementCount;
-        if (confirm('상세 옵션을 추가하시겠습니까?')) {
-            const newRow = document.createElement('td');
-            newRow.style.setProperty('width', '150px');
-            const input = document.createElement('input');
-            input.name = `${detailsId}`;
-            input.id = `${detailsId}_${optCnt}`;
-            input.type = 'text';
-            newRow.appendChild(input);
-            details.appendChild(newRow);
-            optCnt++;
-        }
-    }
-</script>
 <main layout:fragment="main">
+    <script type="text/javascript">
+        function registration(form) {
+            if (confirm('등록하시겠습니까?')) {
+                form.submit();
+            }
+        }
+
+        function addDetailOption(detailsId) {
+            const details = document.getElementById(detailsId);
+            let optCnt = details.childElementCount;
+            if (confirm('상세 옵션을 추가하시겠습니까?')) {
+                const newRow = document.createElement('td');
+                newRow.style.setProperty('width', '150px');
+                const input = document.createElement('input');
+                input.name = detailsId;
+                input.id = `${detailsId}_${optCnt}`;
+                input.type = 'text';
+                newRow.appendChild(input);
+                details.appendChild(newRow);
+                optCnt++;
+            }
+        }
+    </script>
     <form th:action method="post" onsubmit="registration(this)">
         <div>
             <div class="">상품 등록</div>
