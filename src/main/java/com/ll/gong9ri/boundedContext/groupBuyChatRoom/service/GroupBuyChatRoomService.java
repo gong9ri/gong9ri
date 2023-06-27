@@ -15,11 +15,11 @@ public class GroupBuyChatRoomService {
 	private final GroupBuyChatRoomRepository groupBuyChatRoomRepository;
 
 	@Transactional
-	public Long createChatRoom(){
+	public GroupBuyChatRoom createChatRoom(){
 		GroupBuyChatRoom chatRoom = GroupBuyChatRoom.builder()
 			.build();
 
-		return groupBuyChatRoomRepository.save(chatRoom).getId();
+		return groupBuyChatRoomRepository.save(chatRoom);
 	}
 	public GroupBuyChatRoom findById(Long chatRoomId) {
 		return groupBuyChatRoomRepository.findById(chatRoomId).orElseThrow();
