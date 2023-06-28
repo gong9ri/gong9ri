@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.service.MemberService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,11 +23,27 @@ import lombok.extern.slf4j.Slf4j;
 public class WsRq {
 	private final MemberService memberService;
 	private final HttpSession session;
+	private final HttpServletRequest req;
+	private final HttpServletResponse resp;
 	private final User user;
 	private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
 
-	public WsRq(MemberService memberService, HttpSession session) {
+	@PostConstruct
+	public void init() {
+		// Invoked after dependencies injected
+	}
+
+	// ...
+
+	@PreDestroy
+	public void destroy() {
+		// Invoked when the WebSocket session ends
+	}
+
+	public WsRq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
 		this.memberService = memberService;
+		this.req = req;
+		this.resp = resp;
 		this.session = session;
 
 		// 현재 로그인한 회원의 인증정보를 가져옴
