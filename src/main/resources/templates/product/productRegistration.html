@@ -8,7 +8,7 @@
 
 <main layout:fragment="main">
     <script type="text/javascript">
-        function registration(form) {
+        function submitRegistrationForm(form) {
             if (confirm('등록하시겠습니까?')) {
                 form.submit();
             }
@@ -30,7 +30,7 @@
             }
         }
     </script>
-    <form th:action method="post" onsubmit="registration(this)">
+    <form th:action method="post" onsubmit="submitRegistrationForm(this)">
         <div>
             <div class="">상품 등록</div>
             <div class="">아래 양식을 작성하여 상품 등록을 진행해주세요.</div>
@@ -74,44 +74,6 @@
                     </td>
                     <td>
                         <input class="btn btn-primary" name="image" id="image" type="button" value="대충 이미지 업로드 버튼">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="optionOne">상품 옵션1 이름</label>
-                    </td>
-                    <td>
-                        <input name="optionOneName" id="optionOne" type="text">
-                    </td>
-                    <td>
-                        <input class="btn" type="button" onclick="addDetailOption('optionOneDetails')" value="+">
-                    </td>
-                </tr>
-                <tr id="optionOneDetails">
-                    <td>
-                        <label>옵션1의 상세 옵션명</label>
-                    </td>
-                    <td>
-                        <input name="optionOneDetails" id="optionOneDetail_1" type="text">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="optionTwo">상품 옵션2 이름</label>
-                    </td>
-                    <td>
-                        <input name="optionTwoName" id="optionTwo" type="text">
-                    </td>
-                    <td>
-                        <input class="btn" type="button" onclick="addDetailOption('optionTwoDetails')" value="+">
-                    </td>
-                </tr>
-                <tr id="optionTwoDetails">
-                    <td>
-                        <label>옵션2의 상세 옵션명</label>
-                    </td>
-                    <td>
-                        <input name="optionTwoDetails" id="optionTwoDetail_1" type="text">
                     </td>
                 </tr>
             </table>
