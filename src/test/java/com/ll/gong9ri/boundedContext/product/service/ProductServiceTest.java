@@ -110,4 +110,34 @@ class ProductServiceTest {
         assertThat(productRs.getData().getName()).isEqualTo(productDTO.getName());
         assertThat(productRs.getData().getProductOptions()).hasSize(colorOptionList.size());
     }
+
+    @Test
+    @DisplayName("search for all products")
+    void getAllProducts() {
+        List<String> colorOptionList = new ArrayList<>();
+        colorOptionList.add("블랙");
+        colorOptionList.add("화이트");
+        colorOptionList.add("아이보리");
+        colorOptionList.add("네이비");
+
+        ProductDTO productDTO = ProductDTO.builder()
+                .name("버튼 카라 반팔 니트")
+                .description("여름에도 시원하게 입을 수 있는 반팔 니트 입니다.")
+                .price(43000)
+                .maxPurchaseNum(2)
+                .build();
+
+        ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
+                .optionOneName("색상")
+                .optionOneDetails(colorOptionList)
+                .build();
+
+        RsData<Product> productRs = productService.registerProduct(productDTO);
+        productService.addOptionDetails(productRs.getData(), productOptionDTO);
+
+        RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
+
+        assertThat(getAllProductsRs.isSuccess()).isTrue();
+        assertThat(getAllProductsRs.getData()).isNotEmpty();
+    }
 }
