@@ -18,16 +18,17 @@ function connect() {
 }
 
 function onConnected() {
+    getChatMessages(1);
     stompClient.subscribe(`/topic/chats/${chatRoomId}`, function (data) {
-
-        getChatMessages();
+        let message = JSON.parse(data.body);
+        addChatBubble(true ,`${message.senderId}`, `${message.content}`);
     });
 }
 
-function getChatMessages() {
+function getChatMessages(fromId) {
 
     console.log("fromId : " + fromId);
-    fetch(`/${chatRoomId}/messages`, {
+    fetch(`/${chatRoomId}/messages?fromId=${fromId}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -46,7 +47,6 @@ function drawMessages(messages) {
 
     let isOwnChat = true;
 
-    //TODO: Offset 구현해서 필요한 메시지만 가져오기.
     if (messages.length > 0) {
         fromId = messages[messages.length - 1].id;
     }

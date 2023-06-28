@@ -26,7 +26,7 @@ public class GroupBuyChatRoomController {
 	public String create(){
 		groupBuyChatRoomService.createChatRoom();
 
-		return rq.redirectWithMsg("groupbuy/1","");
+		return rq.redirectWithMsg("1","");
 	}
 
 	@GetMapping("/{chatRoomId}")

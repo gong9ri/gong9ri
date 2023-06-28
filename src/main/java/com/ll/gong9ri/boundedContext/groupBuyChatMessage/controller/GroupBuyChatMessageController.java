@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,10 +43,14 @@ public class GroupBuyChatMessageController {
 
 	@GetMapping("/{roomId}/messages")
 	@ResponseBody
-	public List<GroupBuyChatMessage> findAll(@PathVariable Long roomId) {
+	public List<GroupBuyChatMessage> findMessages(@PathVariable Long roomId, @RequestParam(defaultValue = "1") Long fromId) {
 
-		// TODO: 단순 get(0)으로 확인만 했음. 로직 필요함.
-		ChatRoomParticipant chatRoomParticipant = rq.getMember().getChatRoomParticipants().get(0);
+		if (fromId == 1L) return groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
+
+		ChatRoomParticipant chatRoomParticipant = rq.getMember().getChatRoomParticipants().stream()
+			.filter(p->p.getGroupBuyChatRoom().getId().equals(roomId))
+			.findFirst().orElseThrow();
+
 		return groupBuyChatMessageService.getNewChatMessagesByRoomId(String.valueOf(roomId), chatRoomParticipant.getId(),
 			chatRoomParticipant.getChatOffset());
 
