@@ -27,6 +27,8 @@ public class ChatRoomParticipantService {
 			.chatOffset("000000000000000000000000")
 			.build();
 
+		member.joinChat(chatRoomParticipant);
+
 		return chatRoomParticipantRepository.save(chatRoomParticipant);
 	}
 

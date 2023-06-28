@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ll.gong9ri.base.rq.Rq;
+import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.service.GroupBuyChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,10 @@ public class GroupBuyChatMessageController {
 	@ResponseBody
 	public List<GroupBuyChatMessage> findAll(@PathVariable Long roomId) {
 
-		// TODO: Offset 구현해서 필요한 메시지만 가져오기.
+		// TODO: 단순 get(0)으로 확인만 했음. 로직 필요함.
+		ChatRoomParticipant chatRoomParticipant = rq.getMember().getChatRoomParticipants().get(0);
+		return groupBuyChatMessageService.getNewChatMessagesByRoomId(String.valueOf(roomId), chatRoomParticipant.getId(),
+			chatRoomParticipant.getChatOffset());
 
-		return groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
 	}
 }

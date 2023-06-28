@@ -29,6 +29,7 @@ public class Rq {
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
 	private final User user;
+	private final HttpSession session;
 	private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
 
 	public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
