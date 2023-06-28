@@ -73,7 +73,7 @@ public class ProductService {
                 .build();
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public RsData<List<Product>> getAllProducts() {
+        return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", productRepository.findAll());
     }
 }

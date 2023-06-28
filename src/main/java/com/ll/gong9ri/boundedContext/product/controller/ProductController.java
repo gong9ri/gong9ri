@@ -66,8 +66,13 @@ public class ProductController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showProducts(Model model) {
-        List<Product> productList = productService.getAllProducts();
-        model.addAttribute("products", productList);
+        RsData<List<Product>> getRs = productService.getAllProducts();
+
+        if (getRs.isFail()) {
+            return rq.historyBack("모든 상품 목록을 가져오는 데 실패했습니다.");
+        }
+
+        model.addAttribute("products", getRs.getData());
         return "product/productList";
     }
 }
