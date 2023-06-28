@@ -10,9 +10,11 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
 
 //TODO: hasAuthority('store') 추가
 @Controller
@@ -38,17 +40,17 @@ public class ProductController {
 
         session.setAttribute("product", productRs.getData());
 
-        return rq.redirectWithMsg("/product/registration/option", productRs.getMsg());
+        return rq.redirectWithMsg("/product/option", productRs.getMsg());
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/registration/option")
+    @GetMapping("/option")
     public String showProductOption() {
         return "product/optionDetails";
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/registration/option")
+    @PostMapping("/option")
     public String addProductOptions(ProductOptionDTO productOptionDTO) {
         HttpSession session = rq.getSession();
         Product product = (Product) session.getAttribute("product");
@@ -58,6 +60,14 @@ public class ProductController {
             return rq.historyBack("상품 상세 옵션 등록에 실했습니다.");
         }
 
-        return rq.redirectWithMsg("/product/registration", productRs);
+        return rq.redirectWithMsg("/product/list", productRs);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/list")
+    public String showProducts(Model model) {
+        List<Product> productList = productService.getAllProducts();
+        model.addAttribute("products", productList);
+        return "product/productList";
     }
 }

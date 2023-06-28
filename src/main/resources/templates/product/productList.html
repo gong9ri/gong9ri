@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+</head>
+<body>
+<main layout:fragment="main">
+    <div>
+        <div th:if="${products.isEmpty()}">상품 목록이 비어있습니다.</div>
+        <table>
+            <tr th:each="product : ${products}">
+                <td><a href="#" th:text="${product.getName()}"></a></td>
+            </tr>
+        </table>
+    </div>
+</main>
+</body>
+</html>

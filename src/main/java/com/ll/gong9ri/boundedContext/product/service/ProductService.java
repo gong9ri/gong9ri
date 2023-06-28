@@ -72,4 +72,8 @@ public class ProductService {
                 .optionTwoName(optionTwoName)
                 .build();
     }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
 }
