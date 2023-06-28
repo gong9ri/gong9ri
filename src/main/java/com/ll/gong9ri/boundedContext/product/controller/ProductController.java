@@ -6,8 +6,6 @@ import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
-import com.ll.gong9ri.boundedContext.store.service.StoreService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,12 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
+//TODO: hasAuthority('store') 추가
 @Controller
 @RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final StoreService storeService;
     private final Rq rq;
 
     @PreAuthorize("isAuthenticated()")
@@ -32,8 +31,8 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/registration")
-    public String registerProduct(ProductDTO productDTO, HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public String registerProduct(ProductDTO productDTO) {
+        HttpSession session = rq.getSession();
         RsData<Product> productRs = productService.registerProduct(productDTO);
         if (productRs.isFail())
             return rq.historyBack(productRs);
@@ -51,8 +50,8 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/registration/option")
-    public String addProductOptions(ProductOptionDTO productOptionDTO, HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public String addProductOptions(ProductOptionDTO productOptionDTO) {
+        HttpSession session = rq.getSession();
         Product product = (Product) session.getAttribute("product");
 
         RsData<Product> productRs = productService.addOptionDetails(product, productOptionDTO);
@@ -62,6 +61,4 @@ public class ProductController {
 
         return rq.redirectWithMsg("/product/registration", productRs);
     }
-
-
 }
