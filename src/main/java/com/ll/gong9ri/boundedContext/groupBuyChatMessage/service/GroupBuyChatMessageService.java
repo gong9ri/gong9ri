@@ -25,6 +25,18 @@ public class GroupBuyChatMessageService {
 	private final GroupBuyChatMessageRepository groupBuyChatMessageRepository;
 	private final ChatRoomParticipantService chatRoomParticipantService;
 
+	public GroupBuyChatMessage sendChat(String content, String roomId, String senderId) {
+		GroupBuyChatMessage groupBuyChatMessage = GroupBuyChatMessage.builder()
+			.content(content)
+			.senderId(senderId)
+			.chatRoomId(roomId)
+			.createDate(LocalDateTime.now())
+			.build();
+
+		messagingTemplate.convertAndSend("/topic/" + roomId, groupBuyChatMessage);
+
+		return groupBuyChatMessageRepository.save(groupBuyChatMessage);
+	}
 	public GroupBuyChatMessage sendChat(String content, String roomId) {
 		GroupBuyChatMessage groupBuyChatMessage = GroupBuyChatMessage.builder()
 			.content(content)

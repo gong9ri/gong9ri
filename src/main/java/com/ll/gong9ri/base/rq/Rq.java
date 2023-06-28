@@ -2,6 +2,8 @@ package com.ll.gong9ri.base.rq;
 
 import java.util.Date;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 @Slf4j
 @RequestScope
@@ -25,7 +28,6 @@ public class Rq {
 	private final MemberService memberService;
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
-	private final HttpSession session;
 	private final User user;
 	private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
 

@@ -1,5 +1,6 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatMessage.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.service.GroupBuyChatMessageService;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,13 +24,17 @@ import lombok.RequiredArgsConstructor;
 public class GroupBuyChatMessageController {
 
 	private final GroupBuyChatMessageService groupBuyChatMessageService;
+	private final Rq rq;
 
 	@MessageMapping("/chats/{roomId}")
-	public GroupBuyChatMessage send(@DestinationVariable String roomId, @RequestBody Map<String,String> message, @Headers MessageHeaders headers){
+	public GroupBuyChatMessage send(@DestinationVariable String roomId, @RequestBody Map<String,String> message, @Headers MessageHeaders headers, Principal principal){
 
 		String content = message.get("content");
 
-		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(content, roomId);
+		// TODO: 이름말고 member정보 가져오게 변경하기
+		String name = principal.getName();
+
+		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(content, roomId, name);
 
 		return chatMessage;
 	}
