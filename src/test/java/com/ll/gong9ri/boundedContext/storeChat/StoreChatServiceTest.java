@@ -84,8 +84,9 @@ class StoreChatServiceTest {
 			.max()
 			.orElseThrow();
 
-		storeChatService.getAllMessages(room).forEach(message -> assertThat(message.getContent()).contains(content));
-		assertThat(storeChatService.getNewMessages(room, normalUserLastReadOffset)).isEmpty();
+		storeChatService.getAllMessages(room.getId())
+			.forEach(message -> assertThat(message.getContent()).contains(content));
+		assertThat(storeChatService.getNewMessages(room.getId(), normalUserLastReadOffset)).isEmpty();
 
 		final Long lastMessageId = LongStream.range(1, 23)
 			.map(i -> i + normalUserLastReadOffset)
@@ -101,7 +102,7 @@ class StoreChatServiceTest {
 			.max()
 			.orElseThrow();
 
-		assertThat(storeChatService.getNewMessages(room, normalUserLastReadOffset)).isNotEmpty();
+		assertThat(storeChatService.getNewMessages(room.getId(), normalUserLastReadOffset)).isNotEmpty();
 		assertThat(normalUserLastReadOffset).isLessThan(lastMessageId);
 	}
 }

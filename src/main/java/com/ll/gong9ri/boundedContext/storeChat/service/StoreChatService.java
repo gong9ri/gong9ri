@@ -76,19 +76,19 @@ public class StoreChatService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<StoreChatMessageDTO> getAllMessages(final StoreChatRoom storeChatRoom) {
-		return storeChatMessageRepositoryImpl.findAllByRoomId(storeChatRoom.getId());
+	public List<StoreChatMessageDTO> getAllMessages(final Long storeChatRoomId) {
+		return storeChatMessageRepositoryImpl.findAllByRoomId(storeChatRoomId);
 	}
 
 	/**
 	 * 해당 채팅방의 offset 이후의 Id 를 가진 메시지를 가져옵니다.
 	 *
-	 * @param storeChatRoom 소속한 채팅방
+	 * @param storeChatRoomId 소속한 채팅방의 Id
 	 * @param offset 마지막으로 읽은 메시지의 Id
 	 * @return StoreChatMessages
 	 */
 	@Transactional(readOnly = true)
-	public List<StoreChatMessageDTO> getNewMessages(final StoreChatRoom storeChatRoom, final Long offset) {
-		return storeChatMessageRepositoryImpl.findAllByRoomIdAndIdGreaterThan(storeChatRoom.getId(), offset);
+	public List<StoreChatMessageDTO> getNewMessages(final Long storeChatRoomId, final Long offset) {
+		return storeChatMessageRepositoryImpl.findAllByRoomIdAndIdGreaterThan(storeChatRoomId, offset);
 	}
 }
