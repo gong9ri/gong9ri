@@ -66,5 +66,4 @@ class PaymentServiceTest {
 		assertThat(result).isNotNull();
 		System.out.println(result);
 	}
-
 }
