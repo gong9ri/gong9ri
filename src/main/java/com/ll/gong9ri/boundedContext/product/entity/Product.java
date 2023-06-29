@@ -54,6 +54,7 @@ public class Product extends BaseEntity {
 
 	public ProductDTO toDTO() {
 		return ProductDTO.builder()
+				.id(this.getId())
 				.name(this.name)
 				.price(this.price)
 				.description(this.description)
