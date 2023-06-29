@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.tosspayments.entity.PaymentConfirmBody;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentCreateBody;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentWebClient;
@@ -38,4 +39,32 @@ class PaymentServiceTest {
 		assertThat(result).isNotNull();
 		System.out.println(result);
 	}
+
+	@Test
+	@DisplayName("Payment Confirm Test")
+	void paymentConfirmTest() {
+		final Integer amount = 1000000;
+
+		PaymentCreateBody paymentCreateBody = PaymentCreateBody.builder()
+			.method("카드")
+			.amount(amount)
+			.orderId("a4CWyWY5m89PNh7xJwhk1")
+			.orderName("pattern T shrit")
+			.build();
+
+		PaymentResult createResult = PaymentWebClient.paymentCreate(paymentCreateBody);
+		System.out.println(createResult);
+		// TODO: 실제 QR코드 찍는 과정 필요
+
+		PaymentConfirmBody paymentConfirmBody = PaymentConfirmBody.builder()
+			.paymentKey(createResult.paymentKey)
+			.amount(amount)
+			.orderId(createResult.orderId)
+			.build();
+
+		PaymentResult result = PaymentWebClient.paymentConfirm(paymentConfirmBody);
+		assertThat(result).isNotNull();
+		System.out.println(result);
+	}
+
 }

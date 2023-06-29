@@ -11,12 +11,8 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentRequestBody {
-	// TODO: https://docs.tosspayments.com/reference/test/v1/payments/confirm/POST
-	private String method;
+public class PaymentConfirmBody {
+	private String paymentKey;
 	private Integer amount;
 	private String orderId;
-	private String orderName;
-	private String successUrl;
-	private String failUrl;
 }
