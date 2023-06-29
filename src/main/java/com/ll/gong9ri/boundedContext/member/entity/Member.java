@@ -9,6 +9,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 
@@ -18,7 +19,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -37,6 +37,7 @@ public class Member extends BaseEntity {
 	@Column(unique = true, nullable = false)
 	private String username;
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;
 	private String nickname;
 
