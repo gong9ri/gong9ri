@@ -13,7 +13,7 @@
             }
         }
     </script>
-    <form th:action method="post" onsubmit="submitOptionForm(this)">
+    <form th:action method="post" onsubmit="submitOptionForm(this); return false;">
         <table>
             <tr>
                 <td>
@@ -54,10 +54,9 @@
                 </td>
             </tr>
         </table>
-        <button class="btn">상품 등록</button>
+        <button class="btn">등록</button>
+        <a class="btn" href="/product/list">상품 목록</a>
     </form>
-
 </main>
-
 </body>
 </html>
