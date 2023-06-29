@@ -31,16 +31,12 @@ public class ProductService {
 
     @Transactional
     public RsData<Product> addOptionDetails(Product product, final ProductOptionDTO productOptionDTO) {
-        product = product.toBuilder()
-                .optionOne(productOptionDTO.getOptionOneName())
-                .optionTwo(productOptionDTO.getOptionTwoName())
-                .build();
+        product.setOptionOne(productOptionDTO.getOptionOneName());
+        product.setOptionTwo(productOptionDTO.getOptionTwoName());
 
         product.addProductOptions(
                 createProductOptions(product, productOptionDTO.getOptionOneDetails(), productOptionDTO.getOptionTwoDetails())
         );
-
-        productRepository.save(product);
 
         return RsData.of("S-1", "상품 상세 옵션이 성공적으로 등록되었습니다.", product);
     }

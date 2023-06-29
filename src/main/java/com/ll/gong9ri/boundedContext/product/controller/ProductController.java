@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.List;
 
 //TODO: hasAuthority('store') 추가
@@ -40,7 +41,7 @@ public class ProductController {
         if (productRs.isFail())
             return rq.historyBack(productRs);
 
-        session.setAttribute("product", productRs.getData());
+        session.setAttribute("product", productRs.getData().toDTO());
 
         return rq.redirectWithMsg("/product/option", productRs.getMsg());
     }
@@ -55,7 +56,7 @@ public class ProductController {
     @PostMapping("/option")
     public String addProductOptions(ProductOptionDTO productOptionDTO) {
         HttpSession session = rq.getSession();
-        Product product = (Product) session.getAttribute("product");
+        Product product = ((ProductDTO) session.getAttribute("product")).toEntity();
 
         RsData<Product> productRs = productService.addOptionDetails(product, productOptionDTO);
         if (productRs.isFail()) {
@@ -74,7 +75,7 @@ public class ProductController {
             return rq.historyBack("상품 목록을 가져오는 데 실패했습니다.");
         }
 
-        model.addAttribute(PRODUCTS, getRs.getData());
+        sendProductListToView(model, getRs);
         return "product/productList";
     }
 
@@ -87,10 +88,15 @@ public class ProductController {
             return rq.historyBack("검색 결과를 가져오는 데 실패했습니다.");
         }
 
-        List<Product> products = searchRs.getData();
-
-        model.addAttribute(PRODUCTS, products);
-
+        sendProductListToView(model, searchRs);
         return "product/searchForm";
+    }
+
+    private void sendProductListToView(Model model, RsData<List<Product>> rsData) {
+        List<Product> products = rsData.getData();
+
+        List<ProductDTO> productDTOList = products.stream().map(Product::toDTO).toList();
+
+        model.addAttribute(PRODUCTS, productDTOList);
     }
 }
