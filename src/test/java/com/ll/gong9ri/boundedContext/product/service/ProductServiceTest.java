@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.product.service;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -139,5 +140,59 @@ class ProductServiceTest {
 
         assertThat(getAllProductsRs.isSuccess()).isTrue();
         assertThat(getAllProductsRs.getData()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("search all products")
+    void showAllProductsTest() {
+        ProductDTO product1 = ProductDTO.builder()
+                .name("반팔 티셔츠")
+                .price(15000)
+                .build();
+        ProductDTO product2 = ProductDTO.builder()
+                .name("긴팔 티셔츠")
+                .price(20000)
+                .build();
+        ProductDTO product3 = ProductDTO.builder()
+                .name("반바지")
+                .price(20000)
+                .build();
+        productService.registerProduct(product1);
+        productService.registerProduct(product2);
+        productService.registerProduct(product3);
+
+        RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
+
+        assertThat(getAllProductsRs.isSuccess()).isTrue();
+        assertThat(getAllProductsRs.getData()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("search product test")
+    void searchProductTest() {
+        ProductDTO product1 = ProductDTO.builder()
+                .name("반팔 티셔츠")
+                .price(15000)
+                .build();
+        ProductDTO product2 = ProductDTO.builder()
+                .name("긴팔 티셔츠")
+                .price(20000)
+                .build();
+        ProductDTO product3 = ProductDTO.builder()
+                .name("반바지")
+                .price(20000)
+                .build();
+        productService.registerProduct(product1);
+        productService.registerProduct(product2);
+        productService.registerProduct(product3);
+
+        SearchDTO searchDTO = SearchDTO.builder()
+                .keyword("티셔츠")
+                .build();
+
+        RsData<List<Product>> searchRs = productService.search(searchDTO);
+
+        assertThat(searchRs.isSuccess()).isTrue();
+        assertThat(searchRs.getData()).hasSize(2);
     }
 }
