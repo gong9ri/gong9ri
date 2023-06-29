@@ -5,7 +5,6 @@ let ChatMessageUl = null;
 function connect() {
     var socket = new SockJS('/chats');
     stompClient = Stomp.over(socket);
-    let token = "";
     const headers = {
         'X-CSRF-TOKEN': token,
     };
