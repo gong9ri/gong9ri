@@ -25,10 +25,11 @@ public class GroupBuyChatMessageService {
 	private final GroupBuyChatMessageRepository groupBuyChatMessageRepository;
 	private final ChatRoomParticipantService chatRoomParticipantService;
 
-	public GroupBuyChatMessage sendChat(String content, String roomId, String senderId) {
+	public GroupBuyChatMessage sendChat(String content, String roomId, String senderId, String senderName) {
 		GroupBuyChatMessage groupBuyChatMessage = GroupBuyChatMessage.builder()
 			.content(content)
 			.senderId(senderId)
+			.senderName(senderName)
 			.chatRoomId(roomId)
 			.createDate(LocalDateTime.now())
 			.build();

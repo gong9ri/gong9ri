@@ -1,8 +1,11 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatMessage.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,29 +38,42 @@ public class GroupBuyChatMessageController {
 
 		String content = message.get("content");
 
-		// TODO: 이름말고 member정보 가져오게 변경하기
-		//String name = principal.getName();
-
 		String username = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
 		Long id = memberService.findByUsername(username).get().getId();
 
-		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(content, roomId, String.valueOf(id));
+		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(content, roomId, String.valueOf(id),
+			username);
 
 		return chatMessage;
 	}
 
 	@GetMapping("/{roomId}/messages")
 	@ResponseBody
-	public List<GroupBuyChatMessage> findMessages(@PathVariable Long roomId, @RequestParam(defaultValue = "1") Long fromId) {
+	public ResponseEntity<Map<String, Object>> findMessages(@PathVariable Long roomId,
+		@RequestParam(defaultValue = "no") String isNew) {
 
-		if (fromId == 1L) return groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
+		Map<String, Object> responseBody = new HashMap<>();
+		responseBody.put("memberId", rq.getMember().getId());
 
+		List<GroupBuyChatMessage> chatMessages;
+
+		// 기존 메시지 가져오기
+		if (Objects.equals(isNew, "no")) {
+			chatMessages = groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
+			responseBody.put("messages", chatMessages);
+			return ResponseEntity.ok(responseBody);
+		}
+
+		// 새로운 메시지 가져오기
 		ChatRoomParticipant chatRoomParticipant = rq.getMember().getChatRoomParticipants().stream()
-			.filter(p->p.getGroupBuyChatRoom().getId().equals(roomId))
-			.findFirst().orElseThrow();
+			.filter(p -> p.getGroupBuyChatRoom().getId().equals(roomId))
+			.findFirst().orElseThrow(IllegalStateException::new);
 
-		return groupBuyChatMessageService.getNewChatMessagesByRoomId(String.valueOf(roomId), chatRoomParticipant.getId(),
+		chatMessages = groupBuyChatMessageService.getNewChatMessagesByRoomId(String.valueOf(roomId),
+			chatRoomParticipant.getId(),
 			chatRoomParticipant.getChatOffset());
 
+		responseBody.put("messages", chatMessages);
+		return ResponseEntity.ok(responseBody);
 	}
 }

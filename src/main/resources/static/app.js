@@ -1,5 +1,4 @@
 let stompClient = null;
-let fromId = 0;
 let ChatMessageUl = null;
 
 function connect() {
@@ -17,42 +16,45 @@ function connect() {
 }
 
 function onConnected() {
-    getChatMessages(1);
+    getChatMessages('no');
     stompClient.subscribe(`/topic/chats/${chatRoomId}`, function (data) {
         let message = JSON.parse(data.body);
-        addChatBubble(true ,`${message.senderId}`, `${message.content}`);
+        console.log('id=', id);
+        let isOwnChat = message.senderId === id;
+        addChatBubble(isOwnChat, `${message.senderName}`, `${message.content}`);
     });
 }
 
-function getChatMessages(fromId) {
+function getChatMessages(isNew) {
 
-    console.log("fromId : " + fromId);
-    fetch(`/${chatRoomId}/messages?fromId=${fromId}`, {
+    let id;
+    fetch(`/${chatRoomId}/messages?isNew=${isNew}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
-        }})
+        }
+    })
         .then(response => response.json())
         .then(body => {
-            drawMessages(body);
+            const {messages, memberId} = body;
+            drawMessages(messages, memberId);
+            id = memberId;
         })
         .catch(error => {
             console.error(error);
         });
+    return id;
 }
 
-function drawMessages(messages) {
+function drawMessages(messages, memberId) {
 
     let isOwnChat = true;
 
-    if (messages.length > 0) {
-        fromId = messages[messages.length - 1].id;
-    }
-
     messages.forEach((message) => {
+        let isOwnChat = message.senderId === memberId;
 
-        addChatBubble(isOwnChat, `${message.senderId}`, `${message.content}`);
+        addChatBubble(isOwnChat, `${message.senderName}`, `${message.content}`);
     });
 }
 

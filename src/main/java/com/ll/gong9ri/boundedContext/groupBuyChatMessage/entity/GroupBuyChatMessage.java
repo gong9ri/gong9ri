@@ -22,6 +22,7 @@ public class GroupBuyChatMessage {
 
 	private String chatRoomId;
 	private String senderId;
+	private String senderName;
 
 	private String content;
 	private Boolean isSeller;
