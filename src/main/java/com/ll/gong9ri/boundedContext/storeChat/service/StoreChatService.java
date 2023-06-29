@@ -63,7 +63,6 @@ public class StoreChatService {
 		final String content,
 		final LocalDateTime createDate,
 		final Member member
-		final Boolean sentByStore
 	) {
 		StoreChatMessage storeChatMessage = StoreChatMessage.builder()
 			.storeChatRoom(storeChatRoom)
