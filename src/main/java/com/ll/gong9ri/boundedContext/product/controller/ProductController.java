@@ -4,6 +4,7 @@ import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
+    private static final String PRODUCTS = "products";
     private final ProductService productService;
     private final Rq rq;
 
@@ -69,10 +71,26 @@ public class ProductController {
         RsData<List<Product>> getRs = productService.getAllProducts();
 
         if (getRs.isFail()) {
-            return rq.historyBack("모든 상품 목록을 가져오는 데 실패했습니다.");
+            return rq.historyBack("상품 목록을 가져오는 데 실패했습니다.");
         }
 
-        model.addAttribute("products", getRs.getData());
+        model.addAttribute(PRODUCTS, getRs.getData());
         return "product/productList";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/search")
+    public String showSearchList(Model model, SearchDTO searchDTO) {
+        RsData<List<Product>> searchRs = productService.search(searchDTO);
+
+        if (searchRs.isFail()) {
+            return rq.historyBack("검색 결과를 가져오는 데 실패했습니다.");
+        }
+
+        List<Product> products = searchRs.getData();
+
+        model.addAttribute(PRODUCTS, products);
+
+        return "product/searchForm";
     }
 }

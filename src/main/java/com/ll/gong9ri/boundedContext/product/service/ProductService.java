@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.product.service;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
@@ -75,5 +76,10 @@ public class ProductService {
 
     public RsData<List<Product>> getAllProducts() {
         return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", productRepository.findAll());
+    }
+
+    public RsData<List<Product>> search(SearchDTO searchDTO) {
+        List<Product> products = productRepository.findDistinctByNameLike(searchDTO.wrapWithWildcard());
+        return RsData.of("S-1", "상품 검색에 성공했습니다.", products);
     }
 }

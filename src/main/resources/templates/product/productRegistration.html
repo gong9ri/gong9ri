@@ -30,7 +30,7 @@
             }
         }
     </script>
-    <form th:action method="post" onsubmit="submitRegistrationForm(this)">
+    <form th:action method="post" onsubmit="submitRegistrationForm(this); return false;">
         <div>
             <div class="">상품 등록</div>
             <div class="">아래 양식을 작성하여 상품 등록을 진행해주세요.</div>
