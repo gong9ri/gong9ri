@@ -49,6 +49,10 @@ public class StoreService {
 
 	@Transactional(readOnly = true)
 	public List<Store> searchByName(final String name) {
+		if (name.isBlank()) {
+			return storeRepository.findAll();
+		}
+
 		return storeRepository.findDistinctByNameLike(name);
 	}
 

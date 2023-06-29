@@ -76,7 +76,7 @@ class StoreChatServiceTest {
 				room,
 				content + i,
 				LocalDateTime.now(),
-				normalMember.getId().equals(store.getMember().getId())
+				normalMember
 			))
 			.filter(RsData::isSuccess)
 			.map(RsData::getData)
@@ -94,7 +94,7 @@ class StoreChatServiceTest {
 				room,
 				content + i,
 				LocalDateTime.now(),
-				normalMember.getId().equals(store.getMember().getId())
+				normalMember
 			))
 			.filter(RsData::isSuccess)
 			.map(RsData::getData)

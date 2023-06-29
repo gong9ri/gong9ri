@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreChatRoomDTO {
+public class StoreChatNoticeDTO {
 	private Long roomId;
-	private Long lastSeenOffset;
-	private Long notReadCount;
+	private String senderName;
+	private Long chatOffset;
+	private Integer noticeCount;
 }

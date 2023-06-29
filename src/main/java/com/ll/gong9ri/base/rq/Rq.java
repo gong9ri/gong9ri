@@ -94,6 +94,11 @@ public class Rq {
 		return "redirect:" + urlWithMsg(url, msg);
 	}
 
+	public String redirectWithErrorMsg(String url, String msg) {
+		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(msg));
+		return "redirect:" + url;
+	}
+
 	// 302 + 에러 메시지
 	public <T> String redirectWithErrorMsg(String url, RsData<T> rsData) {
 		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(rsData.getMsg()));

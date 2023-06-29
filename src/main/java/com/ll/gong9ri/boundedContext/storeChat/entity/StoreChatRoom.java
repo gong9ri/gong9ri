@@ -32,9 +32,17 @@ public class StoreChatRoom extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
+	@Builder.Default
+	private Long memberChatOffset = 0L;
+	@Builder.Default
+	private Integer memberNoticeCount = 0;
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Store store;
+	@Builder.Default
+	private Long storeChatOffset = 0L;
+	@Builder.Default
+	private Integer storeNoticeCount = 0;
 	@OneToMany(mappedBy = "storeChatRoom", cascade = {CascadeType.ALL})
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@ToString.Exclude
