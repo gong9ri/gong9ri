@@ -1,6 +1,6 @@
 package com.ll.gong9ri.boundedContext.member.entity;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -20,34 +20,27 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
-	// TODO: DB values
 	@Enumerated(EnumType.STRING)
 	private ProviderTypeCode providerTypeCode;
-	@Column(unique = true)
+	@Enumerated(EnumType.STRING)
+	private AuthLevel authLevel;
+	@Column(unique = true, nullable = false)
 	private String username;
+	@Column(nullable = false)
 	private String password;
+	private String nickname;
 
-	public List<? extends GrantedAuthority> getGrantedAuthorities() {
-		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-		grantedAuthorities.add(new SimpleGrantedAuthority("member"));
-
-		// username이 admin인 회원은 추가로 admin 권한도 가진다.
-		if (isAdmin()) {
-			grantedAuthorities.add(new SimpleGrantedAuthority("admin"));
-		}
-
-		return grantedAuthorities;
-	}
-
-	public boolean isAdmin() {
-		return "admin".equals(username);
-	}
-
-	public String getNickname() {
-		return "%1$4s".formatted(Long.toString(getId(), 36)).replace(' ', '0');
+	/**
+	 * 내 권한 보다 낮은 권한들을 전부 획득하여 리턴합니다.
+	 *
+	 * @return List<SimpleGrantedAuthority>
+	 */
+	public List<GrantedAuthority> getGrantedAuthorities() {
+		return Arrays.stream(AuthLevel.values()).filter(e -> e.getCode() <= authLevel.getCode())
+			.map(e -> (GrantedAuthority)(new SimpleGrantedAuthority(e.getValue())))
+			.toList();
 	}
 }

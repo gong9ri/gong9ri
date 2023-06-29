@@ -9,20 +9,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+	// private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.formLogin(
 				formLogin -> formLogin
 					.loginPage("/member/login")
+				// .successHandler(customOAuth2AuthenticationSuccessHandler)
 			)
 			.oauth2Login(
 				oauth2Login -> oauth2Login
 					.loginPage("/member/login")
+				// .successHandler(customOAuth2AuthenticationSuccessHandler)
 			)
 			.logout(
 				logout -> logout

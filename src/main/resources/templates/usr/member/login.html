@@ -1,0 +1,47 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+
+<head>
+    <title>로그인</title>
+</head>
+
+<body>
+
+<main class="flex-grow flex items-center justify-center" layout:fragment="main">
+    <div class="max-w-2xl w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            시작하기
+        </h1>
+
+        <!-- 소셜 로그인 시작 -->
+        <div class="flex flex-col gap-6">
+            <a class="btn btn-block btn-outline gap-1" href="/oauth2/authorization/kakao">
+                <i class="fa-solid fa-comment text-[color:#ffe812]"></i>
+                <span>카카오 아이디로 시작하기</span>
+            </a>
+
+            <a class="btn btn-block btn-outline gap-1" href="/oauth2/authorization/naver">
+                <i class="fa-solid fa-n text-[color:#2DB400]"></i>
+                <span>네이버 아이디로 시작하기</span>
+            </a>
+
+            <a class="btn btn-block btn-outline gap-1" href="/oauth2/authorization/google">
+                <i class="fa-brands fa-google text-[color:#ff4000]"></i>
+                <span>구글 아이디로 시작하기</span>
+            </a>
+
+            <div class="flex flex-wrap justify-center">
+                <a class="btn btn-link" href="/">
+                    <span>
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Gong9Ri란?
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!-- 소셜 로그인 종료 -->
+    </div>
+</main>
+</body>
+
+</html>

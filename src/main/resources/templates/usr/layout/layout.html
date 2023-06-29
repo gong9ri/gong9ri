@@ -54,14 +54,13 @@
                     <ul tabindex="0"
                         class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                         <li th:if="${@rq.logout}" class="flex justify-between">
-                            <a href="/usr/member/login"><i class="fa-solid fa-arrow-right-to-bracket"></i>로그인</a>
-                            <a href="/usr/member/SignUp"><i class="fa-solid fa-user-plus"></i>회원가입</a>
+                            <a href="/member/login"><i class="fa-solid fa-arrow-right-to-bracket"></i>로그인</a>
                         </li>
                         <li th:if="${@rq.login}">
                             <a href="javascript:;" onclick="$(this).next().submit();">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃
                             </a>
-                            <form class="!hidden" th:action="/member/logout" method="POST"></form>
+                            <form class="!hidden" method="POST" th:action="|/member/logout|"></form>
                         </li>
                         <li><a href="/wishlist" style="color: black;">관심있는 공구 목록</a></li>
                         <li><a href="/myItems" style="color: black;">나의 상품 목록</a></li>
@@ -82,14 +81,14 @@
             <!-- 알림 시작 -->
             <div class="navbar-end">
                 <a id="openModalButton1" class="btn btn-ghost btn-circle" th:if="${@rq.login}">
-                    <div class="indicator" style="position: relative;">
-                        <i class="fa-regular fa-bell">
-                            <span data-test="hasUnreadNotifications" th:if="${@rq.hasUnreadNotifications()}"
-                                  class="badge badge-xs badge-secondary indicator-item"
-                                  style="position: absolute; top: -5px; right: -5px;">
-                            </span>
-                        </i>
-                    </div>
+                    <!--                    <div class="indicator" style="position: relative;">-->
+                    <!--                        <i class="fa-regular fa-bell">-->
+                    <!--                            <span data-test="hasUnreadNotifications" th:if="${@rq.hasUnreadNotifications()}"-->
+                    <!--                                  class="badge badge-xs badge-secondary indicator-item"-->
+                    <!--                                  style="position: absolute; top: -5px; right: -5px;">-->
+                    <!--                            </span>-->
+                    <!--                        </i>-->
+                    <!--                    </div>-->
                 </a>
             </div>
             <!-- 알림 끝 -->
