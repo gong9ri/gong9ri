@@ -1,23 +1,31 @@
 package com.ll.gong9ri.boundedContext.member.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.ll.gong9ri.base.appConfig.AppConfig;
 import com.ll.gong9ri.base.event.EventAfterStoreJoinAccept;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.entity.ProviderTypeCode;
 import com.ll.gong9ri.boundedContext.member.repository.MemberRepository;
+import com.ll.gong9ri.boundedContext.member.util.MemberUt;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) // 아래 메서드들이 전부 readonly 라는 것을 명시, 나중을 위해
@@ -101,5 +109,30 @@ public class MemberService {
 		memberRepository.save(member);
 
 		return RsData.successOf(member);
+	}
+
+	@Cacheable("member")
+	@Transactional(readOnly = true)
+	public Map<String, Object> getMemberMapByUsername__cached(final String username) {
+		final Member member = findByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
+
+		final Map<String, Object> memberMap = MemberUt.serializeMemberToMap(member);
+		log.debug("member.toMap() : " + memberMap);
+
+		return memberMap;
+	}
+
+	@CacheEvict("member")
+	@Transactional(readOnly = true)
+	public void evictMemberMapByUsername__cached(final String username) {
+	}
+
+	@Transactional(readOnly = true)
+	public Member getByUsername__cached(String username) {
+		MemberService thisObj = (MemberService)AppConfig.getContext().getBean("memberService");
+		final Map<String, Object> memberMap = thisObj.getMemberMapByUsername__cached(username);
+
+		return MemberUt.deserializeMemberFromMap(memberMap);
 	}
 }
