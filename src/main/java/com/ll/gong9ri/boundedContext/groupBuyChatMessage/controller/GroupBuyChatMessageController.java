@@ -1,9 +1,7 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatMessage.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -11,12 +9,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rq.WsRq;
+import com.ll.gong9ri.boundedContext.groupBuyChatMessage.dto.ChatResponse;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.service.GroupBuyChatMessageService;
 
@@ -42,26 +40,15 @@ public class GroupBuyChatMessageController {
 
 	/**
 	 * 메시지 전체 가져오기
-	 * @param roomId
-	 * @param isNew
-	 * @return
+	 * @param roomId ChatRoomId
+	 * @return ResponseEntity<ChatResponse>
 	 */
 	@GetMapping("/{roomId}/messages")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> findMessages(@PathVariable Long roomId,
-		@RequestParam(defaultValue = "no") String isNew) {
+	public ResponseEntity<ChatResponse> findMessages(@PathVariable Long roomId) {
 
-		Map<String, Object> responseBody = new HashMap<>();
-		responseBody.put("memberId", rq.getMember().getId());
+		List<GroupBuyChatMessage> chatMessages = groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
 
-		List<GroupBuyChatMessage> chatMessages;
-
-		// 기존 메시지 가져오기
-		if (Objects.equals(isNew, "no")) {
-			chatMessages = groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
-			responseBody.put("messages", chatMessages);
-		}
-
-		return ResponseEntity.ok(responseBody);
+		return ResponseEntity.ok(new ChatResponse(chatMessages, rq.getMember().getId()));
 	}
 }

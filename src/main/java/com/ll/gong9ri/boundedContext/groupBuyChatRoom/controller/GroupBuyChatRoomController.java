@@ -34,6 +34,7 @@ public class GroupBuyChatRoomController {
 
 		GroupBuyChatRoom chatRoom = groupBuyChatRoomService.findById(chatRoomId);
 		model.addAttribute("chatRoom", chatRoom);
+		model.addAttribute("memberId", rq.getMember().getId());
 
 		if (chatRoomParticipantService.findByMemberIdAndGroupBuyChatRoomId(rq.getMember().getId(), chatRoomId)
 			.isEmpty()) {
