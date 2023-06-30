@@ -1,7 +1,7 @@
 package com.ll.gong9ri.boundedContext.product.dto;
 
+import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.productImage.entity.ProductImage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

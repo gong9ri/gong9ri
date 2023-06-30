@@ -1,9 +1,10 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
-import com.ll.gong9ri.boundedContext.productImage.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

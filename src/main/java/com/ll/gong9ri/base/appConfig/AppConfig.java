@@ -28,7 +28,7 @@ public class AppConfig {
 	@Getter
 	private static String baseUrl;
 
-	@Value("${custom.baseUrl}")
+	@Value("${custom.site.baseUrl}")
 	public void setBaseUrl(String baseUrl) {
 		AppConfig.baseUrl = baseUrl;
 	}
