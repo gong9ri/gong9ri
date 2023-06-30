@@ -8,5 +8,5 @@ spring:
     hibernate:
       ddl-auto: create
 custom:
-  baseUrl: http://localhost:8080
-
+  site:
+    baseUrl: http://localhost:8080
