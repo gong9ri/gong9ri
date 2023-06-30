@@ -166,7 +166,7 @@ class ProductServiceTest {
         RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
 
         assertThat(getAllProductsRs.isSuccess()).isTrue();
-        assertThat(getAllProductsRs.getData()).hasSize(3);
+        assertThat(getAllProductsRs.getData()).hasSize(products.length);
     }
 
     @Test
