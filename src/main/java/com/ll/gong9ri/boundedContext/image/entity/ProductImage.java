@@ -1,10 +1,13 @@
-package com.ll.gong9ri.boundedContext.productImage.entity;
+package com.ll.gong9ri.boundedContext.image.entity;
 
-import com.ll.gong9ri.base.baseEntity.ImageBase;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,9 +19,10 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @ToString(callSuper = true)
-public class ProductImage extends ImageBase {
+@EntityListeners(AuditingEntityListener.class)
+public class ProductImage extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Product product;
