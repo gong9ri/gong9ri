@@ -23,19 +23,22 @@ import com.ll.gong9ri.boundedContext.member.service.MemberService;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.store.service.StoreService;
 import com.ll.gong9ri.boundedContext.storeChat.entity.StoreChatRoom;
-import com.ll.gong9ri.boundedContext.storeChat.service.StoreChatService;
+import com.ll.gong9ri.boundedContext.storeChat.service.StoreChatMessageService;
+import com.ll.gong9ri.boundedContext.storeChat.service.StoreChatRoomService;
 
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class StoreChatServiceTest {
+class StoreChatRoomServiceTest {
 	@Autowired
 	private MemberService memberService;
 	@Autowired
 	private StoreService storeService;
 	@Autowired
-	private StoreChatService storeChatService;
+	private StoreChatRoomService roomService;
+	@Autowired
+	private StoreChatMessageService messageService;
 
 	private Member normalMember, storeMember;
 	private Store store;
@@ -52,27 +55,27 @@ class StoreChatServiceTest {
 	@Test
 	@DisplayName("storeChat room request")
 	void chatRoomRequest() {
-		final Optional<StoreChatRoom> oRoom = storeChatService.findRoomByMemberAndStore(storeMember, store);
+		final Optional<StoreChatRoom> oRoom = roomService.findRoomByMemberAndStore(storeMember, store);
 		assertThat(oRoom).isEmpty();
 
-		final RsData<StoreChatRoom> rsRoom = storeChatService.getRoom(normalMember, store);
+		final RsData<StoreChatRoom> rsRoom = roomService.getMemberRoom(normalMember, store);
 		assertThat(rsRoom.isSuccess()).isTrue();
 
 		assertThat(rsRoom.getData().getId())
-			.isEqualTo(storeChatService.getRoom(normalMember, store).getData().getId());
+			.isEqualTo(roomService.getMemberRoom(normalMember, store).getData().getId());
 	}
 
 	@Test
 	@DisplayName("chatting test")
 	void chatRoomSendAndRead() {
-		final RsData<StoreChatRoom> rsRoom = storeChatService.getRoom(normalMember, store);
+		final RsData<StoreChatRoom> rsRoom = roomService.getMemberRoom(normalMember, store);
 		final String content = "hi";
 		assertThat(rsRoom.isSuccess()).isTrue();
 		final StoreChatRoom room = rsRoom.getData();
 
 		// TODO: last sent message doesnt mean last seen message
 		final Long normalUserLastReadOffset = LongStream.range(1, 23)
-			.mapToObj(i -> storeChatService.createMessage(
+			.mapToObj(i -> messageService.createMessage(
 				room,
 				content + i,
 				LocalDateTime.now(),
@@ -84,13 +87,13 @@ class StoreChatServiceTest {
 			.max()
 			.orElseThrow();
 
-		storeChatService.getAllMessages(room.getId())
+		messageService.getAllMessages(room.getId())
 			.forEach(message -> assertThat(message.getContent()).contains(content));
-		assertThat(storeChatService.getNewMessages(room.getId(), normalUserLastReadOffset)).isEmpty();
+		assertThat(messageService.getNewMessages(room.getId(), normalUserLastReadOffset)).isEmpty();
 
 		final Long lastMessageId = LongStream.range(1, 23)
 			.map(i -> i + normalUserLastReadOffset)
-			.mapToObj(i -> storeChatService.createMessage(
+			.mapToObj(i -> messageService.createMessage(
 				room,
 				content + i,
 				LocalDateTime.now(),
@@ -102,7 +105,7 @@ class StoreChatServiceTest {
 			.max()
 			.orElseThrow();
 
-		assertThat(storeChatService.getNewMessages(room.getId(), normalUserLastReadOffset)).isNotEmpty();
+		assertThat(messageService.getNewMessages(room.getId(), normalUserLastReadOffset)).isNotEmpty();
 		assertThat(normalUserLastReadOffset).isLessThan(lastMessageId);
 	}
 }

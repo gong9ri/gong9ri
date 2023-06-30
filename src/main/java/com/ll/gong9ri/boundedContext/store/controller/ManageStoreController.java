@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
@@ -18,6 +19,7 @@ import com.ll.gong9ri.boundedContext.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
+@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 @RequestMapping("/manage/store")
 @RequiredArgsConstructor
 public class ManageStoreController {
@@ -26,7 +28,6 @@ public class ManageStoreController {
 	private final StoreService storeService;
 	private final ProductService productService;
 
-	@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 	@GetMapping("/")
 	public String home(Model model) {
 		final Optional<Store> oStore = storeService.findByMemberId(rq.getMember().getId());
@@ -41,9 +42,8 @@ public class ManageStoreController {
 		return "usr/manage/store/index";
 	}
 
-	@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 	@GetMapping("/product/list")
-	public String search(Model model) {
+	public String list(Model model, @RequestParam String kw) {
 		// TODO: getProductsByStore
 		// model.addAttribute("stores", getStore());
 

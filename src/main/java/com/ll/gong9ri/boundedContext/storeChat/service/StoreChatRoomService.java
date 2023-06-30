@@ -1,6 +1,5 @@
 package com.ll.gong9ri.boundedContext.storeChat.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,10 +11,8 @@ import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.storeChat.dto.StoreChatMessageDTO;
 import com.ll.gong9ri.boundedContext.storeChat.dto.StoreChatNoticeDTO;
-import com.ll.gong9ri.boundedContext.storeChat.entity.StoreChatMessage;
+import com.ll.gong9ri.boundedContext.storeChat.dto.StoreChatRoomDTO;
 import com.ll.gong9ri.boundedContext.storeChat.entity.StoreChatRoom;
-import com.ll.gong9ri.boundedContext.storeChat.repository.StoreChatMessageRepository;
-import com.ll.gong9ri.boundedContext.storeChat.repository.StoreChatMessageRepositoryImpl;
 import com.ll.gong9ri.boundedContext.storeChat.repository.StoreChatRoomRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,11 +20,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class StoreChatService {
+public class StoreChatRoomService {
 	private static final String NOT_ALLOWED_ACCESS_MESSAGE = "잘못된 접근입니다.";
 	private final StoreChatRoomRepository roomRepository;
-	private final StoreChatMessageRepository messageRepository;
-	private final StoreChatMessageRepositoryImpl messageRepositoryImpl;
+	private final StoreChatMessageService messageService;
 
 	@Transactional(readOnly = true)
 	public Optional<StoreChatRoom> findRoomById(final Long roomId) {
@@ -39,7 +35,7 @@ public class StoreChatService {
 		return roomRepository.findByMemberIdAndStoreId(member.getId(), store.getId());
 	}
 
-	private StoreChatRoom createRoom(final Member member, final Store store) {
+	public StoreChatRoom createRoom(final Member member, final Store store) {
 		StoreChatRoom storeChatRoom = StoreChatRoom.builder()
 			.member(member)
 			.store(store)
@@ -50,47 +46,21 @@ public class StoreChatService {
 		return storeChatRoom;
 	}
 
-	public RsData<StoreChatRoom> getRoom(final Member member, final Store store) {
+	public RsData<StoreChatRoom> getMemberRoom(final Member member, final Store store) {
 		if (member.getId().equals(store.getMember().getId())) {
 			return RsData.of("F-1", NOT_ALLOWED_ACCESS_MESSAGE, null);
 		}
 
-		return RsData.successOf(findRoomByMemberAndStore(member, store).orElseGet(() -> createRoom(member, store)));
+		return RsData.successOf(findRoomByMemberAndStore(member, store)
+			.orElseGet(() -> createRoom(member, store)));
 	}
 
-	public RsData<StoreChatMessage> createMessage(
-		final StoreChatRoom storeChatRoom,
-		final String content,
-		final LocalDateTime createDate,
-		final Member member
-	) {
-		StoreChatMessage storeChatMessage = StoreChatMessage.builder()
-			.storeChatRoom(storeChatRoom)
-			.content(content)
-			.createDate(createDate)
-			.sentByStore(member.getId().equals(storeChatRoom.getMember().getId()))
-			.build();
+	public void setOffset(StoreChatRoom room, final Long offset, final Boolean isMember) {
+		room = Boolean.TRUE.equals(isMember)
+			? room.toBuilder().memberChatOffset(offset).build()
+			: room.toBuilder().storeChatOffset(offset).build();
 
-		messageRepository.save(storeChatMessage);
-
-		return RsData.successOf(storeChatMessage);
-	}
-
-	@Transactional(readOnly = true)
-	public List<StoreChatMessageDTO> getAllMessages(final Long storeChatRoomId) {
-		return messageRepositoryImpl.findAllByRoomId(storeChatRoomId);
-	}
-
-	/**
-	 * 해당 채팅방의 offset 이후의 Id 를 가진 메시지를 가져옵니다.
-	 *
-	 * @param storeChatRoomId 소속한 채팅방의 Id
-	 * @param offset 마지막으로 읽은 메시지의 Id
-	 * @return StoreChatMessages
-	 */
-	@Transactional(readOnly = true)
-	public List<StoreChatMessageDTO> getNewMessages(final Long storeChatRoomId, final Long offset) {
-		return messageRepositoryImpl.findAllByRoomIdAndIdGreaterThan(storeChatRoomId, offset);
+		roomRepository.save(room);
 	}
 
 	@Transactional(readOnly = true)
@@ -115,5 +85,35 @@ public class StoreChatService {
 				.noticeCount(e.getStoreNoticeCount())
 				.build())
 			.toList();
+	}
+
+	public RsData<StoreChatRoomDTO> getMemberRoomDTO(StoreChatRoom room, final Store store) {
+		if (!room.getStore().getId().equals(store.getId())) {
+			return RsData.failOf(null);
+		}
+
+		final List<StoreChatMessageDTO> messages = messageService.getAllMessages(room.getId());
+		setOffset(room, messages.stream().mapToLong(StoreChatMessageDTO::getId).max().orElse(Long.MIN_VALUE), false);
+
+		return RsData.successOf(StoreChatRoomDTO.builder()
+			.room(StoreChatNoticeDTO.storeOf(room))
+			.messages(messages)
+			.build()
+		);
+	}
+
+	public RsData<StoreChatRoomDTO> getStoreRoomDTO(StoreChatRoom room, final Member member) {
+		if (!room.getMember().getId().equals(member.getId())) {
+			return RsData.failOf(null);
+		}
+
+		final List<StoreChatMessageDTO> messages = messageService.getAllMessages(room.getId());
+		setOffset(room, messages.stream().mapToLong(StoreChatMessageDTO::getId).max().orElse(Long.MIN_VALUE), true);
+
+		return RsData.successOf(StoreChatRoomDTO.builder()
+			.room(StoreChatNoticeDTO.memberOf(room))
+			.messages(messages)
+			.build()
+		);
 	}
 }

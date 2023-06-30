@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreChatMessageDTO {
+	@NotNull
+	private Long id;
 	@NotBlank
 	private String content;
 	private LocalDateTime createDate;

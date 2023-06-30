@@ -25,5 +25,5 @@ public class StoreChatMessage extends BaseEntity {
 	@Column(columnDefinition = "TEXT")
 	private String content;
 	@Column(nullable = false)
-	private Boolean sentByStore;
+	private Boolean sentByMember;
 }

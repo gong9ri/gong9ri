@@ -17,12 +17,12 @@ public class StoreChatMessageRepositoryImpl implements StoreChatMessageRepositor
 
 	@Override
 	public List<StoreChatMessageDTO> findAllByRoomId(final Long roomId) {
-		// todo: member, store
 		return jpaQueryFactory.select(Projections.constructor(
 				StoreChatMessageDTO.class,
+				storeChatMessage.id,
 				storeChatMessage.content,
 				storeChatMessage.createDate,
-				storeChatMessage.sentByStore
+				storeChatMessage.sentByMember
 			))
 			.from(storeChatMessage)
 			.leftJoin(storeChatMessage.storeChatRoom, storeChatRoom)
@@ -32,12 +32,12 @@ public class StoreChatMessageRepositoryImpl implements StoreChatMessageRepositor
 
 	@Override
 	public List<StoreChatMessageDTO> findAllByRoomIdAndIdGreaterThan(final Long roomId, final Long offset) {
-		// todo: member, store
 		return jpaQueryFactory.select(Projections.constructor(
 				StoreChatMessageDTO.class,
+				storeChatMessage.id,
 				storeChatMessage.content,
 				storeChatMessage.createDate,
-				storeChatMessage.sentByStore
+				storeChatMessage.sentByMember
 			))
 			.from(storeChatMessage)
 			.leftJoin(storeChatMessage.storeChatRoom, storeChatRoom)
