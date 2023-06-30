@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,5 +78,9 @@ public class ProductService {
     public RsData<List<Product>> search(SearchDTO searchDTO) {
         List<Product> products = productRepository.findDistinctByNameLike(searchDTO.wrapWithWildcard());
         return RsData.of("S-1", "상품 검색에 성공했습니다.", products);
+    }
+
+    public Optional<Product> getProducts(Long id) {
+        return productRepository.findById(id);
     }
 }
