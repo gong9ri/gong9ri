@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.store.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class StoreService {
 		return storeRepository.findById(id);
 	}
 
+	@Cacheable("store")
 	@Transactional(readOnly = true)
 	public Optional<Store> findByMemberId(final Long memberId) {
 		return storeRepository.findByMemberId(memberId);
