@@ -19,15 +19,12 @@ function onConnected() {
     getChatMessages('no');
     stompClient.subscribe(`/topic/chats/${chatRoomId}`, function (data) {
         let message = JSON.parse(data.body);
-        console.log('id=', id);
-        let isOwnChat = message.senderId === id;
-        addChatBubble(isOwnChat, `${message.senderName}`, `${message.content}`);
+        addChatBubble(true, `${message.senderName}`, `${message.content}`);
     });
 }
 
 function getChatMessages(isNew) {
 
-    let id;
     fetch(`/${chatRoomId}/messages?isNew=${isNew}`, {
         method: "GET",
         headers: {
@@ -39,12 +36,11 @@ function getChatMessages(isNew) {
         .then(body => {
             const {messages, memberId} = body;
             drawMessages(messages, memberId);
-            id = memberId;
+            return memberId;
         })
         .catch(error => {
             console.error(error);
         });
-    return id;
 }
 
 function drawMessages(messages, memberId) {

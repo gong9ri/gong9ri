@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rq.WsRq;
-import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.service.GroupBuyChatMessageService;
 
@@ -33,7 +32,6 @@ public class GroupBuyChatMessageController {
 	@MessageMapping("/chats/{roomId}")
 	public GroupBuyChatMessage send(@DestinationVariable String roomId, @RequestBody Map<String, String> message) {
 
-
 		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(
 			message.get("content"),
 			roomId, String.valueOf(wsRq.getMember().getId()), wsRq.getMember().getUsername()
@@ -42,6 +40,12 @@ public class GroupBuyChatMessageController {
 		return chatMessage;
 	}
 
+	/**
+	 * 메시지 전체 가져오기
+	 * @param roomId
+	 * @param isNew
+	 * @return
+	 */
 	@GetMapping("/{roomId}/messages")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> findMessages(@PathVariable Long roomId,
@@ -56,19 +60,8 @@ public class GroupBuyChatMessageController {
 		if (Objects.equals(isNew, "no")) {
 			chatMessages = groupBuyChatMessageService.getChatMessagesByRoomId(roomId);
 			responseBody.put("messages", chatMessages);
-			return ResponseEntity.ok(responseBody);
 		}
 
-		// 새로운 메시지 가져오기
-		ChatRoomParticipant chatRoomParticipant = rq.getMember().getChatRoomParticipants().stream()
-			.filter(p -> p.getGroupBuyChatRoom().getId().equals(roomId))
-			.findFirst().orElseThrow(IllegalStateException::new);
-
-		chatMessages = groupBuyChatMessageService.getNewChatMessagesByRoomId(String.valueOf(roomId),
-			chatRoomParticipant.getId(),
-			chatRoomParticipant.getChatOffset());
-
-		responseBody.put("messages", chatMessages);
 		return ResponseEntity.ok(responseBody);
 	}
 }

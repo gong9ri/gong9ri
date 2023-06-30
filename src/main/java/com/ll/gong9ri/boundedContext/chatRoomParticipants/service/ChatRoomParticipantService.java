@@ -1,5 +1,6 @@
 package com.ll.gong9ri.boundedContext.chatRoomParticipants.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -40,5 +41,13 @@ public class ChatRoomParticipantService {
 
 	public Optional<ChatRoomParticipant> findById(Long id) {
 		return chatRoomParticipantRepository.findById(id);
+	}
+
+	public List<ChatRoomParticipant> findAllByMemberId(Long id) {
+		return chatRoomParticipantRepository.findAllByMemberId(id);
+	}
+
+	public Optional<ChatRoomParticipant> findByMemberIdAndGroupBuyChatRoomId(Long memberId, Long groupBuyChatRoomId) {
+		return chatRoomParticipantRepository.findByMemberIdAndGroupBuyChatRoomId(memberId, groupBuyChatRoomId);
 	}
 }

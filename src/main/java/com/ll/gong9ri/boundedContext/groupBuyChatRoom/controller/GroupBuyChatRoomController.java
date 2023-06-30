@@ -23,19 +23,22 @@ public class GroupBuyChatRoomController {
 	private final Rq rq;
 
 	@GetMapping("/make")
-	public String create(){
+	public String create() {
 		groupBuyChatRoomService.createChatRoom();
 
-		return rq.redirectWithMsg("1","");
+		return rq.redirectWithMsg("1", "");
 	}
 
 	@GetMapping("/{chatRoomId}")
-	public String showChatRoom(@PathVariable Long chatRoomId, Model model){
+	public String showChatRoom(@PathVariable Long chatRoomId, Model model) {
 
 		GroupBuyChatRoom chatRoom = groupBuyChatRoomService.findById(chatRoomId);
 		model.addAttribute("chatRoom", chatRoom);
 
-		chatRoomParticipantService.createNewParticipant(chatRoom, rq.getMember());
+		if (chatRoomParticipantService.findByMemberIdAndGroupBuyChatRoomId(rq.getMember().getId(), chatRoomId)
+			.isEmpty()) {
+			chatRoomParticipantService.createNewParticipant(chatRoom, rq.getMember());
+		}
 
 		return "groupBuy/roomDetail";
 	}
