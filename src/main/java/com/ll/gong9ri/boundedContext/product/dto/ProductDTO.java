@@ -2,6 +2,7 @@ package com.ll.gong9ri.boundedContext.product.dto;
 
 import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Builder
 @Getter
@@ -24,14 +26,30 @@ public class ProductDTO {
     private Integer maxPurchaseNum;
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
+    private List<Integer> headCounts;
+    private List<Integer> discountRates;
 
     public Product toEntity() {
         return Product.builder()
-                .name(name)
-                .price(price)
-                .description(description)
-                .productImages(images)
-                .maxPurchaseNum(maxPurchaseNum)
+                .name(this.name)
+                .price(this.price)
+                .description(this.description)
+                .productImages(this.images)
+                .maxPurchaseNum(this.maxPurchaseNum)
+                .productDiscounts(createProductDiscountList())
                 .build();
+    }
+
+    private List<ProductDiscount> createProductDiscountList() {
+        return (List<ProductDiscount>) IntStream.range(0, headCounts.size())
+                .mapToObj(i -> ProductDiscount.builder()
+                        .headCount(headCounts.get(i))
+                        .discountRate(discountRates.get(i))
+                        .build())
+                .toList();
+    }
+
+    public List<ProductDiscount> getProductDiscountList() {
+        return createProductDiscountList();
     }
 }

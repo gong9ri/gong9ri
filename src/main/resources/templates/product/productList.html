@@ -11,7 +11,7 @@
         <table class="table">
             <thead class="table-header" th:if="${!products.isEmpty()}">상품 이름</thead>
             <tr th:each="product : ${products}">
-                <td><a href="#" th:text="${product.getName()}"></a></td>
+                <td><a th:href="@{|details?productId=${product.id}|}" th:text="${product.getName()}"></a></td>
             </tr>
         </table>
         <a class="btn" href="/product/registration">상품 등록</a>

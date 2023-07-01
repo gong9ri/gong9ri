@@ -44,6 +44,9 @@ public class Product extends BaseEntity {
 	@ToString.Exclude
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
+	@OneToMany
+	@Builder.Default
+	private List<ProductDiscount> productDiscounts = new ArrayList<>();
 
 	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);
@@ -53,6 +56,7 @@ public class Product extends BaseEntity {
 		this.productOptions.addAll(productOptions);
 	}
 
+	// TODO: toDTO() 함수 ProductDTO로 옮기기
 	public ProductDTO toDTO() {
 		return ProductDTO.builder()
 				.id(this.getId())
