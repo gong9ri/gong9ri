@@ -46,7 +46,6 @@ public class Product extends BaseEntity {
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
 
-
 	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);
 	}
