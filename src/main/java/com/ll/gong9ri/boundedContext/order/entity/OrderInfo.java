@@ -1,7 +1,17 @@
 package com.ll.gong9ri.boundedContext.order.entity;
 
-import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -10,6 +20,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +48,21 @@ public class OrderInfo extends BaseEntity {
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	@ToString.Exclude
 	private OrderRecipientInfo orderRecipientInfo;
+	@OneToMany(mappedBy = "orderInfo", cascade = {CascadeType.ALL})
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@ToString.Exclude
+	@Builder.Default
+	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
+
+	public static OrderInfo of(Member member, Store store, Product product, List<ProductOptionQuantity> quantities) {
+		return OrderInfo.builder()
+			.memberId(member.getId())
+			.username(member.getUsername())
+			.storeId(store.getId())
+			.storeName(store.getName())
+			.productId(product.getId())
+			.productName(product.getName())
+			.productOptionQuantities(quantities)
+			.build();
+	}
 }
