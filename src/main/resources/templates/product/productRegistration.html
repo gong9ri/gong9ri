@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 등록</title>
+</head>
+<body>
+
+<main layout:fragment="main">
+    <script type="text/javascript">
+        function submitRegistrationForm(form) {
+            if (confirm('등록하시겠습니까?')) {
+                form.submit();
+            }
+        }
+
+        function addDetailOption(detailsId) {
+            const details = document.getElementById(detailsId);
+            let optCnt = details.childElementCount;
+            if (confirm('상세 옵션을 추가하시겠습니까?')) {
+                const newRow = document.createElement('td');
+                newRow.style.setProperty('width', '150px');
+                const input = document.createElement('input');
+                input.name = detailsId;
+                input.id = `${detailsId}_${optCnt}`;
+                input.type = 'text';
+                newRow.appendChild(input);
+                details.appendChild(newRow);
+                optCnt++;
+            }
+        }
+    </script>
+    <form th:action method="post" onsubmit="submitRegistrationForm(this); return false;">
+        <div>
+            <div class="">상품 등록</div>
+            <div class="">아래 양식을 작성하여 상품 등록을 진행해주세요.</div>
+            <hr>
+            <table class="flex flex-col">
+                <tr>
+                    <td>
+                        <label>상품명</label>
+                    </td>
+                    <td>
+                        <input name="name" id="name" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="price">상품 기본 가격</label>
+                    </td>
+                    <td>
+                        <input name="price" id="price" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="productDescription">상품 설명</label>
+                    </td>
+                    <td>
+                        <textarea name="productDescription" id="productDescription" cols="16" rows="10"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="maxPurchaseNum">상품 최대 구매 가능 개수</label>
+                    </td>
+                    <td>
+                        <input name="maxPurchaseNum" id="maxPurchaseNum" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>상품 이미지 업로드</label>
+                    </td>
+                    <td>
+                        <input class="btn btn-primary" name="image" id="image" type="button" value="대충 이미지 업로드 버튼">
+                    </td>
+                </tr>
+            </table>
+            <button class="btn">상품 등록</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

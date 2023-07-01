@@ -16,6 +16,7 @@ import com.ll.gong9ri.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -25,6 +26,7 @@ public class Rq {
 	private final MemberService memberService;
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
+	@Getter
 	private final HttpSession session;
 	private final User user;
 	private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
@@ -92,6 +94,11 @@ public class Rq {
 	// 302 + 메세지
 	public String redirectWithMsg(String url, String msg) {
 		return "redirect:" + urlWithMsg(url, msg);
+	}
+
+	public String redirectWithErrorMsg(String url, String msg) {
+		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(msg));
+		return "redirect:" + url;
 	}
 
 	// 302 + 에러 메시지
