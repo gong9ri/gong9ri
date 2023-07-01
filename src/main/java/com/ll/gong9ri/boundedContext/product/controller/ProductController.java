@@ -44,9 +44,13 @@ public class ProductController {
         if (productRs.isFail())
             return rq.historyBack(productRs);
 
-        session.setAttribute(PRODUCT, productRs.getData().toDTO());
+        if (session.getAttribute(PRODUCT) != null) {
+            session.setAttribute(PRODUCT, null);
+        }
 
-        return rq.redirectWithMsg("/product/discount", productRs);
+        session.setAttribute(PRODUCT, ProductDTO.toDTO(productRs.getData()));
+
+        return rq.redirectWithMsg("/product/option", productRs);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -98,7 +102,7 @@ public class ProductController {
     private void sendProductListToView(Model model, RsData<List<Product>> rsData) {
         List<Product> products = rsData.getData();
 
-        List<ProductDTO> productDTOList = products.stream().map(Product::toDTO).toList();
+        List<ProductDTO> productDTOList = products.stream().map(ProductDTO::toDTO).toList();
 
         model.addAttribute(PRODUCTS, productDTOList);
     }
@@ -112,7 +116,7 @@ public class ProductController {
             return rq.historyBack("등록된 상품이 존재하지 않습니다.");
         }
 
-        ProductDTO productDTO = optionalProduct.get().toDTO();
+        ProductDTO productDTO = ProductDTO.toDTO(optionalProduct.get());
         model.addAttribute(PRODUCT, productDTO);
 
         return "product/productDetails";

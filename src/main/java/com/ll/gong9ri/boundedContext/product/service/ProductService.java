@@ -28,9 +28,10 @@ public class ProductService {
     public RsData<Product> registerProduct(final ProductDTO productDTO) {
         Product product = productDTO.toEntity();
 
+        saveProductDiscount(product.getProductDiscounts());
+
         productRepository.save(product);
 
-        saveProductDiscount(productDTO.getProductDiscountList());
 
         return RsData.of("S-1", "상품이 성공적으로 등록되었습니다.", product);
     }

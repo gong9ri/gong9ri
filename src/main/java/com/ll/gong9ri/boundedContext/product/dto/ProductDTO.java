@@ -26,7 +26,9 @@ public class ProductDTO {
     private Integer maxPurchaseNum;
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
+    @NotNull
     private List<Integer> headCounts;
+    @NotNull
     private List<Integer> discountRates;
 
     public Product toEntity() {
@@ -37,6 +39,30 @@ public class ProductDTO {
                 .productImages(this.images)
                 .maxPurchaseNum(this.maxPurchaseNum)
                 .productDiscounts(createProductDiscountList())
+                .build();
+    }
+
+    public static ProductDTO toDTO(Product product) {
+        List<ProductDiscount> discounts = product.getProductDiscounts();
+
+        List<Integer> headCounts = new ArrayList<>();
+        List<Integer> discountRates = new ArrayList<>();
+
+        discounts.forEach(discount -> {
+            headCounts.add(discount.getHeadCount());
+            discountRates.add(discount.getDiscountRate());
+        });
+
+
+        return ProductDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .images(product.getProductImages())
+                .maxPurchaseNum(product.getMaxPurchaseNum())
+                .headCounts(headCounts)
+                .discountRates(discountRates)
                 .build();
     }
 
