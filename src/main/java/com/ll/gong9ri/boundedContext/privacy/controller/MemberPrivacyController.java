@@ -47,17 +47,14 @@ public class MemberPrivacyController {
 		if (rsPrivacy.isFail()) {
 			return rq.historyBack(rsPrivacy);
 		}
-		PrivacyDTO dto = decryptPrivacyDTO(rsPrivacy.getData());
-		System.out.println(dto);
 
-		model.addAttribute("privacy", dto);
+		model.addAttribute("privacy", decryptPrivacyDTO(rsPrivacy.getData()));
 
 		return "usr/member/privacy/detail";
 	}
 
 	@PostMapping("/create")
 	public String createPrivacy(PrivacyDTO privacyDTO) {
-		System.out.println(privacyDTO);
 		memberPrivacyService.create(rq.getMember(), privacyDTO);
 
 		return rq.redirectWithMsg("/member/privacy/", "성공적으로 등록했습니다.");

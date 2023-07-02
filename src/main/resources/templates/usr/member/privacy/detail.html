@@ -8,7 +8,7 @@
 
 <main layout:fragment="main">
     <div class="card flex-grow bg-base-100 shadow-2xl">
-        <div class="card-body flex flex-col flex-row">
+        <div class="card-body flex flex-col flex-row" th:if="${privacy != null}">
             <span class="list-group-item list-group-item-primary text-2xl">받으시는 분</span>
             <span class="list-group-item list-group-item-primary text-xl" th:text="${privacy.recipient}"></span>
             <span class="list-group-item list-group-item-primary text-2xl">전화번호</span>
@@ -17,6 +17,9 @@
             <span class="list-group-item list-group-item-primary text-xl" th:text="${privacy.mainAddress}"></span>
             <span class="list-group-item list-group-item-primary text-2xl">상세주소</span>
             <span class="list-group-item list-group-item-primary text-xl" th:text="${privacy.subAddress}"></span>
+            <a class="badge badge-primary mx-1 my-2 " th:href="|/member/privacy/privacyForm|">배송지등록</a>
+        </div>
+        <div class="card-body flex flex-col flex-row" th:if="${privacy == null}">
             <a class="badge badge-primary mx-1 my-2 " th:href="|/member/privacy/privacyForm|">배송지등록</a>
         </div>
     </div>

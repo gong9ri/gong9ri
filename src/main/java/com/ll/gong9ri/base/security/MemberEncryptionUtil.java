@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+/**
+ * Member 별 암호화 키를 통해 암, 복호화를 제공하는 클래스
+ * getSecretKey() 추가적인 암호화 필요
+ */
 @Component
 public class MemberEncryptionUtil {
 	private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";

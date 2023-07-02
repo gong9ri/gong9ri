@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * MemberPrivacy 경로의 request 의 parameter를 제공된 암호화하여 Controller로 전달
+ */
 @WebFilter(urlPatterns = "/member/privacy/create")
 @RequiredArgsConstructor
 public class MemberPrivacyFilter implements Filter {
