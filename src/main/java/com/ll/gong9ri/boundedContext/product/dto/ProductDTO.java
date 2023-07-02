@@ -36,7 +36,7 @@ public class ProductDTO {
                 .name(this.name)
                 .price(this.price)
                 .description(this.description)
-                .productImages(this.images)
+                .images(this.images)
                 .maxPurchaseNum(this.maxPurchaseNum)
                 .productDiscounts(createProductDiscountList())
                 .build();
@@ -59,7 +59,7 @@ public class ProductDTO {
                 .name(product.getName())
                 .price(product.getPrice())
                 .description(product.getDescription())
-                .images(product.getProductImages())
+                .images(product.getImages())
                 .maxPurchaseNum(product.getMaxPurchaseNum())
                 .headCounts(headCounts)
                 .discountRates(discountRates)

@@ -31,7 +31,7 @@ public class Product extends BaseEntity {
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@ToString.Exclude
 	@Builder.Default
-	private List<ProductImage> productImages = new ArrayList<>();
+	private List<ProductImage> images = new ArrayList<>();
 	@Setter
 	private String optionOne;
 	@Setter

@@ -94,7 +94,6 @@ public class ProductService {
      * 상품의 할인율을 저장하는 메서드 입니다.
      * 인자로 'productDiscounts'를 전달받아 이미 DB에 저장되어 있는지 확인하고,
      * 저장되어 있지 않을 때만 데이터를 저장합니다.
-     *
      * @param productDiscounts
      * @return 해당 메서드를 통해 저장된 ProductDiscount 객체의 List를 포함하는 RsData 객체를 반환합니다.
      */
