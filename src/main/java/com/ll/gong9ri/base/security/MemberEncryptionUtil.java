@@ -1,81 +1,80 @@
 package com.ll.gong9ri.base.security;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class MemberEncryptionUtil {
-	private static final String AES_ALGORITHM = "AES/GCM/NoPadding";
-	private static final String SALT = "_Gong9Ri"; // Salt 값을 공유해서 사용
+	private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
+	private static final String CHARSET = StandardCharsets.UTF_8.name();
+	@Value("${custom.AES.SALT}")
+	private String SALT;
 
-	private static String bytesToHex(byte[] hash) {
-		StringBuilder hexString = new StringBuilder(2 * hash.length);
-		for (byte b : hash) {
-			String hex = Integer.toHexString(0xff & b);
-			if (hex.length() == 1) {
-				hexString.append('0');
-			}
-			hexString.append(hex);
-		}
-		return hexString.toString();
-	}
-
-	public static String getEncryptionKey() {
+	private SecretKeySpec getSecretKey() {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
 			String key = username + SALT;
+			byte[] keyBytes = key.getBytes(CHARSET);
+			byte[] truncatedKey = Arrays.copyOf(keyBytes, 16);
 
-			// SHA-256 해시 알고리즘을 사용하여 키 해시 생성
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] encodedHash = digest.digest(key.getBytes());
-
-			// 해시 결과를 16진수 문자열로 변환하여 리턴
-			return bytesToHex(encodedHash);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("Failed to generate encryption key.", e);
+			return new SecretKeySpec(truncatedKey, "AES");
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to generate secret key: " + e.getMessage(), e);
 		}
 	}
 
-	public static String encrypt(String data) {
+	private IvParameterSpec getIvParameterSpec() {
+		try {
+			String username = SecurityContextHolder.getContext().getAuthentication().getName();
+			String key = username + SALT;
+			byte[] ivBytes = new byte[16];
+			System.arraycopy(key.getBytes(CHARSET), 0, ivBytes, 0, 16);
+			return new IvParameterSpec(ivBytes);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to generate IV parameter: " + e.getMessage(), e);
+		}
+	}
+
+	private void initCipher(Cipher cipher, int mode) {
+		try {
+			SecretKeySpec secretKey = getSecretKey();
+			IvParameterSpec ivParameterSpec = getIvParameterSpec();
+			cipher.init(mode, secretKey, ivParameterSpec);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to initialize cipher: " + e.getMessage(), e);
+		}
+	}
+
+	public String encrypt(String plaintext) {
 		try {
 			Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-			SecretKeySpec secretKeySpec = new SecretKeySpec(
-				getEncryptionKey().getBytes(StandardCharsets.UTF_8),
-				AES_ALGORITHM
-			);
-			cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-			byte[] encryptedBytes = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+			initCipher(cipher, Cipher.ENCRYPT_MODE);
+			byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes(CHARSET));
 
 			return Base64.getEncoder().encodeToString(encryptedBytes);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to encrypt data.", e);
+			throw new RuntimeException("Encryption failed: " + e.getMessage(), e);
 		}
 	}
 
-	public static String decrypt(String encryptedData) {
+	public String decrypt(String ciphertext) {
 		try {
 			Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-			SecretKeySpec secretKeySpec = new SecretKeySpec(
-				getEncryptionKey().getBytes(StandardCharsets.UTF_8),
-				AES_ALGORITHM
-			);
-			cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-			byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
-			byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+			initCipher(cipher, Cipher.DECRYPT_MODE);
+			byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
 
-			return new String(decryptedBytes, StandardCharsets.UTF_8);
+			return new String(decryptedBytes, CHARSET);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to decrypt data.", e);
+			throw new RuntimeException("Decryption failed: " + e.getMessage(), e);
 		}
 	}
 }

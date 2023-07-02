@@ -24,14 +24,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberPrivacyController {
 	private final MemberPrivacyService memberPrivacyService;
+	private final MemberEncryptionUtil memberEncryptionUtil;
 	private final Rq rq;
 
 	private PrivacyDTO decryptPrivacyDTO(PrivacyDTO privacyDTO) {
 		return PrivacyDTO.builder()
-			.recipient(MemberEncryptionUtil.decrypt(privacyDTO.getRecipient()))
-			.phoneNumber(MemberEncryptionUtil.decrypt(privacyDTO.getPhoneNumber()))
-			.mainAddress(MemberEncryptionUtil.decrypt(privacyDTO.getMainAddress()))
-			.subAddress(MemberEncryptionUtil.decrypt(privacyDTO.getSubAddress()))
+			.recipient(memberEncryptionUtil.decrypt(privacyDTO.getRecipient()))
+			.phoneNumber(memberEncryptionUtil.decrypt(privacyDTO.getPhoneNumber()))
+			.mainAddress(memberEncryptionUtil.decrypt(privacyDTO.getMainAddress()))
+			.subAddress(memberEncryptionUtil.decrypt(privacyDTO.getSubAddress()))
 			.build();
 	}
 
@@ -46,27 +47,33 @@ public class MemberPrivacyController {
 		if (rsPrivacy.isFail()) {
 			return rq.historyBack(rsPrivacy);
 		}
+		PrivacyDTO dto = decryptPrivacyDTO(rsPrivacy.getData());
+		System.out.println(dto);
 
-		model.addAttribute("privacy", decryptPrivacyDTO(rsPrivacy.getData()));
+		model.addAttribute("privacy", dto);
 
 		return "usr/member/privacy/detail";
 	}
 
-	@PostMapping("/")
-	public String createPrivacy(@RequestBody PrivacyDTO privacyDTO) {
+	@PostMapping("/create")
+	public String createPrivacy(PrivacyDTO privacyDTO) {
+		System.out.println(privacyDTO);
 		memberPrivacyService.create(rq.getMember(), privacyDTO);
-		return "usr/member/privacy";
+
+		return rq.redirectWithMsg("/member/privacy/", "성공적으로 등록했습니다.");
 	}
 
-	@PutMapping("/")
+	@PutMapping("/update")
 	public String updatePrivacy(@RequestBody PrivacyDTO privacyDTO) {
 		memberPrivacyService.update(rq.getMember(), privacyDTO);
+
 		return "usr/member/privacy";
 	}
 
-	@DeleteMapping("/")
+	@DeleteMapping("/delete")
 	public String deletePrivacy() {
 		memberPrivacyService.delete(rq.getMember().getId());
+
 		return "usr/member/privacy";
 	}
 }

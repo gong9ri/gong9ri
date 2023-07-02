@@ -1,8 +1,7 @@
 package com.ll.gong9ri.base.security;
 
 import java.io.IOException;
-
-import com.ll.gong9ri.boundedContext.privacy.dto.PrivacyDTO;
+import java.util.Arrays;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -11,27 +10,43 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.RequiredArgsConstructor;
 
-@WebFilter("/member/privacy")
+@WebFilter(urlPatterns = "/member/privacy/create")
 @RequiredArgsConstructor
 public class MemberPrivacyFilter implements Filter {
-	private PrivacyDTO retrievePrivacyDTO(HttpServletRequest request) {
-		return PrivacyDTO.builder()
-			.recipient(MemberEncryptionUtil.encrypt(request.getParameter("recipient")))
-			.phoneNumber(MemberEncryptionUtil.encrypt(request.getParameter("phoneNumber")))
-			.mainAddress(MemberEncryptionUtil.encrypt(request.getParameter("mainAddress")))
-			.subAddress(MemberEncryptionUtil.encrypt(request.getParameter("subAddress")))
-			.build();
-	}
+	private final MemberEncryptionUtil memberEncryptionUtil;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
 		IOException,
 		ServletException {
+		RequestWrapper requestWrapper = new RequestWrapper((HttpServletRequest)request);
+		chain.doFilter(requestWrapper, response);
+	}
 
-		PrivacyDTO privacyDTO = retrievePrivacyDTO((HttpServletRequest)request);
+	private class RequestWrapper extends HttpServletRequestWrapper {
+		public RequestWrapper(HttpServletRequest request) {
+			super(request);
+		}
 
-		chain.doFilter(request, response);
+		@Override
+		public String[] getParameterValues(String parameter) {
+			String[] values = super.getParameterValues(parameter);
+
+			return values == null
+				? new String[0]
+				: Arrays.stream(values)
+				.map(memberEncryptionUtil::encrypt)
+				.toArray(String[]::new);
+		}
+
+		@Override
+		public String getParameter(String parameter) {
+			String value = super.getParameter(parameter);
+
+			return value == null ? null : memberEncryptionUtil.encrypt(value);
+		}
 	}
 }
