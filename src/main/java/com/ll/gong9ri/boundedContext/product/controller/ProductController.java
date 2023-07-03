@@ -2,7 +2,6 @@ package com.ll.gong9ri.boundedContext.product.controller;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.product.dto.DetailDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 //TODO: hasAuthority('store') 추가
 @Controller
@@ -26,7 +24,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductController {
     private static final String PRODUCTS = "products";
-    private static final String PRODUCT = "product";
     private final ProductService productService;
     private final Rq rq;
 
@@ -44,13 +41,9 @@ public class ProductController {
         if (productRs.isFail())
             return rq.historyBack(productRs);
 
-        if (session.getAttribute(PRODUCT) != null) {
-            session.setAttribute(PRODUCT, null);
-        }
+        session.setAttribute("product", productRs.getData().toDTO());
 
-        session.setAttribute(PRODUCT, ProductDTO.toDTO(productRs.getData()));
-
-        return rq.redirectWithMsg("/product/option", productRs);
+        return rq.redirectWithMsg("/product/option", productRs.getMsg());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -63,7 +56,7 @@ public class ProductController {
     @PostMapping("/option")
     public String addProductOptions(ProductOptionDTO productOptionDTO) {
         HttpSession session = rq.getSession();
-        Product product = ((ProductDTO) session.getAttribute(PRODUCT)).toEntity();
+        Product product = ((ProductDTO) session.getAttribute("product")).toEntity();
 
         RsData<Product> productRs = productService.addOptionDetails(product, productOptionDTO);
         if (productRs.isFail()) {
@@ -102,24 +95,8 @@ public class ProductController {
     private void sendProductListToView(Model model, RsData<List<Product>> rsData) {
         List<Product> products = rsData.getData();
 
-        List<ProductDTO> productDTOList = products.stream().map(ProductDTO::toDTO).toList();
+        List<ProductDTO> productDTOList = products.stream().map(Product::toDTO).toList();
 
         model.addAttribute(PRODUCTS, productDTOList);
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/details")
-    public String showDetails(Model model, DetailDTO detailDTO) {
-        Optional<Product> optionalProduct = productService.getProducts(detailDTO.getProductId());
-
-        if (optionalProduct.isEmpty()) {
-            return rq.historyBack("등록된 상품이 존재하지 않습니다.");
-        }
-
-        ProductDTO productDTO = ProductDTO.toDTO(optionalProduct.get());
-
-        model.addAttribute(PRODUCT, productDTO);
-
-        return "product/productDetails";
     }
 }

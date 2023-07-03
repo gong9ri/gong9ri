@@ -117,7 +117,7 @@ public class MemberService {
 		final Member member = findByUsername(username)
 			.orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
 
-		final Map<String, Object> memberMap = MemberUt.toMap(member);
+		final Map<String, Object> memberMap = MemberUt.serializeMemberToMap(member);
 		log.debug("member.toMap() : " + memberMap);
 
 		return memberMap;
@@ -133,6 +133,6 @@ public class MemberService {
 		MemberService thisObj = (MemberService)AppConfig.getContext().getBean("memberService");
 		final Map<String, Object> memberMap = thisObj.getMemberMapByUsername__cached(username);
 
-		return MemberUt.fromMap(memberMap);
+		return MemberUt.deserializeMemberFromMap(memberMap);
 	}
 }

@@ -1,8 +1,8 @@
-package com.ll.gong9ri.boundedContext.storeChat.entity;
+package com.ll.gong9ri.boundedContext.productImage.entity;
 
-import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.base.baseEntity.ImageBase;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -18,12 +18,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
-public class StoreChatMessage extends BaseEntity {
+public class ProductImage extends ImageBase {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private StoreChatRoom storeChatRoom;
-	@Column(columnDefinition = "TEXT")
-	private String content;
-	@Column(nullable = false)
-	private Boolean sentByMember;
+	private Product product;
 }

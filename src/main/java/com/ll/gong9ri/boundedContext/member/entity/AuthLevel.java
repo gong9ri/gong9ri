@@ -10,9 +10,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AuthLevel {
-	MEMBER(3, "ROLE_USER"),
-	STORE(5, "ROLE_STORE"),
-	ADMIN(7, "ROLE_ADMIN");
+	MEMBER(3, "member"),
+	STORE(5, "store"),
+	ADMIN(7, "admin");
 
 	private final Integer code;
 	private final String value;

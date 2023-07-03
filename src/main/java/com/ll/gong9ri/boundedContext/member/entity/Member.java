@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -31,7 +30,6 @@ public class Member extends BaseEntity {
 	@Column(unique = true, nullable = false)
 	private String username;
 	@Column(nullable = false)
-	@JsonIgnore
 	private String password;
 	private String nickname;
 
