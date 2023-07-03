@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface ProductDiscountRepository extends JpaRepository<ProductDiscount, Long> {
 
-    Optional<ProductDiscount> findByHeadCountAndDiscountRate(Integer headCount, Integer discountRate);
+    Optional<ProductDiscount> findByHeadCountAndSalePrice(Integer headCount, Integer discountRate);
 }

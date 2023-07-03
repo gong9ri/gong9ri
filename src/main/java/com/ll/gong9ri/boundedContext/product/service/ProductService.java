@@ -99,7 +99,7 @@ public class ProductService {
     @Transactional
     public RsData<List<ProductDiscount>> saveProductDiscount(List<ProductDiscount> productDiscounts) {
         List<ProductDiscount> unsavedProductDiscountList = productDiscounts.stream()
-                .filter(e -> productDiscountRepository.findByHeadCountAndDiscountRate(e.getHeadCount(), e.getDiscountRate()).isEmpty())
+                .filter(e -> productDiscountRepository.findByHeadCountAndSalePrice(e.getHeadCount(), e.getSalePrice()).isEmpty())
                 .toList();
         productDiscountRepository.saveAll(unsavedProductDiscountList);
 

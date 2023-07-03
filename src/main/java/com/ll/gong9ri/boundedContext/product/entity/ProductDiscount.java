@@ -21,5 +21,5 @@ public class ProductDiscount extends BaseEntity {
 	// TODO: is this percentage?
 	@Builder.Default
 	@Column(nullable = false)
-	private Integer discountRate = 0;
+	private Integer salePrice = 0;
 }

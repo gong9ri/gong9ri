@@ -46,7 +46,7 @@ class ProductServiceTest {
                 .price(43000)
                 .maxPurchaseNum(2)
                 .headCounts(headCountList)
-                .discountRates(discountRateList)
+                .salePrices(discountRateList)
                 .build();
 
         RsData<Product> productRs = productService.registerProduct(productDTO);
@@ -83,7 +83,7 @@ class ProductServiceTest {
                 .price(43000)
                 .maxPurchaseNum(2)
                 .headCounts(headCountList)
-                .discountRates(discountRateList)
+                .salePrices(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -122,7 +122,7 @@ class ProductServiceTest {
                 .price(43000)
                 .maxPurchaseNum(2)
                 .headCounts(headCountList)
-                .discountRates(discountRateList)
+                .salePrices(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -159,7 +159,7 @@ class ProductServiceTest {
                 .price(43000)
                 .maxPurchaseNum(2)
                 .headCounts(headCountList)
-                .discountRates(discountRateList)
+                .salePrices(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -189,19 +189,19 @@ class ProductServiceTest {
                         .name("반팔 티셔츠")
                         .price(15000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("긴팔 티셔츠")
                         .price(20000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("반바지")
                         .price(20000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build()
         };
 
@@ -226,19 +226,19 @@ class ProductServiceTest {
                         .name("반팔 티셔츠")
                         .price(15000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("긴팔 티셔츠")
                         .price(20000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("반바지")
                         .price(20000)
                         .headCounts(headCountList)
-                        .discountRates(discountRateList)
+                        .salePrices(discountRateList)
                         .build()
         };
 
@@ -260,7 +260,7 @@ class ProductServiceTest {
         List<ProductDiscount> productDiscounts = new ArrayList<>() {{
             add(ProductDiscount.builder()
                     .headCount(10)
-                    .discountRate(5)
+                    .salePrice(5)
                     .build());
         }};
         RsData<List<ProductDiscount>> productRs = productService.saveProductDiscount(productDiscounts);
