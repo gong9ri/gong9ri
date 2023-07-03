@@ -1,21 +1,23 @@
 package com.ll.gong9ri.base.rq;
 
-import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
-import com.ll.gong9ri.boundedContext.member.service.MemberService;
-import com.ll.gong9ri.standard.util.Ut;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-import java.util.Date;
+import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.service.MemberService;
+import com.ll.gong9ri.standard.util.Ut;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -92,6 +94,11 @@ public class Rq {
 	// 302 + 메세지
 	public String redirectWithMsg(String url, String msg) {
 		return "redirect:" + urlWithMsg(url, msg);
+	}
+
+	public String redirectWithErrorMsg(String url, String msg) {
+		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(msg));
+		return "redirect:" + url;
 	}
 
 	// 302 + 에러 메시지

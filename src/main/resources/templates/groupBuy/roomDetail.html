@@ -1,0 +1,36 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:inline="javascript">
+        const chatRoomId = /*[[${chatRoom.id}]]*/ '';
+        const memberId = /*[[${memberId}]]*/'';
+        const token = /*[[${_csrf.token}]]*/ '';
+    </script>
+    <script th:src="@{/app.js}"></script>
+</head>
+<body>
+
+<main layout:fragment="main" class="flex items-center justify-center">
+
+    <!-- content 시작 -->
+    <div class="max-w-2xl w-full my-3">
+        <div class="font-semibold text-2xl my-1 text-center my-4 sticky top-16" text="">채팅방 이름</div>
+        <!-- 채팅 내용 -->
+        <div class="chat__message-ul"></div>
+
+        <!-- 채팅 입력 -->
+        <form id="messageForm" onsubmit="chatWriteMessage(this); return false;" class="my-5">
+            <div class="flex items-center mx-4">
+                <input type="text" id="content" name="content" placeholder="Message"
+                       class="input input-bordered input-primary mx-2 w-full" autofocus>
+                <button type="submit" class="btn btn-primary">전달!</button>
+            </div>
+        </form>
+    </div>
+    <!-- content 종료 -->
+</main>
+
+</body>
+
+</html>

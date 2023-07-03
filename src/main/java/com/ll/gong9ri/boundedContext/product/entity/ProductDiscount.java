@@ -1,7 +1,6 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 public class ProductDiscount extends BaseEntity {
 	@Builder.Default
 	@Column(nullable = false)
-	private Integer productCount = 0;
+	private Integer headCount = 0;
 	// TODO: is this percentage?
 	@Builder.Default
 	@Column(nullable = false)

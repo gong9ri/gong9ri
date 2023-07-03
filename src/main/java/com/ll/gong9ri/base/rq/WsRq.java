@@ -48,8 +48,9 @@ public class WsRq {
 
 	// 로그인 된 회원의 객체
 	public Member getMember() {
-		if (isLogout())
+		if (isLogout()) {
 			return null;
+		}
 
 		// 데이터가 없는지 체크
 		if (member == null) {
