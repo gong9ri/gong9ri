@@ -54,4 +54,15 @@ public class Product extends BaseEntity {
 	public void addProductOptions(final List<ProductOption> productOptions) {
 		this.productOptions.addAll(productOptions);
 	}
+
+	public ProductDTO toDTO() {
+		return ProductDTO.builder()
+				.id(this.getId())
+				.name(this.name)
+				.price(this.price)
+				.description(this.description)
+				.images(this.productImages)
+				.maxPurchaseNum(this.maxPurchaseNum)
+				.build();
+	}
 }
