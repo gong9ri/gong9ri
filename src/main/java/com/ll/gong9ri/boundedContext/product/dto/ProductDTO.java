@@ -9,8 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Builder
@@ -30,6 +32,8 @@ public class ProductDTO {
     private List<Integer> headCounts;
     @NotNull
     private List<Integer> discountRates;
+    private LocalDateTime createDate;
+    private LocalDateTime modifyDate;
 
     public Product toEntity() {
         return Product.builder()
@@ -53,7 +57,6 @@ public class ProductDTO {
             discountRates.add(discount.getDiscountRate());
         });
 
-
         return ProductDTO.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -63,16 +66,19 @@ public class ProductDTO {
                 .maxPurchaseNum(product.getMaxPurchaseNum())
                 .headCounts(headCounts)
                 .discountRates(discountRates)
+                .createDate(product.getCreateDate())
+                .modifyDate(product.getModifyDate())
                 .build();
     }
 
     private List<ProductDiscount> createProductDiscountList() {
-        return (List<ProductDiscount>) IntStream.range(0, headCounts.size())
+        return IntStream.range(0, headCounts.size())
                 .mapToObj(i -> ProductDiscount.builder()
                         .headCount(headCounts.get(i))
                         .discountRate(discountRates.get(i))
-                        .build())
-                .toList();
+                        .build()
+                )
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<ProductDiscount> getProductDiscountList() {
