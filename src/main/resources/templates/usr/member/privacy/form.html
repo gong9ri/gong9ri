@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>개인정보 등록</title>
+</head>
+<body>
+
+<main layout:fragment="main">
+    <div class="max-w-2xl w-full px-4">
+        <h1 class="mb-4">
+            기본 배송지 등록
+        </h1>
+        <script type="text/javascript">
+            function submitRegistrationForm(form) {
+                console.log(form);
+                if (confirm('등록하시겠습니까?')) {
+                    form.submit();
+                }
+            }
+        </script>
+        <div class="card flex-grow bg-base-100 shadow-2xl">
+            <form class="card-body flex flex-col flex-row" method="POST"
+                  onsubmit="submitRegistrationForm(this); return false;"
+                  th:action="@{|/member/privacy/create|}">
+                <label class="label-text">
+                    받으시는 분 이름
+                    <input autofocus class="input input-bordered" id="recipient" name="recipient"
+                           placeholder="받으시는 분 이름"
+                           type="text"/>
+                </label>
+                <label class="label-text">
+                    전화번호
+                    <input class="input input-bordered" id="phoneNumber" name="phoneNumber" placeholder="전화번호"
+                           type="text"/>
+                </label>
+                <label class="label-text">
+                    주소
+                    <input class="input input-bordered" id="mainAddress" name="mainAddress" placeholder="주소"
+                           type="text"/>
+                </label>
+                <label class="label-text">
+                    상세주소
+                    <input class="input input-bordered" id="subAddress" name="subAddress" placeholder="상세주소"
+                           type="text"/>
+                </label>
+                <button class="badge badge-primary mx-1 my-2" type="submit">생성</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

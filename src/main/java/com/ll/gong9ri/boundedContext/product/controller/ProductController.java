@@ -46,7 +46,7 @@ public class ProductController {
 
         session.setAttribute(PRODUCT, productRs.getData().toDTO());
 
-        return rq.redirectWithMsg("/product/option", productRs.getMsg());
+        return rq.redirectWithMsg("/product/option", productRs);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -98,7 +98,7 @@ public class ProductController {
     private void sendProductListToView(Model model, RsData<List<Product>> rsData) {
         List<Product> products = rsData.getData();
 
-        List<ProductDTO> productDTOList = products.stream().map(Product::toDTO).toList();
+        List<ProductDTO> productDTOList = products.stream().map(ProductDTO::toDTO).toList();
 
         model.addAttribute(PRODUCTS, productDTOList);
     }
@@ -113,6 +113,7 @@ public class ProductController {
         }
 
         ProductDTO productDTO = optionalProduct.get().toDTO();
+
         model.addAttribute(PRODUCT, productDTO);
 
         return "product/productDetails";
