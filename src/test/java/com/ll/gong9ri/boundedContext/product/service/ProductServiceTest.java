@@ -35,11 +35,18 @@ class ProductServiceTest {
     @Test
     @DisplayName("product registration test")
     void productRegistrationTest() {
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO productDTO = ProductDTO.builder()
                 .name("버튼 카라 반팔 니트")
                 .description("여름에도 시원하게 입을 수 있는 반팔 니트 입니다.")
                 .price(43000)
                 .maxPurchaseNum(2)
+                .headCounts(headCountList)
+                .discountRates(discountRateList)
                 .build();
 
         RsData<Product> productRs = productService.registerProduct(productDTO);
@@ -64,11 +71,19 @@ class ProductServiceTest {
         sizeOptionList.add("l");
         sizeOptionList.add("xl");
 
+
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO productDTO = ProductDTO.builder()
                 .name("버튼 카라 반팔 니트")
                 .description("여름에도 시원하게 입을 수 있는 반팔 니트 입니다.")
                 .price(43000)
                 .maxPurchaseNum(2)
+                .headCounts(headCountList)
+                .discountRates(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -96,11 +111,18 @@ class ProductServiceTest {
         colorOptionList.add("아이보리");
         colorOptionList.add("네이비");
 
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO productDTO = ProductDTO.builder()
                 .name("버튼 카라 반팔 니트")
                 .description("여름에도 시원하게 입을 수 있는 반팔 니트 입니다.")
                 .price(43000)
                 .maxPurchaseNum(2)
+                .headCounts(headCountList)
+                .discountRates(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -126,11 +148,18 @@ class ProductServiceTest {
         colorOptionList.add("아이보리");
         colorOptionList.add("네이비");
 
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO productDTO = ProductDTO.builder()
                 .name("버튼 카라 반팔 니트")
                 .description("여름에도 시원하게 입을 수 있는 반팔 니트 입니다.")
                 .price(43000)
                 .maxPurchaseNum(2)
+                .headCounts(headCountList)
+                .discountRates(discountRateList)
                 .build();
 
         ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
@@ -150,18 +179,29 @@ class ProductServiceTest {
     @Test
     @DisplayName("search all products")
     void showAllProductsTest() {
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO[] products = {
                 ProductDTO.builder()
                         .name("반팔 티셔츠")
                         .price(15000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("긴팔 티셔츠")
                         .price(20000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("반바지")
                         .price(20000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build()
         };
 
@@ -176,18 +216,29 @@ class ProductServiceTest {
     @Test
     @DisplayName("search product test")
     void searchProductTest() {
+        List<Integer> headCountList = new ArrayList<>();
+        headCountList.add(10);
+        List<Integer> discountRateList = new ArrayList<>();
+        discountRateList.add(10);
+
         ProductDTO[] products = {
                 ProductDTO.builder()
                         .name("반팔 티셔츠")
                         .price(15000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("긴팔 티셔츠")
                         .price(20000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build(),
                 ProductDTO.builder()
                         .name("반바지")
                         .price(20000)
+                        .headCounts(headCountList)
+                        .discountRates(discountRateList)
                         .build()
         };
 

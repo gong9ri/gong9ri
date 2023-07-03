@@ -44,7 +44,11 @@ public class ProductController {
         if (productRs.isFail())
             return rq.historyBack(productRs);
 
-        session.setAttribute(PRODUCT, productRs.getData().toDTO());
+        if (session.getAttribute(PRODUCT) != null) {
+            session.setAttribute(PRODUCT, null);
+        }
+
+        session.setAttribute(PRODUCT, ProductDTO.toDTO(productRs.getData()));
 
         return rq.redirectWithMsg("/product/option", productRs);
     }
@@ -112,11 +116,10 @@ public class ProductController {
             return rq.historyBack("등록된 상품이 존재하지 않습니다.");
         }
 
-        ProductDTO productDTO = optionalProduct.get().toDTO();
+        ProductDTO productDTO = ProductDTO.toDTO(optionalProduct.get());
 
         model.addAttribute(PRODUCT, productDTO);
 
         return "product/productDetails";
     }
-
 }
