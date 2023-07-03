@@ -2,9 +2,7 @@ package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
-import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -39,11 +37,15 @@ public class Product extends BaseEntity {
 	@Setter
 	private String optionTwo;
 	private Integer maxPurchaseNum;
+	@OneToMany
+	@Builder.Default
+	private List<ProductDiscount> productDiscounts = new ArrayList<>();
 	@OneToMany(mappedBy = "product", cascade = {CascadeType.ALL})
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@ToString.Exclude
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
+
 
 	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);
@@ -51,15 +53,5 @@ public class Product extends BaseEntity {
 
 	public void addProductOptions(final List<ProductOption> productOptions) {
 		this.productOptions.addAll(productOptions);
-	}
-
-	public ProductDTO toDTO() {
-		return ProductDTO.builder()
-				.name(this.name)
-				.price(this.price)
-				.description(this.description)
-				.images(this.productImages)
-				.maxPurchaseNum(this.maxPurchaseNum)
-				.build();
 	}
 }
