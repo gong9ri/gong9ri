@@ -117,9 +117,9 @@ public class ProductController {
         }
 
         ProductDTO productDTO = ProductDTO.toDTO(optionalProduct.get());
+
         model.addAttribute(PRODUCT, productDTO);
 
         return "product/productDetails";
     }
-
 }
