@@ -1,4 +1,4 @@
-package com.ll.gong9ri.boundedContext.store;
+package com.ll.gong9ri.boundedContext.store.service;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -20,7 +20,6 @@ import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.service.MemberService;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
-import com.ll.gong9ri.boundedContext.store.service.StoreService;
 
 @SpringBootTest
 @Transactional

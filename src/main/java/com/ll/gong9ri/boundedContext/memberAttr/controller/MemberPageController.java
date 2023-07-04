@@ -14,6 +14,7 @@ import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.memberAttr.dto.MemberMeHomeDTO;
 import com.ll.gong9ri.boundedContext.memberAttr.entity.MemberAttr;
 import com.ll.gong9ri.boundedContext.memberAttr.service.MemberAttrService;
+import com.ll.gong9ri.boundedContext.review.service.ReviewService;
 import com.ll.gong9ri.boundedContext.storeChat.service.StoreChatRoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberPageController {
 	private final MemberAttrService memberAttrService;
 	private final StoreChatRoomService roomService;
+	private final ReviewService reviewService;
 	private final Rq rq;
 
 	@GetMapping("/")
@@ -64,6 +66,13 @@ public class MemberPageController {
 	@GetMapping("/chatroom/groupbuy")
 	public String groupBuyChatList(Model model) {
 		// gb rooms
+
+		return "usr/store/chat/list";
+	}
+
+	@GetMapping("/review")
+	public String myReviews(Model model) {
+		model.addAttribute("reviews", reviewService.getMemberReviews(rq.getMember().getId()));
 
 		return "usr/store/chat/list";
 	}
