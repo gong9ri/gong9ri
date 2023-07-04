@@ -99,7 +99,10 @@
 
             function sendImageData(response) {
                 const parsedResponse = JSON.parse(response);
-                stompClient.send(`/app/chats/${chatRoomId}`, {}, JSON.stringify({content: parsedResponse[0].uploadFileUrl}));
+                stompClient.send(`/app/chats/${chatRoomId}`, {}, JSON.stringify({
+                    chatType: "img",
+                    content: parsedResponse[0].uploadFileUrl
+                }));
             }
         });
     </script>

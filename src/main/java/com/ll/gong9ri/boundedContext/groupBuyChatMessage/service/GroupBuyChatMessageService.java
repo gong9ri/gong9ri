@@ -25,9 +25,11 @@ public class GroupBuyChatMessageService {
 	private final GroupBuyChatMessageRepository groupBuyChatMessageRepository;
 	private final ApplicationEventPublisher publisher;
 
-	public GroupBuyChatMessage sendChat(String content, String roomId, String senderId, String senderName) {
+	public GroupBuyChatMessage sendChat(String content, String chatType, String roomId, String senderId,
+		String senderName) {
 		GroupBuyChatMessage groupBuyChatMessage = GroupBuyChatMessage.builder()
 			.content(content)
+			.chatType(chatType)
 			.senderId(senderId)
 			.senderName(senderName)
 			.chatRoomId(roomId)
