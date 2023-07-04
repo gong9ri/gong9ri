@@ -122,10 +122,12 @@ public class ImageService {
 	}
 
 	public List<ImageDTO> uploadChatImages(List<MultipartFile> multipartFiles, String chatRoomId) {
-		List<ImageDTO> dtos = uploadImages(multipartFiles, "chat");
+		List<ImageDTO> dtos = uploadImages(multipartFiles, "chat" + "/" + chatRoomId);
 
 		ChatImage chatImage = ChatImage.builder()
 			.chatRoomId(chatRoomId)
+			.filePath(dtos.get(0).getUploadFilePath())
+			.fileName(dtos.get(0).getUploadFileName())
 			.build();
 
 		chatImageRepository.save(chatImage);
