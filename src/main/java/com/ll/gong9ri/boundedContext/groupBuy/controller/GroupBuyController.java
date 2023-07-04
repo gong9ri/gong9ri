@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
@@ -30,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class GroupBuyController {
 	private final GroupBuyService groupBuyService;
 	private final ProductService productService;
+	private final GroupBuyMemberService groupBuyMemberService;
 
 	private final Rq rq;
 
@@ -49,6 +49,7 @@ public class GroupBuyController {
 		Member member = rq.getMember();
 
 		RsData<GroupBuy> rsGroupBuy = groupBuyService.createGroupBuy(optionalProduct.get(), member);
+		groupBuyMemberService.addFirstGroupBuyMember(member, rsGroupBuy.getData());
 
 		return rq.redirectWithMsg("/", rsGroupBuy);
 	}

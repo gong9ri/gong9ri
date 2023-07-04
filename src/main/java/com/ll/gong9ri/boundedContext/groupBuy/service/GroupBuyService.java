@@ -36,8 +36,6 @@ public class GroupBuyService {
 			.status(GroupBuyStatus.PROGRESS)
 			.build();
 
-		groupBuyMemberService.addFirstGroupBuyMember(member, groupBuy);
-
 		groupBuyRepository.save(groupBuy);
 
 		return RsData.successOf(groupBuy);
