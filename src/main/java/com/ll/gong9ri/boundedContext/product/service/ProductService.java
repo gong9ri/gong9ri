@@ -70,7 +70,7 @@ public class ProductService {
 
     private ProductOption createProductOption(Product product, String optionOneName, String optionTwoName) {
         return ProductOption.builder()
-                .product(product)
+                .productId(product.getId())
                 .optionOneName(optionOneName)
                 .optionTwoName(optionTwoName)
                 .build();
@@ -78,6 +78,11 @@ public class ProductService {
 
     public RsData<List<Product>> getAllProducts() {
         return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", productRepository.findAll());
+    }
+
+    public RsData<List<Product>> getProductsByStoreId(Long id) {
+        List<Product> products = productRepository.findByStoreId(id);
+        return RsData.of("S-1", "해당 스토어의 모든 상품 리스트를 가져옵니다.", products);
     }
 
     public RsData<List<Product>> search(SearchDTO searchDTO) {
@@ -89,10 +94,23 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public RsData<List<ProductOption>> getProductOptions(Long id) {
+        Optional<Product> findRs = productRepository.findById(id);
+
+        if (findRs.isEmpty()) {
+            return RsData.of("F-1", "해당 상품이 존재하지 않습니다.");
+        }
+
+        List<ProductOption> productOptions = findRs.get().getProductOptions();
+
+        return RsData.of("S-1", "해당 상품의 옵션 정보를 가져옵니다.", productOptions);
+    }
+
     /**
      * 상품의 할인율을 저장하는 메서드 입니다.
      * 인자로 'productDiscounts'를 전달받아 이미 DB에 저장되어 있는지 확인하고,
      * 저장되어 있지 않을 때만 데이터를 저장합니다.
+     *
      * @param productDiscounts
      * @return 해당 메서드를 통해 저장된 ProductDiscount 객체의 List를 포함하는 RsData 객체를 반환합니다.
      */
