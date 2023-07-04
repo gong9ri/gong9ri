@@ -23,7 +23,6 @@ public class PaymentService {
 	// public final PaymentResultRepository paymentResultRepository;
 
 	public RsData<PaymentResult> createPayment(final OrderInfo orderInfo) {
-		System.out.println(orderInfo.getId());
 		PaymentCreateBody paymentCreateBody = PaymentCreateBody.builder()
 			.method("카드")
 			.amount(orderInfo.getProductOptionQuantities()
@@ -32,7 +31,7 @@ public class PaymentService {
 				.sum())
 			//.orderId(orderInfo.getId().toString()) // TODO: Base 64 encode
 			.orderId(Base64.getEncoder()
-				.encodeToString(orderInfo.getId().toString().getBytes(StandardCharsets.UTF_8))) // Base 64 encode
+				.encodeToString(String.valueOf("oId"+orderInfo.getId()).getBytes(StandardCharsets.UTF_8))) // Base 64 encode
 			.orderName(orderInfo.getProductName()
 				+ " "
 				+ orderInfo.getProductOptionQuantities()
@@ -42,6 +41,8 @@ public class PaymentService {
 				+ "개"
 			)
 			.build();
+
+		System.out.println(paymentCreateBody);
 
 		PaymentResultDTO paymentResultDto = PaymentWebClient.paymentCreate(paymentCreateBody);
 		// TODO: paymentResultRepository.save(paymentResult)
