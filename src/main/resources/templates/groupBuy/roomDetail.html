@@ -39,6 +39,9 @@
                         <div class="modal-action">
                             <label class="btn btn-primary" for="my_modal_6">전송!</label>
                         </div>
+                        <div class="modal-action">
+                            <label class="btn btn-primary" for="my_modal_6">닫기</label>
+                        </div>
                     </div>
                 </div>
 
@@ -54,6 +57,7 @@
         // 미리보기 이미지 생성
         const imageInput = document.getElementById('image-input');
         const previewImage = document.getElementById('preview-image');
+        const submitButton = document.querySelector('.modal-action label');
 
         imageInput.addEventListener('change', function () {
             const file = imageInput.files[0];
@@ -63,6 +67,39 @@
                     previewImage.src = reader.result;
                 });
                 reader.readAsDataURL(file);
+            }
+        });
+
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const file = imageInput.files[0];
+            if (!file) {
+                alert("파일을 선택해주세요!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('files', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `/upload/chats/${chatRoomId}`);
+            xhr.setRequestHeader('X-CSRF-TOKEN', token);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = xhr.responseText; // 이미지 링크
+                    sendImageData(response);
+                    alert('파일 업로드가 완료되었습니다!');
+
+                    const modal = document.querySelector('.modal-toggle');
+                    modal.checked = false;
+                }
+            };
+            xhr.send(formData);
+
+            function sendImageData(response) {
+                const parsedResponse = JSON.parse(response);
+                stompClient.send(`/app/chats/${chatRoomId}`, {}, JSON.stringify({content: parsedResponse[0].uploadFileUrl}));
             }
         });
     </script>
