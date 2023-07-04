@@ -1,8 +1,7 @@
 package com.ll.gong9ri.boundedContext.order.service;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +10,9 @@ import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
 import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
-import com.ll.gong9ri.boundedContext.order.repository.OrderRepository;
+import com.ll.gong9ri.boundedContext.order.repository.OrderInfoRepository;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
-import com.ll.gong9ri.boundedContext.product.service.ProductService;
-import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,27 +20,44 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
-	private final OrderRepository orderRepository;
-	private final ProductService productService;
+	private final OrderInfoRepository orderInfoRepository;
 
-	public RsData<OrderInfo> createOrder(final Member member, final Map<Long, Integer> rawQuantities) {
-		List<ProductOptionQuantity> quantities = rawQuantities
-			.values()
-			.stream()
-			//ProductOption productOption = productService.getProductOptionById(el.getKey());
-			.map(integer -> ProductOptionQuantity.builder()
-				.productOption(ProductOption.builder().product(null).build())
-				.quantity(integer)
-				.build())
-			.collect(Collectors.toList());
+	@Transactional(readOnly = true)
+	public Optional<OrderInfo> findById(final Long id) {
+		return orderInfoRepository.findById(id);
+	}
 
-		Product product = quantities.get(0).getProductOption().getProduct();
-		Store store = product.getStore();
-		OrderInfo orderInfo = OrderInfo.of(member, store, product, quantities);
-
-		orderRepository.save(orderInfo);
+	public RsData<OrderInfo> createOrder(final Member member, final Product product) {
+		OrderInfo orderInfo = OrderInfo.of(member, product);
+		orderInfoRepository.save(orderInfo);
 
 		return RsData.of("S-1", "주문이 생성되었습니다.", orderInfo);
 	}
-}
 
+	public RsData<OrderInfo> confirmOrder(
+		final Long memberId,
+		final Long orderId,
+		final Map<ProductOption, Integer> rawQuantities
+	) {
+		Optional<OrderInfo> oOrderInfo = orderInfoRepository.findById(orderId);
+		if (oOrderInfo.isEmpty() || !oOrderInfo.get().getMemberId().equals(memberId)) {
+			return RsData.failOf(null);
+		}
+
+		OrderInfo orderInfo = oOrderInfo.get();
+		rawQuantities
+			.entrySet()
+			.stream()
+			.map(e -> ProductOptionQuantity.builder()
+				.orderInfo(orderInfo)
+				.productOption(e.getKey())
+				.quantity(e.getValue())
+				.price(e.getKey().getProduct().getPrice() * e.getValue())
+				.build())
+				.forEach(orderInfo::addProductOptionQuantity);
+
+		orderInfoRepository.save(orderInfo);
+
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderInfo);
+	}
+}

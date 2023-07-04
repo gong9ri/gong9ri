@@ -9,7 +9,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -54,15 +53,18 @@ public class OrderInfo extends BaseEntity {
 	@Builder.Default
 	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
 
-	public static OrderInfo of(Member member, Store store, Product product, List<ProductOptionQuantity> quantities) {
+	public void addProductOptionQuantity(ProductOptionQuantity productOptionQuantity) {
+		productOptionQuantities.add(productOptionQuantity);
+	}
+
+	public static OrderInfo of(Member member, Product product) {
 		return OrderInfo.builder()
 			.memberId(member.getId())
 			.username(member.getUsername())
-			.storeId(store.getId())
-			.storeName(store.getName())
+			.storeId(product.getStore().getId())
+			.storeName(product.getStore().getName())
 			.productId(product.getId())
 			.productName(product.getName())
-			.productOptionQuantities(quantities)
 			.build();
 	}
 }
