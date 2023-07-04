@@ -35,7 +35,7 @@ public class PaymentService {
 	 * @param encodedOrderId
 	 * @return remove ORDER_ID_PREFIX, decoded Long id
 	 */
-	public Long getEncodedOrderId(final String encodedOrderId) {
+	public Long getDecodedOrderId(final String encodedOrderId) {
 		byte[] decodedBytes = Base64.getDecoder().decode(encodedOrderId);
 		String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
 
@@ -60,8 +60,6 @@ public class PaymentService {
 				+ "개"
 			)
 			.build();
-
-		System.out.println(paymentCreateBody);
 
 		PaymentResultDTO paymentResultDto = paymentWebClient.paymentCreate(paymentCreateBody);
 		// TODO: paymentResultRepository.save(paymentResult)
