@@ -50,6 +50,22 @@
         </form>
     </div>
     <!-- content 종료 -->
+    <script>
+        // 미리보기 이미지 생성
+        const imageInput = document.getElementById('image-input');
+        const previewImage = document.getElementById('preview-image');
+
+        imageInput.addEventListener('change', function () {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener('load', function () {
+                    previewImage.src = reader.result;
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </main>
 
 </body>
