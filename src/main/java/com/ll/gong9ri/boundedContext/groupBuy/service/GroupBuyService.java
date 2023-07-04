@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.groupBuy.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,26 +23,32 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final ProductRepository productRepository;
+	private final GroupBuyMemberService groupBuyMemberService;
 
 	@Transactional
-	public RsData<GroupBuy> createGroupBuy(Long productId, Member member){
-		Product product = productRepository.findById(productId).orElse(null);
+	public RsData<GroupBuy> createGroupBuy(Product product, Member member){
 
-		if(product == null){
-			return RsData.of("F-1", "존재하지 않는 상품입니다.");
-		}
 		GroupBuy groupBuy = GroupBuy.builder()
 			.product(product)
 			.name(product.getName())
 			.startDate(LocalDateTime.now())
 			.endDate(LocalDateTime.now().plusDays(1)) // 시작시간으로부터 하루 뒤
-			.status(GroupBuyStatus.START)
+			.status(GroupBuyStatus.PROGRESS)
 			.build();
 
-		groupBuy.addGroupBuyMember(member);
+		groupBuyMemberService.addFirstGroupBuyMember(member, groupBuy);
 
 		groupBuyRepository.save(groupBuy);
 
 		return RsData.successOf(groupBuy);
+	}
+
+	public Optional<GroupBuy> findById(Long id){
+		return groupBuyRepository.findById(id);
+	}
+
+	@Transactional
+	public RsData<GroupBuy> save(GroupBuy groupBuy) {
+		return RsData.successOf(groupBuyRepository.save(groupBuy));
 	}
 }

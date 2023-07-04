@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import jakarta.persistence.*;
@@ -45,7 +46,10 @@ public class Product extends BaseEntity {
 	@ToString.Exclude
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
-
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@Builder.Default
+	private List<GroupBuy> groupBuys = new ArrayList<>();
 
 	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);
@@ -53,5 +57,9 @@ public class Product extends BaseEntity {
 
 	public void addProductOptions(final List<ProductOption> productOptions) {
 		this.productOptions.addAll(productOptions);
+	}
+
+	public void addGroupBuy(GroupBuy groupBuy) {
+		groupBuys.add(groupBuy);
 	}
 }

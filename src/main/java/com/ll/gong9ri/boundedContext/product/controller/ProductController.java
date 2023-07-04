@@ -110,7 +110,7 @@ public class ProductController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/details")
     public String showDetails(Model model, DetailDTO detailDTO) {
-        Optional<Product> optionalProduct = productService.getProducts(detailDTO.getProductId());
+        Optional<Product> optionalProduct = productService.findById(detailDTO.getProductId());
 
         if (optionalProduct.isEmpty()) {
             return rq.historyBack("등록된 상품이 존재하지 않습니다.");

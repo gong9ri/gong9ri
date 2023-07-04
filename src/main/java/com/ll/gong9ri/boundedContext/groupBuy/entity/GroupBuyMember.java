@@ -1,11 +1,9 @@
 package com.ll.gong9ri.boundedContext.groupBuy.entity;
 
-import java.time.LocalDateTime;
-
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,8 +11,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -25,20 +21,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
-public class GroupBuy extends BaseEntity {
+public class GroupBuyMember extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
-	private Product product;
-	@Column(nullable = false)
-	private String name;
-	@Builder.Default
-	@Column(nullable = false)
-	private LocalDateTime startDate = LocalDateTime.now();
-	@Column(nullable = false)
-	private LocalDateTime endDate;
-	@Column(nullable = false)
+	private Member member;
+
 	@Enumerated(EnumType.STRING)
-	@Builder.Default
-	private GroupBuyStatus status = GroupBuyStatus.WAIT;
+	private GroupBuyMemberRole role;
+
+	@ManyToOne
+	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
+	private GroupBuy groupBuy;
 
 }

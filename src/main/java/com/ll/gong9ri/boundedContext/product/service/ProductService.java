@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.product.service;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
@@ -86,7 +87,7 @@ public class ProductService {
         return RsData.of("S-1", "상품 검색에 성공했습니다.", products);
     }
 
-    public Optional<Product> getProducts(Long id) {
+    public Optional<Product> findById(Long id) {
         return productRepository.findById(id);
     }
 
@@ -106,4 +107,24 @@ public class ProductService {
 
         return RsData.of("S-1", "상품의 할인율이 성공적으로 등록됐습니다.", unsavedProductDiscountList);
     }
+
+    /**
+     * product의 공동구매 생성 가능 여부를 리턴
+     * @param productId
+     * @return product의 GroupBuy목록 중 상태가 PROGRESS인 GroupBuy가 존재하면 false
+     */
+    public boolean canCreateGroupBuy(Long productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            return !hasInProgressGroupBuy(product);
+        }
+        return false;
+    }
+
+    private boolean hasInProgressGroupBuy(Product product) {
+        return product.getGroupBuys().stream()
+            .anyMatch(groupBuy -> groupBuy.getStatus() == GroupBuyStatus.PROGRESS);
+    }
+
 }
