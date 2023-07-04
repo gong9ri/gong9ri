@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.ll.gong9ri.base.appConfig.AppConfig;
+import com.ll.gong9ri.base.event.EventAfterMemberJoinAttr;
 import com.ll.gong9ri.base.event.EventAfterStoreJoinAccept;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
@@ -41,11 +42,6 @@ public class MemberService {
 		return memberRepository.findByUsername(username);
 	}
 
-	@Transactional
-	public RsData<Member> join(String username, String password) {
-		return join(ProviderTypeCode.GONG9RI, username, password);
-	}
-
 	private RsData<Member> join(ProviderTypeCode providerTypeCode, String username, String password) {
 		if (findByUsername(username).isPresent()) {
 			return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
@@ -64,7 +60,14 @@ public class MemberService {
 
 		memberRepository.save(member);
 
+		publisher.publishEvent(new EventAfterMemberJoinAttr(member));
+
 		return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
+	}
+
+	@Transactional
+	public RsData<Member> join(String username, String password) {
+		return join(ProviderTypeCode.GONG9RI, username, password);
 	}
 
 	@Transactional
