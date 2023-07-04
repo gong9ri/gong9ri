@@ -22,6 +22,27 @@
         <!-- 채팅 입력 -->
         <form id="messageForm" onsubmit="chatWriteMessage(this); return false;" class="my-5">
             <div class="flex items-center mx-4">
+                <!-- The button to open modal upload images-->
+                <label for="my_modal_6">
+                    <i class="fa-regular fa-image btn btn-primary"></i>
+                </label>
+
+                <input class="modal-toggle" id="my_modal_6" type="checkbox"/>
+                <div class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">이미지 업로드</h3>
+                        <input accept="image/*" id="image-input" name="files" type="file">
+
+                        <div class="my-3" id="image-container">
+                            <img id="preview-image" src="" style="max-width: 300px;">
+                        </div>
+                        <div class="modal-action">
+                            <label class="btn btn-primary" for="my_modal_6">전송!</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Input-->
                 <input type="text" id="content" name="content" placeholder="Message"
                        class="input input-bordered input-primary mx-2 w-full" autofocus>
                 <button type="submit" class="btn btn-primary">전달!</button>
