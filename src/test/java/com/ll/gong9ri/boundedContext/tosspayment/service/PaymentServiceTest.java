@@ -44,6 +44,9 @@ class PaymentServiceTest {
 	@Autowired
 	private OrderService orderService;
 
+	@Autowired
+	private PaymentWebClient paymentWebClient;
+
 	private Member member;
 	private Store store;
 	private Product product;
@@ -82,38 +85,21 @@ class PaymentServiceTest {
 
 		List<ProductOption> options = LongStream.range(3L, 12L)
 			.mapToObj(l -> ProductOption.builder()
+				.id(3477L + l)
 				.product(initProduct)
 				.optionOneName("asdas" + l)
 				.optionOneName("iojptr" + l)
 				.build())
 			.collect(Collectors.toList());
+
 		product = initProduct.toBuilder()
-				.productOptions(options)
+			.productOptions(options)
 			.build();
-	}
-
-	@Test
-	@DisplayName("Create Payment Test")
-	void createPaymentTest() {
-		OrderInfo orderInfo = OrderInfo.builder()
-			.id(523L)
-			.memberId(2334L)
-			.username("aknjfd")
-			.storeId(6342L)
-			.storeName("oguvh")
-			.productId(777L)
-			.productName("svdsd")
-			.build();
-
-		PaymentResult result = paymentService.createPayment(orderInfo).getData();
-		assertThat(result).isNotNull();
-		System.out.println(result);
 	}
 
 	@Test
 	@DisplayName("Create Order Test")
 	void createOrderTest() {
-		// TODO: 주문 생성후 승인 받기
 		RsData<OrderInfo> rsCreateOrderInfo = orderService.createOrder(member, product);
 		assertThat(rsCreateOrderInfo.isSuccess()).isTrue();
 
@@ -121,11 +107,16 @@ class PaymentServiceTest {
 		options.put(product.getProductOptions().get(1), 3);
 		options.put(product.getProductOptions().get(4), 1);
 		options.put(product.getProductOptions().get(5), 2);
+
 		RsData<OrderInfo> rsConfirmOrderInfo = orderService.confirmOrder(
 			rsCreateOrderInfo.getData().getMemberId(),
 			rsCreateOrderInfo.getData().getId(),
-			options);
+			options
+		);
 		assertThat(rsConfirmOrderInfo.isSuccess()).isTrue();
+
+		RsData<PaymentResult> rsCreatePayment = paymentService.createPayment(rsConfirmOrderInfo.getData());
+		assertThat(rsCreatePayment.isSuccess()).isTrue();
 	}
 
 	@Test
@@ -140,7 +131,7 @@ class PaymentServiceTest {
 			.orderName("pattern T shrit")
 			.build();
 
-		PaymentResult createResult = PaymentWebClient.paymentCreate(paymentCreateBody).toEntity();
+		PaymentResult createResult = paymentWebClient.paymentCreate(paymentCreateBody).toEntity();
 		System.out.println(createResult);
 		// TODO: 실제 QR코드 찍는 과정 필요
 
@@ -150,7 +141,7 @@ class PaymentServiceTest {
 			.orderId(createResult.getOrderId())
 			.build();
 
-		PaymentResult result = PaymentWebClient.paymentConfirm(paymentConfirmBody).toEntity();
+		PaymentResult result = paymentWebClient.paymentConfirm(paymentConfirmBody).toEntity();
 		assertThat(result).isNotNull();
 		System.out.println(result);
 	}

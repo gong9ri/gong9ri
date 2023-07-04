@@ -53,10 +53,6 @@ public class OrderInfo extends BaseEntity {
 	@Builder.Default
 	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
 
-	public void addProductOptionQuantity(ProductOptionQuantity productOptionQuantity) {
-		productOptionQuantities.add(productOptionQuantity);
-	}
-
 	public static OrderInfo of(Member member, Product product) {
 		return OrderInfo.builder()
 			.memberId(member.getId())
