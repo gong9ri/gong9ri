@@ -51,4 +51,12 @@ public class GroupBuy extends BaseEntity {
 	@ToString.Exclude
 	@Builder.Default
 	private Set<Member> groupBuyMembers = new LinkedHashSet<>();
+
+	public void addGroupBuyMember(Member member) {
+		groupBuyMembers.add(member);
+	}
+
+	public void removeGroupBuyMember(Member member) {
+		groupBuyMembers.remove(member);
+	}
 }

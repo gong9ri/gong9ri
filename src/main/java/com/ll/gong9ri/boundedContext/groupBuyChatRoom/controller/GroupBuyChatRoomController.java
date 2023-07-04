@@ -22,7 +22,7 @@ public class GroupBuyChatRoomController {
 	private final ChatRoomParticipantService chatRoomParticipantService;
 	private final Rq rq;
 
-	@GetMapping("/make")
+	@GetMapping("/makechat")
 	public String create() {
 		groupBuyChatRoomService.createChatRoom();
 
