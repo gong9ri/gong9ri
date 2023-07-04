@@ -1,9 +1,13 @@
 package com.ll.gong9ri.base.tosspayments.service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.base.tosspayments.dto.PaymentResultDTO;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentCreateBody;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentWebClient;
@@ -16,14 +20,19 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class PaymentService {
+	// public final PaymentResultRepository paymentResultRepository;
+
 	public RsData<PaymentResult> createPayment(final OrderInfo orderInfo) {
+		System.out.println(orderInfo.getId());
 		PaymentCreateBody paymentCreateBody = PaymentCreateBody.builder()
 			.method("카드")
 			.amount(orderInfo.getProductOptionQuantities()
 				.stream()
 				.mapToInt(ProductOptionQuantity::getPrice)
 				.sum())
-			.orderId(orderInfo.getId().toString()) // TODO: Base 64 encode
+			//.orderId(orderInfo.getId().toString()) // TODO: Base 64 encode
+			.orderId(Base64.getEncoder()
+				.encodeToString(orderInfo.getId().toString().getBytes(StandardCharsets.UTF_8))) // Base 64 encode
 			.orderName(orderInfo.getProductName()
 				+ " "
 				+ orderInfo.getProductOptionQuantities()
@@ -34,9 +43,9 @@ public class PaymentService {
 			)
 			.build();
 
-		PaymentResult paymentResult = PaymentWebClient.paymentCreate(paymentCreateBody);
+		PaymentResultDTO paymentResultDto = PaymentWebClient.paymentCreate(paymentCreateBody);
 		// TODO: paymentResultRepository.save(paymentResult)
-		return RsData.successOf(paymentResult);
+		//paymentResultRepository.save(paymentResult);
+		return RsData.successOf(paymentResultDto.toEntity());
 	}
 }
-

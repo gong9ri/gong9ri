@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ll.gong9ri.base.appConfig.AppConfig;
+import com.ll.gong9ri.base.tosspayments.dto.PaymentResultDTO;
 import com.ll.gong9ri.base.tosspayments.tossConfig.TossConfig;
 
 import lombok.AccessLevel;
@@ -36,7 +37,7 @@ public class PaymentWebClient {
 	 * @param paymentCreateBody
 	 * @return 결제 생성 결과 입니다.
 	 */
-	public static PaymentResult paymentCreate(PaymentCreateBody paymentCreateBody) {
+	public static PaymentResultDTO paymentCreate(PaymentCreateBody paymentCreateBody) {
 		paymentCreateBody = paymentCreateBody.toBuilder()
 			.successUrl(BASE_SUCCESS_URL)
 			.failUrl(BASE_FAIL_URL)
@@ -47,17 +48,17 @@ public class PaymentWebClient {
 			.uri(BASE_URL + BASE_PAYMENT)
 			.bodyValue(paymentCreateBody)
 			.retrieve()
-			.bodyToMono(PaymentResult.class)
+			.bodyToMono(PaymentResultDTO.class)
 			.block();
 	}
 
-	public static PaymentResult paymentConfirm(PaymentConfirmBody paymentConfirmBody) {
+	public static PaymentResultDTO paymentConfirm(PaymentConfirmBody paymentConfirmBody) {
 		return createWebClient()
 			.method(HttpMethod.POST)
 			.uri(BASE_URL + BASE_PAYMENT + "/confirm")
 			.bodyValue(paymentConfirmBody)
 			.retrieve()
-			.bodyToMono(PaymentResult.class)
+			.bodyToMono(PaymentResultDTO.class)
 			.block();
 	}
 }
