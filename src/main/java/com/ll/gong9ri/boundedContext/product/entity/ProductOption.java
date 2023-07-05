@@ -1,19 +1,26 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-@ToString(callSuper = true)
 public class ProductOption extends BaseEntity {
-    private Long productId;
-    private String optionOneName;
-    private String optionTwoName;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Product product;
+	private String optionOneName;
+	private String optionTwoName;
+	private Boolean deleteStatus;
 }
