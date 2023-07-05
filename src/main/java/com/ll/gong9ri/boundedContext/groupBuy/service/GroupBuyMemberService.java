@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMemberRole;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyMemberRepository;
+import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GroupBuyMemberService {
 	private final GroupBuyMemberRepository groupBuyMemberRepository;
+	private final GroupBuyRepository groupBuyRepository;
 
 	@Transactional
 	public List<GroupBuyMember> addFirstGroupBuyMember(Member member, GroupBuy groupBuy){
@@ -31,14 +34,13 @@ public class GroupBuyMemberService {
 			.build();
 
 		groupBuyMembers.add(groupBuyMember);
-
 		groupBuyMemberRepository.saveAll(groupBuyMembers);
 
 		return groupBuyMembers;
 	}
 
 	@Transactional
-	public List<GroupBuyMember> addGroupBuyMember(Member member, GroupBuy groupBuy){
+	public RsData<List<GroupBuyMember>> addGroupBuyMember(Member member, GroupBuy groupBuy){
 		List<GroupBuyMember> groupBuyMembers = groupBuyMemberRepository.findAllByGroupBuyId(groupBuy.getId());
 
 		GroupBuyMember groupBuyMember = GroupBuyMember.builder()
@@ -51,7 +53,14 @@ public class GroupBuyMemberService {
 
 		groupBuyMemberRepository.saveAll(groupBuyMembers);
 
-		return groupBuyMembers;
+		return RsData.successOf(groupBuyMembers);
 	}
 
+	public List<GroupBuyMember> findAllByGroupBuyId(Long groupBuyId){
+		return groupBuyMemberRepository.findAllByGroupBuyId(groupBuyId);
+	}
+
+	public Integer getMemberCount(Long groupId) {
+		return groupBuyMemberRepository.countByGroupBuyId(groupId);
+	}
 }

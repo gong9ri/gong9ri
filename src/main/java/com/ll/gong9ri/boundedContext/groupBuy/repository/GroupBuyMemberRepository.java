@@ -8,4 +8,6 @@ public interface GroupBuyMemberRepository extends JpaRepository<GroupBuyMember, 
 	List<GroupBuyMember> findAllByMemberId(final Long memberId);
 	List<GroupBuyMember> findAllByGroupBuyId(final Long groupBuyId);
 
+	Integer countByGroupBuyId(final Long groupId);
+
 }
