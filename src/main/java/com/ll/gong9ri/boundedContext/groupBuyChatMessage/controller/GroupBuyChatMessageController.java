@@ -32,6 +32,7 @@ public class GroupBuyChatMessageController {
 
 		GroupBuyChatMessage chatMessage = groupBuyChatMessageService.sendChat(
 			message.get("content"),
+			message.get("chatType"),
 			roomId, String.valueOf(wsRq.getMember().getId()), wsRq.getMember().getUsername()
 		);
 

@@ -7,23 +7,24 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ll.gong9ri.boundedContext.image.dto.ImageDTO;
+import com.ll.gong9ri.boundedContext.image.entity.ChatImage;
 import com.ll.gong9ri.boundedContext.image.entity.MemberImage;
+import com.ll.gong9ri.boundedContext.image.repository.ChatImageRepository;
 import com.ll.gong9ri.boundedContext.image.repository.MemberImageRepository;
 import com.ll.gong9ri.boundedContext.image.repository.ProductImageRepository;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,6 +34,7 @@ public class ImageService {
 	private final AmazonS3Client amazonS3Client;
 	private final MemberImageRepository memberImageRepository;
 	private final ProductImageRepository productImageRepository;
+	private final ChatImageRepository chatImageRepository;
 
 	@Value("${spring.s3.bucket}")
 	private String bucketName;
@@ -117,5 +119,19 @@ public class ImageService {
 		}
 
 		return s3Images;
+	}
+
+	public List<ImageDTO> uploadChatImages(List<MultipartFile> multipartFiles, String chatRoomId) {
+		List<ImageDTO> dtos = uploadImages(multipartFiles, "chat" + "/" + chatRoomId);
+
+		ChatImage chatImage = ChatImage.builder()
+			.chatRoomId(chatRoomId)
+			.filePath(dtos.get(0).getUploadFilePath())
+			.fileName(dtos.get(0).getUploadFileName())
+			.build();
+
+		chatImageRepository.save(chatImage);
+
+		return dtos;
 	}
 }
