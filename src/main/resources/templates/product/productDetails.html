@@ -6,23 +6,40 @@
 </head>
 <body>
 <main layout:fragment="main">
-    <table>
-        <tr>
-            <th>상품명</th>
-            <td>
-                <div th:text="${product.name}"></div>
-            </td>
-        </tr>
-        <tr>
-            <th>가격</th>
-            <td>
-                <div th:text="${product.price}"></div>
-            </td>
-        </tr>
-        <tr>
-            <th>옵션</th>
-        </tr>
-    </table>
+    <form th:action method="post">
+        <table>
+            <tr>
+                <th>상품명</th>
+                <td><input name="name" th:value="${product.name}"></td>
+            </tr>
+            <tr>
+                <th>가격</th>
+                <td><input name="price" type="text" th:value="${product.price}"></td>
+            </tr>
+            <tr>
+                <th>옵션</th>
+                <td th:if="${optionOne == null}"><a class="btn btn-primary" href="/product/option">옵션 등록</a></td>
+                <td th:if="${optionOne != null}"><a class="btn btn-primary" href="/product/option">옵션 관리</a></td>
+            </tr>
+            <tr>
+                <th rowspan="2">공동구매 할인</th>
+                <td>인원</td>
+                <td>할인가격</td>
+            </tr>
+            <tr th:if="${product.getProductDiscountList()} == null">
+                <td>등록된 할인 정보 없음</td>
+                <td>
+                    <form th:action="/product/option"></form>
+                    <a href="">할인율 관리</a></td>
+            </tr>
+            <tr th:each="discount : ${product.getProductDiscountList()}">
+                <td><input name="headCounts" type="text" th:value="${discount.getHeadCount()}"></td>
+                <td><input name="salePrices" type="text" th:value="${discount.getSalePrice()}"></td>
+            </tr>
+        </table>
+        <button class="btn">저장</button>
+        <button type="reset" class="btn">취소</button>
+    </form>
 </main>
 </body>
 </html>

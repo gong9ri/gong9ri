@@ -1,23 +1,21 @@
 package com.ll.gong9ri.base.rq;
 
-import java.util.Date;
-
+import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.service.MemberService;
+import com.ll.gong9ri.standard.util.Ut;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
-import com.ll.gong9ri.boundedContext.member.service.MemberService;
-import com.ll.gong9ri.standard.util.Ut;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
 
 @Component
 @Slf4j
@@ -106,6 +104,14 @@ public class Rq {
 		url = Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(rsData.getMsg()));
 
 		return "redirect:" + url;
+	}
+
+	public <T> void setAttributeToSession(String attributeName, T obj) {
+		this.session.setAttribute(attributeName, obj);
+	}
+
+	public Object getAttributeFromSession(String attributeName) {
+		return this.session.getAttribute(attributeName);
 	}
 
 	private String urlWithMsg(String url, String msg) {
