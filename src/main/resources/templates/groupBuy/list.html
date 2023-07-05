@@ -7,7 +7,7 @@
 <body>
 <main layout:fragment="main">
     <div>
-        <div th:if="${groupBuyList.isEmpty()}">상품 목록이 비어있습니다.</div>
+        <div th:if="${groupBuyList.isEmpty()}">공동구매 목록이 비어있습니다.</div>
         <table class="table">
             <tr class="table-header" th:if="${!groupBuyList.isEmpty()}">
                 <th>상품 이미지</th>

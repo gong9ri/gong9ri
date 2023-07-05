@@ -49,7 +49,7 @@ public class GroupBuyController {
 
 		Member member = rq.getMember();
 
-		RsData<GroupBuy> rsGroupBuy = groupBuyService.createGroupBuy(optionalProduct.get(), member);
+		RsData<GroupBuy> rsGroupBuy = groupBuyService.createGroupBuy(optionalProduct.get());
 		groupBuyMemberService.addFirstGroupBuyMember(member, rsGroupBuy.getData());
 
 		return rq.redirectWithMsg("/groupBuy/list", rsGroupBuy);
@@ -66,18 +66,19 @@ public class GroupBuyController {
 	@PostMapping("/{groupBuyId}/participate")
 	@PreAuthorize("isAuthenticated()")
 	public String participateGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
-		boolean canParticipateGroupBuy = groupBuyService.canParticipateGroupBuy(groupBuyId);
-		if(!canParticipateGroupBuy){
-			return rq.historyBack("진행중인 공동구매가 아닙니다.");
+		Member member = rq.getMember();
+		RsData<Boolean> rsCanParticipateGroupBuy = groupBuyService.canParticipateGroupBuy(groupBuyId, member.getId());
+		if(rsCanParticipateGroupBuy.isFail()){
+			return rq.historyBack(rsCanParticipateGroupBuy.getMsg());
 		}
 
 		GroupBuy groupBuy = groupBuyService.findById(groupBuyId).orElse(null);
-		Member member = rq.getMember();
-		RsData<List<GroupBuyMember>> rsGroupBuyMembers = groupBuyMemberService.addGroupBuyMember(member, groupBuy);
-		return rq.redirectWithMsg("/groupBuy/detail/"+groupBuyId, rsGroupBuyMembers);
+
+		groupBuyMemberService.addGroupBuyMember(member, groupBuy);
+
+		return rq.redirectWithMsg("/groupBuy/detail/"+groupBuyId, rsCanParticipateGroupBuy.getMsg());
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/detail/{groupBuyId}")
 	public String showDetail(Model model,  @PathVariable("groupBuyId") Long groupBuyId) {
 		Optional<GroupBuy> optionalGroupBuy = groupBuyService.findById(groupBuyId);
