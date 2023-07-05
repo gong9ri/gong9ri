@@ -8,12 +8,33 @@
 <main layout:fragment="main">
     <script>
         function submitOptionForm(form) {
-            if (confirm('상품 상세 옵션을 등록하시겠습니까?')) {
+            if (confirm('상품 상세 옵션을 저장 하시겠습니까?')) {
                 form.submit();
             }
         }
 
-        function addDetailOption(detailsId) {
+        function showOptions() {
+            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneDetails_"]'));
+            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoDetails_"]'));
+
+            let message = '';
+            if (optionTwoValues.length === 0) {
+                optionOneValues.forEach(optionOne => {
+                    message += optionOne.value + '\n\n';
+                });
+            } else {
+                optionOneValues.forEach(optionOne => {
+                    optionTwoValues.forEach(optionTwo => {
+                        const combination = optionOne.value + ' | ' + optionTwo.value;
+                        message += combination + '\n\n';
+                    });
+                });
+            }
+
+            alert(message);
+        }
+
+        function addDetailOptionRow(detailsId) {
             const details = document.getElementById(detailsId);
             let optCnt = details.childElementCount;
             if (confirm('상세 옵션을 추가하시겠습니까?')) {
@@ -39,7 +60,7 @@
                     <input name="optionOneName" id="optionOne" type="text">
                 </td>
                 <td>
-                    <input class="btn" type="button" onclick="addDetailOption('optionOneDetails')" value="+">
+                    <input class="btn" type="button" onclick="addDetailOptionRow('optionOneDetails')" value="+">
                 </td>
             </tr>
             <tr id="optionOneDetails">
@@ -47,7 +68,7 @@
                     <label>옵션1의 상세 옵션명</label>
                 </td>
                 <td>
-                    <input name="optionOneDetails" id="optionOneDetail_1" type="text">
+                    <input name="optionOneDetails" id="optionOneDetails_1" type="text">
                 </td>
             </tr>
             <tr>
@@ -58,7 +79,7 @@
                     <input name="optionTwoName" id="optionTwo" type="text">
                 </td>
                 <td>
-                    <input class="btn" type="button" onclick="addDetailOption('optionTwoDetails')" value="+">
+                    <input class="btn" type="button" onclick="addDetailOptionRow('optionTwoDetails')" value="+">
                 </td>
             </tr>
             <tr id="optionTwoDetails">
@@ -66,11 +87,12 @@
                     <label>옵션2의 상세 옵션명</label>
                 </td>
                 <td>
-                    <input name="optionTwoDetails" id="optionTwoDetail_1" type="text">
+                    <input name="optionTwoDetails" id="optionTwoDetails_1" type="text">
                 </td>
             </tr>
         </table>
-        <button class="btn">등록</button>
+        <button class="btn">저장</button>
+        <a class="btn" onclick="showOptions()">옵션 미리보기</a>
         <a class="btn" href="/product/list">상품 목록</a>
     </form>
 </main>
