@@ -70,6 +70,6 @@ public class ProductController {
 
 		model.addAttribute(PRODUCT, productDTO);
 
-		return "details";
+		return "product/detail";
 	}
 }

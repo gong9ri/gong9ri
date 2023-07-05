@@ -8,7 +8,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -23,6 +22,5 @@ public class ProductOption extends BaseEntity {
 	private Product product;
 	private String optionOneName;
 	private String optionTwoName;
-	@Builder.Default
-	private Boolean deleteStatus = false;
+	private Boolean deleteStatus;
 }
