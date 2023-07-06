@@ -1,17 +1,19 @@
 package com.ll.gong9ri.boundedContext.product.service;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionNameDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductOptionRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class ProductOptionService {
 		return repository.findAllByProductIdAndDeleteStatusFalse(productId)
 			.stream()
 			.map(e -> ProductOptionNameDTO.builder()
+				.id(e.getId())
 				.optionOneName(e.getOptionOneName())
 				.optionTwoName(e.getOptionTwoName())
 				.build())
@@ -39,9 +42,9 @@ public class ProductOptionService {
 	@Transactional
 	public RsData<ProductOption> defaultCreate(final Product product) {
 		final ProductOption productOption = ProductOption.builder()
-				.product(product)
-				.optionOneName(NO_OPTION_DEFAULT)
-				.build();
+			.product(product)
+			.optionOneName(NO_OPTION_DEFAULT)
+			.build();
 
 		repository.save(productOption);
 
@@ -62,23 +65,6 @@ public class ProductOptionService {
 	}
 
 	@Transactional
-	public RsData<ProductOption> update(final Long id, final ProductOptionNameDTO dto) {
-		RsData<ProductOption> rsOption = validate(id);
-		if (rsOption.isFail()) {
-			return rsOption;
-		}
-
-		ProductOption productOption = rsOption.getData().toBuilder()
-			.optionOneName(dto.getOptionOneName())
-			.optionTwoName(dto.getOptionOneName())
-			.build();
-
-		repository.save(productOption);
-
-		return RsData.successOf(productOption);
-	}
-
-	@Transactional
 	public RsData<ProductOption> delete(final Long id) {
 		RsData<ProductOption> rsOption = validate(id);
 		if (rsOption.isFail()) {
@@ -86,7 +72,7 @@ public class ProductOptionService {
 		}
 
 		ProductOption productOption = rsOption.getData().toBuilder()
-			.deleteStatus(Boolean.FALSE)
+			.deleteStatus(Boolean.TRUE)
 			.build();
 
 		repository.save(productOption);
@@ -109,16 +95,9 @@ public class ProductOptionService {
 	@Transactional
 	public List<ProductOption> writeOptions(final Product product, final ProductOptionDTO dto) {
 		return dto.getOptionNames().stream()
-			.map(optionName -> {
-				final Long id = optionName.getId();
-				if (id != null) {
-					return (findByIdFromExists(product.getProductOptions(), id) != null)
-						? update(id, optionName)
-						: delete(id);
-				} else {
-					return create(product, optionName);
-				}
-			})
+			.map(optionName -> (optionName.getId() == null) // TODO: update checker
+				? create(product, optionName)
+				: delete(optionName.getId()))
 			.map(RsData::getData)
 			.filter(Objects::nonNull)
 			.toList();

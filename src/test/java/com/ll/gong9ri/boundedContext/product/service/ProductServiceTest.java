@@ -1,9 +1,13 @@
 package com.ll.gong9ri.boundedContext.product.service;
 
-import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.product.dto.*;
-import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -13,12 +17,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductOptionNameDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
+import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 @SpringBootTest
 @Transactional
@@ -29,6 +38,24 @@ class ProductServiceTest {
     private ProductService productService;
     @Autowired
     private ProductDiscountService productDiscountService;
+
+    private Member member;
+    private Store store;
+
+    @BeforeEach
+    void setup() {
+        member = Member.builder()
+            .id(9879878L)
+            .authLevel(AuthLevel.STORE)
+            .username("SDFSDFSDF@#$")
+            .build();
+
+        store = Store.builder()
+            .id(4365640L)
+            .name("#$%%$#%$#3")
+            .member(member)
+            .build();
+    }
 
     @Test
     @DisplayName("product registration test")
@@ -46,7 +73,7 @@ class ProductServiceTest {
                 .maxPurchaseNum(2)
                 .build();
 
-        RsData<Product> productRs = productService.registerProduct(registerDTO);
+        RsData<Product> productRs = productService.registerProduct(store, registerDTO);
 
         assertThat(productRs.isSuccess()).isTrue();
         assertThat(productRs.getData().getName()).isEqualTo(registerDTO.getName());
@@ -103,7 +130,7 @@ class ProductServiceTest {
                 .optionNames(optionNameDTOList)
                 .build();
 
-        RsData<Product> productRs = productService.registerProduct(productDTO);
+        RsData<Product> productRs = productService.registerProduct(store, productDTO);
         discountDTOList.forEach(e -> productDiscountService.create(productRs.getData(), e));
         RsData<Product> addOptionRs = productService.addOptions(productRs.getData().getId(), productOptionDTO);
 
@@ -145,7 +172,7 @@ class ProductServiceTest {
                 .optionNames(optionNameDTOList)
                 .build();
 
-        RsData<Product> productRs = productService.registerProduct(registerDTO);
+        RsData<Product> productRs = productService.registerProduct(store, registerDTO);
         RsData<Product> addOptionRs = productService.addOptions(productRs.getData().getId(), productOptionDTO);
 
         assertThat(productRs.isSuccess()).isTrue();
@@ -186,7 +213,7 @@ class ProductServiceTest {
                 .optionNames(optionNameDTOList)
                 .build();
 
-        RsData<Product> productRs = productService.registerProduct(productDTO);
+        RsData<Product> productRs = productService.registerProduct(store, productDTO);
         productService.addOptions(productRs.getData().getId(), productOptionDTO);
 
         RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
@@ -218,7 +245,7 @@ class ProductServiceTest {
                         .build()
         };
 
-        Arrays.stream(productRegisterDTOs).forEach(productService::registerProduct);
+        Arrays.stream(productRegisterDTOs).forEach(o -> productService.registerProduct(store, o));
 
         RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
 
@@ -249,7 +276,7 @@ class ProductServiceTest {
                         .build()
         };
 
-        Arrays.stream(productRegisterDTOs).forEach(productService::registerProduct);
+        Arrays.stream(productRegisterDTOs).forEach(o -> productService.registerProduct(store, o));
 
         SearchDTO searchDTO = SearchDTO.builder()
                 .keyword("티셔츠")
@@ -275,7 +302,7 @@ class ProductServiceTest {
                         .salePrice(5)
                         .build();
 
-        RsData<Product> productRs = productService.registerProduct(registerDTO);
+        RsData<Product> productRs = productService.registerProduct(store, registerDTO);
 
         RsData<ProductDiscount> productDiscountRs = productDiscountService.create(productRs.getData(), productDiscountDTO);
         assertThat(productDiscountRs.isSuccess()).isTrue();

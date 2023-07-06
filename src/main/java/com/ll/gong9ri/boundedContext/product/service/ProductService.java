@@ -18,6 +18,7 @@ import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,8 +61,11 @@ public class ProductService {
 	}
 
 	@Transactional
-	public RsData<Product> registerProduct(final ProductRegisterDTO productRegisterDTO) {
-		Product product = productRegisterDTO.toEntity();
+	public RsData<Product> registerProduct(final Store store, final ProductRegisterDTO productRegisterDTO) {
+		Product product = productRegisterDTO.toEntity()
+			.toBuilder()
+			.store(store)
+			.build();
 
 		repository.save(product);
 
