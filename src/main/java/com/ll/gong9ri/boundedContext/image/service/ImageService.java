@@ -21,9 +21,7 @@ import com.ll.gong9ri.boundedContext.image.entity.ChatImage;
 import com.ll.gong9ri.boundedContext.image.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.image.repository.ChatImageRepository;
 import com.ll.gong9ri.boundedContext.image.repository.MemberImageRepository;
-import com.ll.gong9ri.boundedContext.image.repository.ProductImageRepository;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -12,5 +12,4 @@ public class DetailDTO {
     private String name;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
-
 }

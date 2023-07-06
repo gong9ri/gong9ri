@@ -13,28 +13,6 @@
                 form.submit();
             }
         }
-
-        <!--TODO: 열 삭제 기능 추가하기-->
-        function addInputRow() {
-            if (confirm('인원별 할인율을 추가하시겠습니까?')) {
-                const discountRow = document.getElementById("discountRow");
-                const newTableRow = document.createElement('tr');
-                let newTableData = document.createElement('td');
-                const headCountInput = document.createElement('input');
-                headCountInput.name = 'headCounts';
-                headCountInput.type = 'text';
-                const discountRateInput = document.createElement('input');
-                discountRateInput.name = 'discountRates';
-                discountRateInput.type = 'text';
-
-                newTableData.appendChild(headCountInput);
-                newTableRow.appendChild(newTableData);
-                newTableData = document.createElement('td');
-                newTableData.appendChild(discountRateInput);
-                newTableRow.appendChild(newTableData);
-                discountRow.parentNode.appendChild(newTableRow);
-            }
-        }
     </script>
     <form th:action method="post" onsubmit="submitRegistrationForm(this); return false;">
         <div>
@@ -44,7 +22,7 @@
             <table class="flex flex-col">
                 <tr>
                     <td>
-                        <label>상품명</label>
+                        <label for="name">상품명</label>
                     </td>
                 </tr>
                 <tr>
@@ -64,12 +42,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="productDescription">상품 설명</label>
+                        <label for="description">상품 설명</label>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <textarea name="productDescription" id="productDescription" cols="16" rows="10"></textarea>
+                        <textarea name="description" id="description" cols="20" rows="10"></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -82,46 +60,11 @@
                         <input name="maxPurchaseNum" id="maxPurchaseNum" type="text">
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <label>상품 이미지 업로드</label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input class="btn btn-primary" name="image" id="image" type="button" value="대충 이미지 업로드 버튼">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div>할인율</div>
-                    </td>
-                    <td>
-                        <input class="btn" type="button" onclick="addInputRow()" value="+">
-                    </td>
-                </tr>
-                <tr id="discountRow">
-                    <td id="headCount">
-                        <div>목표 인원수(명)</div>
-                    </td>
-                    <td id="discountRate">
-                        <div>예상 할인률(%)</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input name="headCounts" type="text">
-                    </td>
-                    <td>
-                        <input name="discountRates" type="text">
-                    </td>
-                </tr>
             </table>
             <button class="btn">등록</button>
             <a class="btn" href="/product/list">상품 목록</a>
         </div>
     </form>
-
 </main>
 </body>
 </html>

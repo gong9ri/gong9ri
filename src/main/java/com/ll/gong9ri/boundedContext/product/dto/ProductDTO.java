@@ -31,10 +31,9 @@ public class ProductDTO {
     @NotNull
     private List<Integer> headCounts;
     @NotNull
-    private List<Integer> discountRates;
+    private List<Integer> salePrices;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
-
 
     public Product toEntity() {
         return Product.builder()
@@ -51,11 +50,11 @@ public class ProductDTO {
         List<ProductDiscount> discounts = product.getProductDiscounts();
 
         List<Integer> headCounts = new ArrayList<>();
-        List<Integer> discountRates = new ArrayList<>();
+        List<Integer> salePrices = new ArrayList<>();
 
         discounts.forEach(discount -> {
             headCounts.add(discount.getHeadCount());
-            discountRates.add(discount.getDiscountRate());
+            salePrices.add(discount.getSalePrice());
         });
 
         return ProductDTO.builder()
@@ -66,7 +65,7 @@ public class ProductDTO {
                 .images(product.getImages())
                 .maxPurchaseNum(product.getMaxPurchaseNum())
                 .headCounts(headCounts)
-                .discountRates(discountRates)
+                .salePrices(salePrices)
                 .createDate(product.getCreateDate())
                 .modifyDate(product.getModifyDate())
                 .build();
@@ -76,7 +75,7 @@ public class ProductDTO {
         return IntStream.range(0, headCounts.size())
                 .mapToObj(i -> ProductDiscount.builder()
                         .headCount(headCounts.get(i))
-                        .discountRate(discountRates.get(i))
+                        .salePrice(salePrices.get(i))
                         .build()
                 )
                 .collect(Collectors.toUnmodifiableList());
