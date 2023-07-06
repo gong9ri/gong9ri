@@ -236,12 +236,14 @@ class ProductServiceTest {
                         .build()
         };
 
+        int preRegistrationProductCnt = productService.getAllProducts().getData().size();
+
         Arrays.stream(productRegisterDTOs).forEach(o -> productService.registerProduct(store, o));
 
         RsData<List<Product>> getAllProductsRs = productService.getAllProducts();
 
         assertThat(getAllProductsRs.isSuccess()).isTrue();
-        assertThat(getAllProductsRs.getData()).hasSize(productRegisterDTOs.length);
+        assertThat(getAllProductsRs.getData()).hasSize(preRegistrationProductCnt + productRegisterDTOs.length);
     }
 
     @Test
