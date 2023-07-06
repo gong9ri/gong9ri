@@ -1,33 +1,24 @@
 package com.ll.gong9ri.boundedContext.product.service;
 
-import static org.assertj.core.api.Assertions.*;
+import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.product.dto.*;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
-import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductOptionNameDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
-import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
-import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
-import com.ll.gong9ri.boundedContext.store.entity.Store;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
