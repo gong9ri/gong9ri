@@ -18,8 +18,7 @@
             </tr>
             <tr>
                 <th>옵션</th>
-                <td th:if="${optionOne == null}"><a class="btn btn-primary" href="/product/option">옵션 등록</a></td>
-                <td th:if="${optionOne != null}"><a class="btn btn-primary" href="/product/option">옵션 관리</a></td>
+                <td><a class="btn btn-primary" th:href="@{|/manage/product/${product.id}/option|}">옵션 관리</a></td>
             </tr>
             <tr>
                 <th rowspan="2">공동구매 할인</th>

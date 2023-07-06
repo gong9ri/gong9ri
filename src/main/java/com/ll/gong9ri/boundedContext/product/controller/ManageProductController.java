@@ -1,25 +1,8 @@
 package com.ll.gong9ri.boundedContext.product.controller;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductImageDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductOptionNameDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
+import com.ll.gong9ri.boundedContext.product.dto.*;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductDiscountService;
 import com.ll.gong9ri.boundedContext.product.service.ProductImageService;
@@ -27,9 +10,15 @@ import com.ll.gong9ri.boundedContext.product.service.ProductOptionService;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.store.service.StoreService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
@@ -76,7 +65,7 @@ public class ManageProductController {
 			return rq.historyBack(rsProduct);
 		}
 
-		model.addAttribute(PRODUCT, rsProduct);
+		model.addAttribute(PRODUCT, rsProduct.getData());
 
 		return "product/detail";
 	}
@@ -93,7 +82,7 @@ public class ManageProductController {
 			return rq.historyBack(productRs);
 		}
 
-		return rq.redirectWithMsg("/" + productRs.getData().getId() + "/detail", productRs);
+		return rq.redirectWithMsg("/manage/product/" + productRs.getData().getId() + "/detail", productRs);
 	}
 
 	@GetMapping("/{productId}/option")
@@ -102,17 +91,17 @@ public class ManageProductController {
 
 		model.addAttribute("options", options);
 
-		return "product/optionDetails";
+		return "product/optionDetail";
 	}
 
 	@PutMapping("/{productId}/option")
-	public String addProductOptions(@PathVariable Long productId, @Valid ProductOptionDTO productOptionDTO) {
-		RsData<Product> productRs = productService.addOptions(productId, productOptionDTO);
+	public String addProductOptions(@PathVariable Long productId, @Valid ProductOptionDTO dto) {
+		RsData<Product> productRs = productService.addOptions(productId, dto);
 		if (productRs.isFail()) {
 			return rq.historyBack("상품 상세 옵션 등록에 실했습니다.");
 		}
 
-		return rq.redirectWithMsg("/" + productRs.getData().getId() + "/detail", productRs);
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
 	}
 
 	@GetMapping("/{productId}/image")
@@ -121,7 +110,7 @@ public class ManageProductController {
 
 		model.addAttribute("images", images);
 
-		return "product/optionDetails";
+		return "product/image";
 	}
 
 	@PutMapping("/{productId}/image")
@@ -131,7 +120,7 @@ public class ManageProductController {
 			return rq.historyBack(productRs);
 		}
 
-		return rq.redirectWithMsg("/" + productRs.getData().getId() + "/detail", productRs);
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
 	}
 
 	@GetMapping("/{productId}/discount")
@@ -140,16 +129,16 @@ public class ManageProductController {
 
 		model.addAttribute("discounts", discounts);
 
-		return "product/optionDetails";
+		return "product/discount";
 	}
 
 	@PutMapping("/{productId}/discount")
-	public String addProductOptions(@PathVariable Long productId, @Valid List<ProductDiscountDTO> dtos) {
+	public String addProductDiscounts(@PathVariable Long productId, @Valid List<ProductDiscountDTO> dtos) {
 		RsData<Product> productRs = productService.addDiscounts(productId, dtos);
 		if (productRs.isFail()) {
-			return rq.historyBack("상품 할인 등록에 실했습니다.");
+			return rq.historyBack("상품 할인 등록에 실패했습니다.");
 		}
 
-		return rq.redirectWithMsg("/" + productRs.getData().getId() + "/detail", productRs);
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
 	}
 }
