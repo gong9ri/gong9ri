@@ -1,12 +1,9 @@
 package com.ll.gong9ri.boundedContext.groupBuy.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,8 +20,9 @@ public class GroupBuyDTO {
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private Integer currentMemberCount;
+	private Boolean isParticipate;
 
-	public static GroupBuyDTO createGroupBuyDTO(GroupBuy groupBuy, Integer currentMemberCount){
+	public static GroupBuyDTO createGroupBuyDTO(GroupBuy groupBuy, Integer currentMemberCount, Boolean isParticipate) {
 		return GroupBuyDTO.builder()
 			.id(groupBuy.getId())
 			.name(groupBuy.getName())
@@ -34,7 +32,7 @@ public class GroupBuyDTO {
 			.startDate(groupBuy.getStartDate())
 			.endDate(groupBuy.getEndDate())
 			.currentMemberCount(currentMemberCount)
+			.isParticipate(isParticipate)
 			.build();
 	}
-
 }

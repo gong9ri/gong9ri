@@ -1,17 +1,20 @@
 package com.ll.gong9ri.boundedContext.groupBuy.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
+
 public interface GroupBuyMemberRepository extends JpaRepository<GroupBuyMember, Long> {
 	List<GroupBuyMember> findAllByMemberId(final Long memberId);
+
 	List<GroupBuyMember> findAllByGroupBuyId(final Long groupBuyId);
 
-	Optional<GroupBuyMember> findByGroupBuyIdAndMemberId(Long groupBuyId, Long memberId);
+	Optional<GroupBuyMember> findByGroupBuyIdAndMemberId(final Long groupBuyId, final Long memberId);
 
-	Integer countByGroupBuyId(final Long groupId);
+	Integer countByGroupBuyId(final Long groupBuyId);
 
+	Boolean existsByGroupBuyIdAndMemberId(final Long groupBuyId, final Long memberId);
 }

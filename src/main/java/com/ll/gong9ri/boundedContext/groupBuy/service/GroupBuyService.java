@@ -10,12 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
-import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
-import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyMemberRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepositoryImpl;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import lombok.RequiredArgsConstructor;
@@ -28,10 +25,42 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final GroupBuyRepositoryImpl groupBuyRepositoryImpl;
-	private final GroupBuyMemberService groupBuyMemberService;
+
+	public Optional<GroupBuy> getProgressGroupBuy(final Long id) {
+		return groupBuyRepository.findById(id)
+			.filter(e -> e.getStatus().equals(GroupBuyStatus.PROGRESS));
+	}
+
+	public Optional<GroupBuy> findById(final Long id) {
+		return groupBuyRepository.findById(id);
+	}
+
+	public List<GroupBuy> findAll() {
+		return groupBuyRepository.findAll();
+	}
+
+	public List<GroupBuyDTO> findAllByDTO() {
+		return groupBuyRepositoryImpl.findAllGroupBuyMemberCount();
+	}
+
+	public List<GroupBuyDTO> findAllProgressByDTO() {
+		return groupBuyRepositoryImpl.findAllProgressGroupBuyMemberCount();
+	}
+
+	/**
+	 * Product 의 GroupBuy 생성 가능 여부를 리턴
+	 * @param productId
+	 * @return Product 의 GroupBuy 중 GroupBuyStatus 가 PROGRESS 인 GroupBuy 가 존재하면 false
+	 */
+	public boolean canCreate(final Long productId) {
+		return !groupBuyRepository.existsByProductIdAndStatus(productId, GroupBuyStatus.PROGRESS.getValue());
+	}
 
 	@Transactional
-	public RsData<GroupBuy> createGroupBuy(Product product) {
+	public RsData<GroupBuy> create(final Product product) {
+		if (!canCreate(product.getId())) {
+			return RsData.of("F-1", "진행중인 공동구매가 있습니다.", null);
+		}
 
 		GroupBuy groupBuy = GroupBuy.builder()
 			.product(product)
@@ -46,45 +75,29 @@ public class GroupBuyService {
 		return RsData.successOf(groupBuy);
 	}
 
-	public RsData canParticipateGroupBuy(GroupBuy groupBuy, Member member) {
-		if(groupBuy == null){
-			return RsData.of("F-1", "존재하지 않는 공동구매 입니다.");
+	@Transactional
+	public RsData<GroupBuy> extendEndDate(final Long id, final Integer hour) {
+		Optional<GroupBuy> unmodifiedGroupBuy = getProgressGroupBuy(id);
+		if (unmodifiedGroupBuy.isEmpty()) {
+			return RsData.of("F-1", "잘못된 접근입니다.", null);
 		}
-		if (groupBuyMemberService.isExistGroupByMember(groupBuy, member)) {
-			return RsData.of("F-2", "이미 공동구매에 참여중인 사용자입니다.");
-		}
-		if (groupBuy.getStatus() != GroupBuyStatus.PROGRESS) {
-			return RsData.of("F-3", "진행중인 공동구매가 아닙니다.");
-		}
-		return RsData.of("S-1", "공동구매 참여 성공");
+		GroupBuy groupBuy = unmodifiedGroupBuy.get().toBuilder()
+			.endDate(unmodifiedGroupBuy.get().getEndDate().plusHours(hour))
+			.build();
+
+		groupBuyRepository.save(groupBuy);
+
+		return RsData.successOf(groupBuy);
 	}
 
 	@Transactional
-	public RsData participateGroupBuy(GroupBuy groupBuy, Member member){
-		RsData canParticipateGroupBuy = canParticipateGroupBuy(groupBuy, member);
+	public void updateStatus(final GroupBuy unmodifiedGroupBuy, final GroupBuyStatus status) {
+		GroupBuy groupBuy = unmodifiedGroupBuy.toBuilder()
+			.status(status)
+			.build();
 
-		if(canParticipateGroupBuy.isFail()){
-			return canParticipateGroupBuy;
-		}
+		groupBuyRepository.save(groupBuy);
 
-		return groupBuyMemberService.addGroupBuyMember(member, groupBuy);
-	}
-
-	public Optional<GroupBuy> findById(Long id) {
-		return groupBuyRepository.findById(id);
-	}
-
-	public List<GroupBuy> findAll() {
-		return groupBuyRepository.findAll();
-	}
-
-	public List<GroupBuyDTO> findAllByDTO() {
-		return groupBuyRepositoryImpl.findAllGroupBuyMemberCount();
-
-	}
-
-	@Transactional
-	public RsData<GroupBuy> save(GroupBuy groupBuy) {
-		return RsData.successOf(groupBuyRepository.save(groupBuy));
+		log.debug(groupBuy.getId() + ": EXPIRED");
 	}
 }

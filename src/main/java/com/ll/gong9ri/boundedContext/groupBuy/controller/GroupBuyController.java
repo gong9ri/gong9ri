@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ll.gong9ri.base.rq.Rq;
@@ -18,7 +19,6 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyMemberService;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyService;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 
@@ -31,33 +31,33 @@ public class GroupBuyController {
 	private final GroupBuyService groupBuyService;
 	private final ProductService productService;
 	private final GroupBuyMemberService groupBuyMemberService;
-
 	private final Rq rq;
+
+	private RsData<GroupBuy> validateGroupBuy(final Long groupBuyId) {
+		final Optional<GroupBuy> oGroupBuy = groupBuyService.getProgressGroupBuy(groupBuyId);
+		return oGroupBuy.map(RsData::successOf)
+			.orElseGet(() -> RsData.of("F-1", "잘못된 접근입니다.", null));
+	}
 
 	@PostMapping("/make/{productId}")
 	@PreAuthorize("isAuthenticated()")
 	public String createGroupBuy(@PathVariable("productId") Long productId) {
-		boolean canCreateGroupBuy = productService.canCreateGroupBuy(productId);
-		if (!canCreateGroupBuy) {
-			return rq.historyBack("진행중인 공동구매가 존재합니다.");
-		}
-
-		Optional<Product> optionalProduct = productService.findById(productId);
+		final Optional<Product> optionalProduct = productService.findById(productId);
 		if (optionalProduct.isEmpty()) {
 			return rq.historyBack("상품이 존재하지 않습니다.");
 		}
 
-		Member member = rq.getMember();
-
-		RsData<GroupBuy> rsGroupBuy = groupBuyService.createGroupBuy(optionalProduct.get());
-		groupBuyMemberService.addFirstGroupBuyMember(member, rsGroupBuy.getData());
+		final RsData<GroupBuy> rsGroupBuy = groupBuyService.create(optionalProduct.get());
+		groupBuyMemberService.addLeader(rq.getMember(), rsGroupBuy.getData());
+		groupBuyMemberService.addStore(optionalProduct.get().getStore().getMember(), rsGroupBuy.getData());
 
 		return rq.redirectWithMsg("/groupBuy/list", rsGroupBuy);
 	}
 
 	@GetMapping("/list")
 	public String groupBuyList(Model model) {
-		List<GroupBuyDTO> groupBuyDTOs = groupBuyService.findAllByDTO();
+		// TODO: search option
+		final List<GroupBuyDTO> groupBuyDTOs = groupBuyService.findAllByDTO();
 		model.addAttribute("groupBuyList", groupBuyDTOs);
 
 		return "groupBuy/list";
@@ -66,25 +66,54 @@ public class GroupBuyController {
 	@PostMapping("/{groupBuyId}/participate")
 	@PreAuthorize("isAuthenticated()")
 	public String participateGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
-		Member member = rq.getMember();
-		GroupBuy groupBuy = groupBuyService.findById(groupBuyId).orElse(null);
+		final RsData<GroupBuy> rsGroupBuy = validateGroupBuy(groupBuyId);
+		if (rsGroupBuy.isFail()) {
+			return rq.historyBack(rsGroupBuy);
+		}
 
-		RsData<List<GroupBuyMember>> rsGroupBuyMembers = groupBuyService.participateGroupBuy(groupBuy, member);
+		final RsData<GroupBuyMember> rsGroupBuyMember = groupBuyMemberService.addGeneral(
+			rq.getMember(),
+			rsGroupBuy.getData()
+		);
+		if (rsGroupBuyMember.isFail()) {
+			return rq.historyBack(rsGroupBuyMember);
+		}
 
-		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMembers);
+		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
+	}
+
+	@PutMapping("/{groupBuyId}/cancel")
+	@PreAuthorize("isAuthenticated()")
+	public String participateCancelGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
+		final RsData<GroupBuy> rsGroupBuy = validateGroupBuy(groupBuyId);
+		if (rsGroupBuy.isFail()) {
+			return rq.historyBack(rsGroupBuy);
+		}
+
+		final RsData<Void> rsGroupBuyMember = groupBuyMemberService.delete(
+			rsGroupBuy.getData(),
+			rq.getMember()
+		);
+		if (rsGroupBuyMember.isFail()) {
+			return rq.historyBack(rsGroupBuyMember);
+		}
+
+		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
 	}
 
 	@GetMapping("/detail/{groupBuyId}")
 	public String showDetail(Model model, @PathVariable("groupBuyId") Long groupBuyId) {
-		Optional<GroupBuy> optionalGroupBuy = groupBuyService.findById(groupBuyId);
-
+		final Optional<GroupBuy> optionalGroupBuy = groupBuyService.findById(groupBuyId);
 		if (optionalGroupBuy.isEmpty()) {
 			return rq.historyBack("존재하지 않는 공동구매 입니다.");
 		}
 
-		Integer memberCount = groupBuyMemberService.getMemberCount(groupBuyId);
+		final GroupBuyDTO groupBuyDTO = GroupBuyDTO.createGroupBuyDTO(
+			optionalGroupBuy.get(),
+			groupBuyMemberService.getMemberCount(groupBuyId),
+			groupBuyMemberService.isExistGroupByMember(optionalGroupBuy.get(), rq.getMember())
+		);
 
-		GroupBuyDTO groupBuyDTO = GroupBuyDTO.createGroupBuyDTO(optionalGroupBuy.get(), memberCount);
 		model.addAttribute("groupBuy", groupBuyDTO);
 
 		return "groupBuy/detail";

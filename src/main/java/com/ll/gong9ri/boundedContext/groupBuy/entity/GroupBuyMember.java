@@ -28,5 +28,4 @@ public class GroupBuyMember extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
 	private GroupBuy groupBuy;
-
 }

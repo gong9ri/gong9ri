@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GroupBuyMemberRole {
 	LEADER("총대"),
-	GENERAL("일반 참여자");
+	STORE("판매자"),
+	GENERAL("참여자");
 
 	private final String value;
 }

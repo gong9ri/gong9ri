@@ -38,5 +38,4 @@ public class GroupBuy extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	private GroupBuyStatus status = GroupBuyStatus.WAIT;
-
 }
