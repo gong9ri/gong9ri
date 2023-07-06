@@ -22,6 +22,9 @@ import lombok.experimental.SuperBuilder;
 public class ProductOptionQuantity extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
+	private OrderInfo orderInfo;
+	@ManyToOne
+	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
 	private ProductOption productOption;
 	@Column(nullable = false)
 	private Integer quantity;

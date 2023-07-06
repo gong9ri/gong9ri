@@ -1,53 +1,52 @@
 package com.ll.gong9ri.base.tosspayments.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentResult {
-	public String mId;
-	public String version;
-	public String transactionKey;
-	public String lastTransactionKey;
-	public String paymentKey;
-	public String orderId;
-	public String orderName;
-	public String status;
-	public String requestedAt;
-	public String approvedAt;
-	public String useEscrow;
-	public Boolean cultureExpense;
-	public String card;
-	public String virtualAccount;
-	public String transfer;
-	public String mobilePhone;
-	public String giftCertificate;
-	public String cashReceipt;
-	public String cashReceipts;
-	public String discount;
-	public String cancels;
-	public String secret;
-	public String type;
-	public String easyPay;
-	public String country;
-	public String failure;
-	public Boolean isPartialCancelable;
-	public String receipt;
-	public Checkout CheckoutObject;
-	public String currency;
-	public Float totalAmount;
-	public Float balanceAmount;
-	public Float suppliedAmount;
-	public Float vat;
-	public Float taxFreeAmount;
-	public Float taxExemptionAmount;
-	public String method;
-
-	@ToString
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Checkout {
-		public String url;
-	}
+	private String mId;
+	private String version;
+	private String transactionKey;
+	private String lastTransactionKey;
+	private String paymentKey;
+	private String orderId;
+	private String orderName;
+	private String status;
+	private String requestedAt;
+	private String approvedAt;
+	private String useEscrow;
+	private Boolean cultureExpense;
+	private String card;
+	private String virtualAccount;
+	private String transfer;
+	private String mobilePhone;
+	private String giftCertificate;
+	private String cashReceipt;
+	private String cashReceipts;
+	private String discount;
+	private String cancels;
+	private String secret;
+	private String type;
+	private String easyPay;
+	private String country;
+	private String failure;
+	private Boolean isPartialCancelable;
+	private String receipt;
+	private String checkoutUrl;
+	private String currency;
+	private Float totalAmount;
+	private Float balanceAmount;
+	private Float suppliedAmount;
+	private Float vat;
+	private Float taxFreeAmount;
+	private Float taxExemptionAmount;
+	private String method;
 }
