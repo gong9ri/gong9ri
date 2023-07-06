@@ -63,4 +63,10 @@ public class GroupBuyMemberService {
 	public Integer getMemberCount(Long groupId) {
 		return groupBuyMemberRepository.countByGroupBuyId(groupId);
 	}
+
+	public boolean isExistGroupByMember(GroupBuy groupBuy, Member member){
+		return groupBuyMemberRepository
+			.findByGroupBuyIdAndMemberId(groupBuy.getId(), member.getId())
+			.isPresent();
+	}
 }

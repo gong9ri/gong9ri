@@ -56,7 +56,7 @@ public class GroupBuyController {
 	}
 
 	@GetMapping("/list")
-	public String groupBuyList(Model model){
+	public String groupBuyList(Model model) {
 		List<GroupBuyDTO> groupBuyDTOs = groupBuyService.findAllByDTO();
 		model.addAttribute("groupBuyList", groupBuyDTOs);
 
@@ -67,20 +67,15 @@ public class GroupBuyController {
 	@PreAuthorize("isAuthenticated()")
 	public String participateGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
 		Member member = rq.getMember();
-		RsData<Boolean> rsCanParticipateGroupBuy = groupBuyService.canParticipateGroupBuy(groupBuyId, member.getId());
-		if(rsCanParticipateGroupBuy.isFail()){
-			return rq.historyBack(rsCanParticipateGroupBuy.getMsg());
-		}
-
 		GroupBuy groupBuy = groupBuyService.findById(groupBuyId).orElse(null);
 
-		groupBuyMemberService.addGroupBuyMember(member, groupBuy);
+		RsData<List<GroupBuyMember>> rsGroupBuyMembers = groupBuyService.participateGroupBuy(groupBuy, member);
 
-		return rq.redirectWithMsg("/groupBuy/detail/"+groupBuyId, rsCanParticipateGroupBuy.getMsg());
+		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMembers);
 	}
 
 	@GetMapping("/detail/{groupBuyId}")
-	public String showDetail(Model model,  @PathVariable("groupBuyId") Long groupBuyId) {
+	public String showDetail(Model model, @PathVariable("groupBuyId") Long groupBuyId) {
 		Optional<GroupBuy> optionalGroupBuy = groupBuyService.findById(groupBuyId);
 
 		if (optionalGroupBuy.isEmpty()) {
