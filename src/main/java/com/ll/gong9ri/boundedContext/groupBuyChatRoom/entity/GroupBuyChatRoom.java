@@ -21,4 +21,5 @@ public class GroupBuyChatRoom extends BaseEntity {
 	@OneToOne(fetch = FetchType.LAZY)
 	private GroupBuy groupBuy;
 	private String name;
+	private String notice;
 }
