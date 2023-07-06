@@ -1,13 +1,10 @@
 package com.ll.gong9ri.boundedContext.product.entity;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-import com.ll.gong9ri.boundedContext.productImage.entity.ProductImage;
+import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -34,15 +31,21 @@ public class Product extends BaseEntity {
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@ToString.Exclude
 	@Builder.Default
-	private List<ProductImage> productImages = new ArrayList<>();
+	private List<ProductImage> images = new ArrayList<>();
+	@Setter
 	private String optionOne;
+	@Setter
 	private String optionTwo;
 	private Integer maxPurchaseNum;
+	@OneToMany
+	@Builder.Default
+	private List<ProductDiscount> productDiscounts = new ArrayList<>();
 	@OneToMany(mappedBy = "product", cascade = {CascadeType.ALL})
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@ToString.Exclude
 	@Builder.Default
 	private List<ProductOption> productOptions = new ArrayList<>();
+
 
 	public void addProductOption(final ProductOption productOption) {
 		this.productOptions.add(productOption);

@@ -12,8 +12,24 @@
                 form.submit();
             }
         }
+
+        function addDetailOption(detailsId) {
+            const details = document.getElementById(detailsId);
+            let optCnt = details.childElementCount;
+            if (confirm('상세 옵션을 추가하시겠습니까?')) {
+                const newRow = document.createElement('td');
+                newRow.style.setProperty('width', '150px');
+                const input = document.createElement('input');
+                input.name = detailsId;
+                input.id = `${detailsId}_${optCnt}`;
+                input.type = 'text';
+                newRow.appendChild(input);
+                details.appendChild(newRow);
+                optCnt++;
+            }
+        }
     </script>
-    <form th:action method="post" onsubmit="submitOptionForm(this)">
+    <form th:action method="post" onsubmit="submitOptionForm(this); return false;">
         <table>
             <tr>
                 <td>
@@ -54,10 +70,9 @@
                 </td>
             </tr>
         </table>
-        <button class="btn">상품 등록</button>
+        <button class="btn">등록</button>
+        <a class="btn" href="/product/list">상품 목록</a>
     </form>
-
 </main>
-
 </body>
 </html>

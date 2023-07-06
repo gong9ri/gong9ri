@@ -8,12 +8,17 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.gong9ri.base.appConfig.AppConfig;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Ut {
+	private static ObjectMapper getObjectMapper() {
+		return (ObjectMapper)AppConfig.getContext().getBean("objectMapper");
+	}
+
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class url {
 		public static String encode(String str) {
@@ -58,20 +63,38 @@ public class Ut {
 		}
 	}
 
+	public static <K, V> Map<K, V> mapOf(Object... args) {
+		Map<K, V> map = new LinkedHashMap<>();
+		int size = args.length / 2;
+		for (int i = 0; i < size; i++) {
+			int keyIndex = i * 2;
+			int valueIndex = keyIndex + 1;
+
+			K key = (K)args[keyIndex];
+			V value = (V)args[valueIndex];
+
+			map.put(key, value);
+		}
+
+		return map;
+	}
+
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class json {
-		public static Object toStr(Map<String, Object> map) {
+		public static String toStr(Object obj) {
 			try {
-				return new ObjectMapper().writeValueAsString(map);
+				return getObjectMapper().writeValueAsString(obj);
 			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 				return null;
 			}
 		}
 
 		public static Map<String, Object> toMap(String jsonStr) {
 			try {
-				return new ObjectMapper().readValue(jsonStr, LinkedHashMap.class);
+				return getObjectMapper().readValue(jsonStr, LinkedHashMap.class);
 			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 				return Collections.emptyMap();
 			}
 		}

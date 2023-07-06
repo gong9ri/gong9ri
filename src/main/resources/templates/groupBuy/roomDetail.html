@@ -1,0 +1,113 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:inline="javascript">
+        const chatRoomId = /*[[${chatRoom.id}]]*/ '';
+        const memberId = /*[[${memberId}]]*/'';
+        const token = /*[[${_csrf.token}]]*/ '';
+    </script>
+    <script th:src="@{/app.js}"></script>
+</head>
+<body>
+
+<main layout:fragment="main" class="flex items-center justify-center">
+
+    <!-- content 시작 -->
+    <div class="max-w-2xl w-full my-3">
+        <div class="font-semibold text-2xl my-1 text-center my-4 sticky top-16" text="">채팅방 이름</div>
+        <!-- 채팅 내용 -->
+        <div class="chat__message-ul"></div>
+
+        <!-- 채팅 입력 -->
+        <form id="messageForm" onsubmit="chatWriteMessage(this); return false;" class="my-5">
+            <div class="flex items-center mx-4">
+                <!-- The button to open modal upload images-->
+                <label for="my_modal_6">
+                    <i class="fa-regular fa-image btn btn-primary"></i>
+                </label>
+
+                <input class="modal-toggle" id="my_modal_6" type="checkbox"/>
+                <div class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">이미지 업로드</h3>
+                        <input accept="image/*" id="image-input" name="files" type="file">
+
+                        <div class="my-3" id="image-container">
+                            <img id="preview-image" src="" style="max-width: 300px;">
+                        </div>
+                        <div class="modal-action">
+                            <label class="btn btn-primary" for="my_modal_6">전송!</label>
+                        </div>
+                        <div class="modal-action">
+                            <label class="btn btn-primary" for="my_modal_6">닫기</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Input-->
+                <input type="text" id="content" name="content" placeholder="Message"
+                       class="input input-bordered input-primary mx-2 w-full" autofocus>
+                <button type="submit" class="btn btn-primary">전달!</button>
+            </div>
+        </form>
+    </div>
+    <!-- content 종료 -->
+    <script>
+        // 미리보기 이미지 생성
+        const imageInput = document.getElementById('image-input');
+        const previewImage = document.getElementById('preview-image');
+        const submitButton = document.querySelector('.modal-action label');
+
+        imageInput.addEventListener('change', function () {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener('load', function () {
+                    previewImage.src = reader.result;
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const file = imageInput.files[0];
+            if (!file) {
+                alert("파일을 선택해주세요!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('files', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `/upload/chats/${chatRoomId}`);
+            xhr.setRequestHeader('X-CSRF-TOKEN', token);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = xhr.responseText; // 이미지 링크
+                    sendImageData(response);
+                    alert('파일 업로드가 완료되었습니다!');
+
+                    const modal = document.querySelector('.modal-toggle');
+                    modal.checked = false;
+                }
+            };
+            xhr.send(formData);
+
+            function sendImageData(response) {
+                const parsedResponse = JSON.parse(response);
+                stompClient.send(`/app/chats/${chatRoomId}`, {}, JSON.stringify({
+                    chatType: "img",
+                    content: parsedResponse[0].uploadFileUrl
+                }));
+            }
+        });
+    </script>
+</main>
+
+</body>
+
+</html>

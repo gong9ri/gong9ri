@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+</head>
+<body>
+<main layout:fragment="main">
+    <div>
+        <div th:if="${products.isEmpty()}">상품 목록이 비어있습니다.</div>
+        <table class="table">
+            <tr class="table-header" th:if="${!products.isEmpty()}">
+                <th>상품 이미지</th>
+                <th>번호</th>
+                <th>상품명</th>
+                <th>등록일</th>
+                <th>수정일</th>
+            </tr>
+            <tr th:each="product : ${products}">
+                <td>
+                    <div>
+                        <!-- TODO: 상품 이미지 불러오기 -->
+                        <img alt="상품 이미지">
+                    </div>
+                </td>
+                <td>
+                    <a th:href="@{|details?productId=${product.id}|}" th:text="${product.id}"></a>
+                </td>
+                <td>
+                    <div th:text="${product.name}"></div>
+                </td>
+                <td>
+                    <div th:text="${#temporals.format(product.createDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </td>
+                <td>
+                    <div th:text="${#temporals.format(product.modifyDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </td>
+            </tr>
+        </table>
+        <a class="btn" href="/product/registration">상품 등록</a>
+    </div>
+</main>
+</body>
+</html>
