@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 옵션 선택</title>
+</head>
+<body>
+<main class="flex-grow flex items-center justify-center" layout:fragment="main">
+    <form onsubmit="submitOrderProductOptionForm(this)">
+        <script>
+            function submitOrderProductOptionForm(form) {
+                if (confirm('해당 옵션으로 주문하시겠습니까?')) {
+                    form.submit();
+                }
+            }
+        </script>
+
+        <div class="text-center">
+                <div>
+                    <div>주문 상세 옵션 선택</div>
+                    <div><span id="productName" class="font-bold" th:text="${product.getName()}"></span> : 해당 상품의 상세 옵션을 선택해주세요.</div>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td th:text="${productOption.getOptionOneName()}">옵션 1 선택</td>
+                            <td>
+                                <ul>
+                                    <li th:each="detail : ${productOptionDTO.optionOneDetails}" th:text="${detail}"></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td th:text="${productOption.getOptionTwoName()}">옵션 2 선택</td>
+                            <td>
+                                <ul>
+                                    <li th:each="detail : ${productOptionDTO.optionTwoDetails}" th:text="${detail}"></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <span id="productOption" class="font-bold" th:text="${productOptionQuantity.getProductOption()}"></span>
+                        <p>수량</p>
+                        <span id="quantity" class="font-bold" th:text="${productOptionQuantity.getQuantity()}"></span>
+                        <P>가격</P>
+                        <span id="price" class="font-bold" th:text="${productOptionQuantity.getPrice()}"></span>
+                    </div>
+                </div>
+            <button type="submit">옵션 선택 완료</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
