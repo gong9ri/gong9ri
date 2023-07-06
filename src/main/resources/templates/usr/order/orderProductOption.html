@@ -9,48 +9,59 @@
     <form onsubmit="submitOrderProductOptionForm(this)">
         <script>
             function submitOrderProductOptionForm(form) {
-                if (confirm('해당 옵션으로 주문하시겠습니까?')) {
+                if (confirm('해당 옵션으로 선택하시겠습니까?')) {
                     form.submit();
+                }
+            }
+
+            function selectOption(option, optionType) {
+                if (optionType === "optionOne") {
+                    document.getElementById("selectedOptionOne").innerText = option;
+                } else if (optionType === "optionTwo") {
+                    document.getElementById("selectedOptionTwo").innerText = option;
                 }
             }
         </script>
 
         <div class="text-center">
+            <div>
+                <div>주문 상세 옵션 선택</div>
+                <div><span id="productName" class="font-bold" th:text="${product.getName()}"></span> : 해당 상품의 상세 옵션을 선택해주세요.</div>
                 <div>
-                    <div>주문 상세 옵션 선택</div>
-                    <div><span id="productName" class="font-bold" th:text="${product.getName()}"></span> : 해당 상품의 상세 옵션을 선택해주세요.</div>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td th:text="${productOption.getOptionOneName()}">옵션 1 선택</td>
-                            <td>
-                                <ul>
-                                    <li th:each="detail : ${productOptionDTO.optionOneDetails}" th:text="${detail}"></li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td th:text="${productOption.getOptionTwoName()}">옵션 2 선택</td>
-                            <td>
-                                <ul>
-                                    <li th:each="detail : ${productOptionDTO.optionTwoDetails}" th:text="${detail}"></li>
-                                </ul>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <div>
-                        <span id="productOption" class="font-bold" th:text="${productOptionQuantity.getProductOption()}"></span>
-                        <p>수량</p>
-                        <span id="quantity" class="font-bold" th:text="${productOptionQuantity.getQuantity()}"></span>
-                        <P>가격</P>
-                        <span id="price" class="font-bold" th:text="${productOptionQuantity.getPrice()}"></span>
-                    </div>
+                    <span th:text="${productOption.getOptionOneName()}">옵션 1 선택</span>
+                    <ul>
+                        <li th:each="detail : ${productOptionDTO.optionOneDetails}">
+                            <a href="#" th:text="${detail}" onclick="selectOption(this.innerText, 'optionOne')"></a>
+                        </li>
+                    </ul>
+                    선택: <span id="selectedOptionOne">선택 안 함</span>
                 </div>
-            <button type="submit">옵션 선택 완료</button>
+                <div>
+                    <span th:text="${productOption.getOptionTwoName()}">옵션 2 선택</span>
+                    <ul>
+                        <li th:each="detail : ${productOptionDTO.optionTwoDetails}">
+                            <a href="#" th:text="${detail}" onclick="selectOption(this.innerText, 'optionTwo')"></a>
+                        </li>
+                    </ul>
+                    선택: <span id="selectedOptionTwo">선택 안 함</span>
+                </div>
+            </div>
         </div>
     </form>
+
+    <!-- 주문 수량, 가격 -->
+    <!-- 옵션에 따라 수량, 가격 수정 필요 -->
+    <form>
+        <div>
+            <span id="productOption" class="font-bold" th:text="${productOptionQuantity.getProductOption()}"></span>
+            <p>수량</p>
+            <span id="quantity" class="font-bold" th:text="${productOptionQuantity.getQuantity()}"></span>
+            <P>가격</P>
+            <span id="price" class="font-bold" th:text="${productOptionQuantity.getPrice()}"></span>
+        </div>
+    </form>
+
+    <button type="submit">옵션 선택 완료</button>
 </main>
 </body>
 </html>
