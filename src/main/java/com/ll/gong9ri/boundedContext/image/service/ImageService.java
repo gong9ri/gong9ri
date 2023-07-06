@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageService {
 	private final AmazonS3Client amazonS3Client;
 	private final MemberImageRepository memberImageRepository;
-	private final ProductImageRepository productImageRepository;
 	private final ChatImageRepository chatImageRepository;
 
 	@Value("${spring.s3.bucket}")

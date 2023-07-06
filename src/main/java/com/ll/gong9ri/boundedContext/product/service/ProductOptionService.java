@@ -40,9 +40,9 @@ public class ProductOptionService {
 	@Transactional
 	public RsData<ProductOption> defaultCreate(final Product product) {
 		final ProductOption productOption = ProductOption.builder()
-			.product(product)
-			.optionOneName(NO_OPTION_DEFAULT)
-			.build();
+				.product(product)
+				.optionOneName(NO_OPTION_DEFAULT)
+				.build();
 
 		repository.save(productOption);
 
