@@ -129,6 +129,7 @@
                     console.log("Notification permission granted.");
                     messaging.getToken().then((currentToken) => {
                         if (currentToken) {
+                            submitToken(currentToken);
                             console.log("Token: ", currentToken);
                         } else {
                             console.warn("No Instance ID token available. Request permission to generate one.");
@@ -157,6 +158,30 @@
         }
 
         requestNotificationPermission(firebaseConfig);
+
+        function submitToken(token) {
+            const url = '/v1/tokens';
+            const requestOptions = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({tokenString: token})
+            };
+
+            fetch(url, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Error while submitting token. Status code: ' + response.status);
+                    }
+                })
+                .then((resultCode) => {
+                    console.log('Success! Result code:', resultCode);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
     </script>
 
 </main>
