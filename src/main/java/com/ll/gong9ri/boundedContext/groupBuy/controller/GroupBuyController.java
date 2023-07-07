@@ -119,3 +119,4 @@ public class GroupBuyController {
 		return "groupBuy/detail";
 	}
 }
+

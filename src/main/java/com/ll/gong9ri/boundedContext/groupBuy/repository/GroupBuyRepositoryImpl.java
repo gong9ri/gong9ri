@@ -27,6 +27,7 @@ public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 				groupBuy.product.price,
 				groupBuy.product.description,
 				groupBuy.product.maxPurchaseNum,
+				groupBuy.status,
 				groupBuy.startDate,
 				groupBuy.endDate,
 				groupBuyMember.count().intValue()

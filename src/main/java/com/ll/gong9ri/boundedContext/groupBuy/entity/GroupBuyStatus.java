@@ -9,7 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GroupBuyStatus {
 	WAIT("대기"),
-	PROGRESS("진행"),
+	PROGRESS("모집 진행"),
+	ORDER("주문"), // 모집 완료 후 구매자가 주문 진행중인 상태
 	EXPIRE("만료"),
 	DONE("완료");
 

@@ -1,9 +1,11 @@
 package com.ll.gong9ri.boundedContext.groupBuy.service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +55,7 @@ public class GroupBuyService {
 	 * @return Product 의 GroupBuy 중 GroupBuyStatus 가 PROGRESS 인 GroupBuy 가 존재하면 false
 	 */
 	public boolean canCreate(final Long productId) {
-		return !groupBuyRepository.existsByProductIdAndStatus(productId, GroupBuyStatus.PROGRESS.getValue());
+		return !groupBuyRepository.existsByProductIdAndStatus(productId, GroupBuyStatus.PROGRESS);
 	}
 
 	@Transactional
@@ -66,7 +68,8 @@ public class GroupBuyService {
 			.product(product)
 			.name(product.getName())
 			.startDate(LocalDateTime.now())
-			.endDate(LocalDateTime.now().plusDays(1)) // 시작시간으로부터 하루 뒤
+			// 종료 시간을 현재 시간의 '시'만 가져와서 25시간을 더한 값으로 설정
+			.endDate(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(25))
 			.status(GroupBuyStatus.PROGRESS)
 			.build();
 
@@ -99,5 +102,20 @@ public class GroupBuyService {
 		groupBuyRepository.save(groupBuy);
 
 		log.debug(groupBuy.getId() + ": EXPIRED");
+	}
+
+	/**
+	 * GroupBuy 의 endDate가 지나면 status를 PROGRESS -> ORDER로 업데이트
+	 */
+	//@Scheduled(cron = " 0 0/5 * * * *")
+	@Scheduled(cron = " 30 * * * * *") // 개발용
+	public void checkStatus(){
+		List<GroupBuy> expiredGroupBuys = groupBuyRepository.findByStatusAndEndDateBefore(GroupBuyStatus.PROGRESS, LocalDateTime.now());
+		for (GroupBuy groupBuy : expiredGroupBuys) {
+			groupBuy.toBuilder()
+				.status(GroupBuyStatus.ORDER)
+				.build();
+			groupBuyRepository.save(groupBuy);
+		}
 	}
 }

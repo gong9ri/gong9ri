@@ -25,6 +25,24 @@
                 <div th:text="${groupBuy.currentMemberCount}"></div>
             </td>
         </tr>
+        <tr>
+            <th>시작 시간</th>
+            <td>
+                <div th:text="${groupBuy.startDate}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>종료 시간</th>
+            <td>
+                <div th:text="${groupBuy.endDate}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>공동구매 상태</th>
+            <td>
+                <div th:text="${groupBuy.status.value}"></div>
+            </td>
+        </tr>
     </table>
 
     <!--    공동구매 참여 버튼-->
