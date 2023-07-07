@@ -48,4 +48,15 @@ public class ChatRoomParticipantService {
 	public Optional<ChatRoomParticipant> findByMemberIdAndGroupBuyChatRoomId(Long memberId, Long groupBuyChatRoomId) {
 		return chatRoomParticipantRepository.findByMemberIdAndGroupBuyChatRoomId(memberId, groupBuyChatRoomId);
 	}
+
+	@Transactional
+	public void setTokenEnteringChatRoom(String token, ChatRoomParticipant chatRoomParticipant) {
+
+		//TODO: where token.memberId = participant.memberId 인지 체크?
+		ChatRoomParticipant build = chatRoomParticipant.toBuilder()
+			.token(token)
+			.build();
+
+		chatRoomParticipantRepository.save(build);
+	}
 }
