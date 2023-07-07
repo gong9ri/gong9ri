@@ -1,9 +1,16 @@
 package com.ll.gong9ri.boundedContext.order.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
-import com.ll.gong9ri.boundedContext.store.entity.Store;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -12,7 +19,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,12 +33,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 public class OrderInfo extends BaseEntity {
-	@ManyToOne
-	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
-	private Member member;
-	@ManyToOne
-	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT), nullable = false)
-	private Store store;
+	private Long memberId;
+	private String username;
+	private Long storeId;
+	private String storeName;
+	private Long productId;
+	private String productName;
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -40,4 +47,20 @@ public class OrderInfo extends BaseEntity {
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	@ToString.Exclude
 	private OrderRecipientInfo orderRecipientInfo;
+	@OneToMany(mappedBy = "orderInfo", cascade = {CascadeType.ALL})
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@ToString.Exclude
+	@Builder.Default
+	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
+
+	public static OrderInfo of(Member member, Product product) {
+		return OrderInfo.builder()
+			.memberId(member.getId())
+			.username(member.getUsername())
+			.storeId(product.getStore().getId())
+			.storeName(product.getStore().getName())
+			.productId(product.getId())
+			.productName(product.getName())
+			.build();
+	}
 }

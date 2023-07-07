@@ -42,7 +42,7 @@ public class GroupBuyController {
 	@PostMapping("/make/{productId}")
 	@PreAuthorize("isAuthenticated()")
 	public String createGroupBuy(@PathVariable("productId") Long productId) {
-		final Optional<Product> optionalProduct = productService.findById(productId);
+		final Optional<Product> optionalProduct = productService.getProduct(productId);
 		if (optionalProduct.isEmpty()) {
 			return rq.historyBack("상품이 존재하지 않습니다.");
 		}

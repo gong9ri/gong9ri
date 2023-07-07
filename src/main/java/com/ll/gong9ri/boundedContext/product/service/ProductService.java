@@ -1,6 +1,5 @@
 package com.ll.gong9ri.boundedContext.product.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,14 +7,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductImageDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
-import com.ll.gong9ri.boundedContext.product.repository.ProductDiscountRepository;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,90 +26,107 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductService {
-    private final ProductRepository productRepository;
-    private final ProductDiscountRepository productDiscountRepository;
+	private final ProductRepository repository;
+	private final ProductOptionService optionService;
+	private final ProductDiscountService discountService;
+	private final ProductImageService imageService;
 
-    @Transactional
-    public RsData<Product> registerProduct(final ProductDTO productDTO) {
-        Product product = productDTO.toEntity();
+	public Optional<Product> getProduct(final Long id) {
+		return repository.findById(id);
+	}
 
-        saveProductDiscount(product.getProductDiscounts());
+	public RsData<ProductDTO> getProductDetail(final Long id) {
+		return repository.findById(id)
+			.map(ProductDTO::toDTO)
+			.map(RsData::successOf)
+			.orElse(RsData.failOf(null));
+	}
 
-        productRepository.save(product);
+	public RsData<List<Product>> getAllProducts() {
+		return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", repository.findAll());
+	}
 
+	public RsData<List<Product>> getProductsByStoreId(final Long id) {
+		List<Product> products = repository.findByStoreId(id);
+		return RsData.of("S-1", "해당 스토어의 모든 상품 리스트를 가져옵니다.", products);
+	}
 
-        return RsData.of("S-1", "상품이 성공적으로 등록되었습니다.", product);
-    }
+	public RsData<List<Product>> search(SearchDTO searchDTO) {
+		List<Product> products = repository.findDistinctByNameLike(searchDTO.wrapWithWildcard());
+		return RsData.of("S-1", "상품 검색에 성공했습니다.", products);
+	}
 
-    @Transactional
-    public RsData<Product> addOptionDetails(Product product, final ProductOptionDTO productOptionDTO) {
-        product.setOptionOne(productOptionDTO.getOptionOneName());
-        product.setOptionTwo(productOptionDTO.getOptionTwoName());
+	public Boolean storeValidation(final Long id, final Long storeId) {
+		return repository.existsByIdAndStoreId(id, storeId);
+	}
 
-        product.addProductOptions(
-                createProductOptions(product, productOptionDTO.getOptionOneDetails(), productOptionDTO.getOptionTwoDetails())
-        );
+	@Transactional
+	public RsData<Product> registerProduct(final Store store, final ProductRegisterDTO productRegisterDTO) {
+		Product product = productRegisterDTO.toEntity()
+			.toBuilder()
+			.store(store)
+			.build();
 
-        return RsData.of("S-1", "상품 상세 옵션이 성공적으로 등록되었습니다.", product);
-    }
+		repository.save(product);
 
-    private List<ProductOption> createProductOptions(
-            Product product,
-            List<String> optionOneDetails,
-            List<String> optionTwoDetails
-    ) {
-        if (optionOneDetails == null || optionOneDetails.isEmpty()) {
-            return Collections.emptyList();
-        }
+		optionService.defaultCreate(product);
 
-        if (optionTwoDetails == null || optionTwoDetails.isEmpty()) {
-            return optionOneDetails.stream()
-                    .map(optionOneDetail -> createProductOption(product, optionOneDetail, null))
-                    .toList();
-        }
+		return RsData.of("S-1", "상품이 성공적으로 등록되었습니다.", product);
+	}
 
-        return optionOneDetails.stream()
-                .flatMap(optionOneDetail -> optionTwoDetails.stream()
-                        .map(optionTwoDetail -> createProductOption(product, optionOneDetail, optionTwoDetail)))
-                .toList();
-    }
+	@Transactional
+	public RsData<Product> addOptions(final Long id, final ProductOptionDTO productOptionDTO) {
+		Optional<Product> unModifiedProduct = repository.findById(id);
+		if (unModifiedProduct.isEmpty()) {
+			return RsData.failOf(null);
+		}
 
-    private ProductOption createProductOption(Product product, String optionOneName, String optionTwoName) {
-        return ProductOption.builder()
-                .product(product)
-                .optionOneName(optionOneName)
-                .optionTwoName(optionTwoName)
-                .build();
-    }
+		List<ProductOption> options = optionService.writeOptions(unModifiedProduct.get(), productOptionDTO);
 
-    public RsData<List<Product>> getAllProducts() {
-        return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", productRepository.findAll());
-    }
+		Product product = unModifiedProduct.get().toBuilder()
+			.optionOne(productOptionDTO.getOptionOne())
+			.optionTwo(productOptionDTO.getOptionTwo())
+			.productOptions(options)
+			.build();
 
-    public RsData<List<Product>> search(SearchDTO searchDTO) {
-        List<Product> products = productRepository.findDistinctByNameLike(searchDTO.wrapWithWildcard());
-        return RsData.of("S-1", "상품 검색에 성공했습니다.", products);
-    }
+		repository.save(product);
 
-    public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
-    }
+		return RsData.of("S-1", "상품 상세 옵션이 성공적으로 등록되었습니다.", product);
+	}
 
-    /**
-     * 상품의 할인율을 저장하는 메서드 입니다.
-     * 인자로 'productDiscounts'를 전달받아 이미 DB에 저장되어 있는지 확인하고,
-     * 저장되어 있지 않을 때만 데이터를 저장합니다.
-     * @param productDiscounts
-     * @return 해당 메서드를 통해 저장된 ProductDiscount 객체의 List를 포함하는 RsData 객체를 반환합니다.
-     */
-    @Transactional
-    public RsData<List<ProductDiscount>> saveProductDiscount(List<ProductDiscount> productDiscounts) {
-        List<ProductDiscount> unsavedProductDiscountList = productDiscounts.stream()
-                .filter(e -> productDiscountRepository.findByHeadCountAndDiscountRate(e.getHeadCount(), e.getDiscountRate()).isEmpty())
-                .toList();
-        productDiscountRepository.saveAll(unsavedProductDiscountList);
+	@Transactional
+	public RsData<Product> addDiscounts(final Long id, final List<ProductDiscountDTO> dtos) {
+		Optional<Product> unModifiedProduct = repository.findById(id);
+		if (unModifiedProduct.isEmpty()) {
+			return RsData.failOf(null);
+		}
 
-        return RsData.of("S-1", "상품의 할인율이 성공적으로 등록됐습니다.", unsavedProductDiscountList);
-    }
+		List<ProductDiscount> discounts = discountService.writeDiscounts(unModifiedProduct.get(), dtos);
 
+		Product product = unModifiedProduct.get().toBuilder()
+			.productDiscounts(discounts)
+			.build();
+
+		repository.save(product);
+
+		return RsData.of("S-1", "인원 별 할인이 성공적으로 등록되었습니다.", product);
+	}
+
+	@Transactional
+	public RsData<Product> addImages(final Long id, final List<ProductImageDTO> dtos) {
+		Optional<Product> unModifiedProduct = repository.findById(id);
+		if (unModifiedProduct.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		List<ProductImage> images = imageService.writeImages(unModifiedProduct.get(), dtos);
+
+		Product product = unModifiedProduct.get().toBuilder()
+			.images(images)
+			.build();
+
+		repository.save(product);
+
+		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", product);
+	}
 }

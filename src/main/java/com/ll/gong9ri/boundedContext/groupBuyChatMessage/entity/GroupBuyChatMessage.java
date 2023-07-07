@@ -26,6 +26,7 @@ public class GroupBuyChatMessage {
 
 	private String content;
 	private Boolean isSeller;
+	private String chatType;
 
 	private LocalDateTime createDate;
 }
