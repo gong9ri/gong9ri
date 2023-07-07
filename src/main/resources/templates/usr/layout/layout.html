@@ -29,6 +29,11 @@
     <!-- 테일윈드 불러오기 -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"
           type="text/css"/>
+
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-messaging.js"></script>
 </head>
 
 <body>
@@ -57,7 +62,7 @@
                             <a href="/member/login"><i class="fa-solid fa-arrow-right-to-bracket"></i>로그인</a>
                         </li>
                         <li th:if="${@rq.login}">
-                            <a href="javascript:;" onclick="$(this).next().submit();">
+                            <a href="javascript:" onclick="$(this).next().submit();">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃
                             </a>
                             <form class="!hidden" method="POST" th:action="|/member/logout|"></form>
@@ -98,6 +103,61 @@
     </header>
 
     <main layout:fragment="main"></main>
+
+    <script th:inline="javascript" type="module">
+
+
+        let firebaseConfig = {
+            apiKey: "AIzaSyDLKx_5B8kBCu8QPxLzYsrA9lpXnjdBPB8",
+            authDomain: "gong9ri-e7e80.firebaseapp.com",
+            projectId: "gong9ri-e7e80",
+            storageBucket: "gong9ri-e7e80.appspot.com",
+            messagingSenderId: "102830193096",
+            appId: "1:102830193096:web:21465d3f428ef17372e8fd",
+            measurementId: "G-RVC0TV1BBY"
+        };
+
+        async function requestNotificationPermission(config) {
+            firebase.initializeApp(config);
+
+            const messaging = firebase.messaging();
+
+            try {
+                await Notification.requestPermission();
+
+                if (Notification.permission === "granted") {
+                    console.log("Notification permission granted.");
+                    messaging.getToken().then((currentToken) => {
+                        if (currentToken) {
+                            console.log("Token: ", currentToken);
+                        } else {
+                            console.warn("No Instance ID token available. Request permission to generate one.");
+                        }
+                    }).catch((err) => {
+                        console.warn("An error occurred while retrieving token. ", err);
+                    });
+
+                    messaging.onMessage((payload) => {
+                        console.log("Message received. ", payload);
+                    });
+
+                    messaging.onTokenRefresh(() => {
+                        messaging.getToken().then((refreshedToken) => {
+                            console.log("Token refreshed.", refreshedToken);
+                        }).catch((err) => {
+                            console.warn("Unable to retrieve refreshed token ", err);
+                        });
+                    });
+                } else {
+                    console.warn("Unable to get permission to notify.");
+                }
+            } catch (error) {
+                console.error("Error in requestNotificationPermission: ", error);
+            }
+        }
+
+        requestNotificationPermission(firebaseConfig);
+    </script>
 
 </main>
 
