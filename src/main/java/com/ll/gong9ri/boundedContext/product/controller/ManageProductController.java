@@ -100,7 +100,7 @@ public class ManageProductController {
 	}
 
 	@PutMapping("/{productId}/option")
-	public String addProductOptions(@PathVariable Long productId, @Valid ProductOptionDTO dto) {
+	public String addProductOptions(@PathVariable Long productId, @RequestBody @Valid ProductOptionDTO dto) {
 		RsData<Product> productRs = productService.addOptions(productId, dto);
 		if (productRs.isFail()) {
 			return rq.historyBack("상품 상세 옵션 등록에 실했습니다.");

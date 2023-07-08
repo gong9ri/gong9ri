@@ -14,11 +14,12 @@
         }
 
         function showOptions() {
-            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneDetails_"]'));
-            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoDetails_"]'));
+            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneName_"]'));
+            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoName_"]'));
 
-            let message = '';
-            if (optionTwoValues.length === 0) {
+            let message = '상품 옵션 미리보기\n\n';
+
+            if (optionTwoValues.at(0).value === '') {
                 optionOneValues.forEach(optionOne => {
                     message += optionOne.value + '\n\n';
                 });
@@ -36,14 +37,14 @@
 
         let optCnt = 1;
 
-        function addDetailOptionRow(idPrefix) {
-            const details = document.getElementById(idPrefix);
+        function addDetailOptionRow(prefix) {
+            const details = document.getElementById(prefix);
             if (confirm('상세 옵션을 추가하시겠습니까?')) {
                 const newRow = document.createElement('td');
                 newRow.style.setProperty('width', '150px');
                 const input = document.createElement('input');
-                input.name = `optionNames[${optCnt}].optionOneName`;
-                input.id = `${idPrefix}_${optCnt}`;
+                input.name = `optionNames[${optCnt}].${prefix}`;
+                input.id = `${prefix}_${optCnt}`;
                 input.type = 'text';
                 newRow.appendChild(input);
                 details.appendChild(newRow);
@@ -51,8 +52,7 @@
             }
         }
     </script>
-    <form th:action method="post" onsubmit="submitOptionForm(this); return false;">
-        <input type="hidden" name="_method" value="PUT">
+    <form th:action th:method="put" onsubmit="submitOptionForm(this); return false;">
         <table>
             <tr>
                 <td>
