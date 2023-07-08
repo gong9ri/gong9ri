@@ -65,3 +65,4 @@ custom:
     upload-dir: THIS_DIRECTORY_MAYBE_NOT_SAFE
   store:
     storeNamePrefix: GONG9STORE__
+  orderIdPrefix: oId

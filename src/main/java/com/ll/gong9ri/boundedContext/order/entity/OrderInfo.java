@@ -1,17 +1,14 @@
 package com.ll.gong9ri.boundedContext.order.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.base.tosspayments.tossConfig.TossConfig;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.store.entity.Store;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,48 +16,40 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@ToString(callSuper = true)
 public class OrderInfo extends BaseEntity {
-	private Long memberId;
-	private String username;
-	private Long storeId;
-	private String storeName;
-	private Long productId;
-	private String productName;
-	@Builder.Default
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private OrderStatus orderStatus = OrderStatus.NOT_ACCEPTED;
-	@OneToOne(fetch = FetchType.LAZY)
+	private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	@ToString.Exclude
-	private OrderRecipientInfo orderRecipientInfo;
-	@OneToMany(mappedBy = "orderInfo", cascade = {CascadeType.ALL})
-	@LazyCollection(LazyCollectionOption.EXTRA)
-	@ToString.Exclude
+	private Member member;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Store store;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Product product;
+	@Enumerated(EnumType.STRING)
 	@Builder.Default
-	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
+	private OrderStatus orderStatus = OrderStatus.PRE_CREATED;
+	private Integer price;
+	private String recentOrderLogId;
 
-	public static OrderInfo of(Member member, Product product) {
-		return OrderInfo.builder()
-			.memberId(member.getId())
-			.username(member.getUsername())
-			.storeId(product.getStore().getId())
-			.storeName(product.getStore().getName())
-			.productId(product.getId())
-			.productName(product.getName())
-			.build();
+	/**
+	 * @return add ORDER_ID_PREFIX, base64 encoded string
+	 */
+	public String getEncodedOrderId() {
+		return Base64.getEncoder()
+			.encodeToString((TossConfig.getORDER_ID_PREFIX() + getId()).getBytes(StandardCharsets.UTF_8));
 	}
 }
