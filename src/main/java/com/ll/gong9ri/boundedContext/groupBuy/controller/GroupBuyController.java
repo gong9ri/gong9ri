@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDTO;
+import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
+import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyMemberService;
@@ -57,8 +58,8 @@ public class GroupBuyController {
 	@GetMapping("/list")
 	public String groupBuyList(Model model) {
 		// TODO: search option
-		final List<GroupBuyDTO> groupBuyDTOs = groupBuyService.findAllByDTO();
-		model.addAttribute("groupBuyList", groupBuyDTOs);
+		final List<GroupBuyListDTO> groupBuyListDTOs = groupBuyService.getAllGroupBuyListDTO();
+		model.addAttribute("groupBuyList", groupBuyListDTOs);
 
 		return "groupBuy/list";
 	}
@@ -105,16 +106,12 @@ public class GroupBuyController {
 	public String showDetail(Model model, @PathVariable("groupBuyId") Long groupBuyId) {
 		final Optional<GroupBuy> optionalGroupBuy = groupBuyService.findById(groupBuyId);
 		if (optionalGroupBuy.isEmpty()) {
-			return rq.historyBack("존재하지 않는 공동구매 입니다.");
+			return rq.historyBack("잘못된 접근입니다.");
 		}
 
-		final GroupBuyDTO groupBuyDTO = GroupBuyDTO.createGroupBuyDTO(
-			optionalGroupBuy.get(),
-			groupBuyMemberService.getMemberCount(groupBuyId),
-			groupBuyMemberService.isExistGroupByMember(optionalGroupBuy.get(), rq.getMember())
-		);
+		GroupBuyDetailDTO groupBuyDetailDTO = groupBuyService.getGroupBuyDetailDTO(rq.getMember());
 
-		model.addAttribute("groupBuy", groupBuyDTO);
+		model.addAttribute("groupBuy", groupBuyDetailDTO);
 
 		return "groupBuy/detail";
 	}

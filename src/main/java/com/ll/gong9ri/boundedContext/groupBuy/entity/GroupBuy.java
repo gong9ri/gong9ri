@@ -12,14 +12,17 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+@Table(name = "group_buy", indexes = @Index(name = "idx__status__end_date", columnList = "status, end_date"))
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
@@ -29,13 +32,13 @@ public class GroupBuy extends BaseEntity {
 	private Product product;
 	@Column(nullable = false)
 	private String name;
-	@Builder.Default
-	@Column(nullable = false)
-	private LocalDateTime startDate = LocalDateTime.now();
-	@Column(nullable = false)
-	private LocalDateTime endDate;
-	@Column(nullable = false)
+	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	private GroupBuyStatus status = GroupBuyStatus.WAIT;
+	@Builder.Default
+	@Column(nullable = false)
+	private LocalDateTime startDate = LocalDateTime.now();
+	@Column(name = "end_date", nullable = false)
+	private LocalDateTime endDate;
 }

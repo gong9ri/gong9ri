@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDTO;
+import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
+import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepositoryImpl;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final GroupBuyRepositoryImpl groupBuyRepositoryImpl;
+	private final GroupBuyMemberService groupBuyMemberService;
 
 	public Optional<GroupBuy> getProgressGroupBuy(final Long id) {
 		return groupBuyRepository.findById(id)
@@ -41,12 +44,16 @@ public class GroupBuyService {
 		return groupBuyRepository.findAll();
 	}
 
-	public List<GroupBuyDTO> findAllByDTO() {
-		return groupBuyRepositoryImpl.findAllGroupBuyMemberCount();
+	public List<GroupBuyListDTO> getAllGroupBuyListDTO() {
+		return groupBuyRepositoryImpl.getAllGroupBuyListDTO();
 	}
 
-	public List<GroupBuyDTO> findAllProgressByDTO() {
-		return groupBuyRepositoryImpl.findAllProgressGroupBuyMemberCount();
+	public List<GroupBuyListDTO> getAllGroupBuyListDTOInProgress() {
+		return groupBuyRepositoryImpl.getAllGroupBuyListDTOInProgress();
+	}
+
+	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Member member) {
+		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(member);
 	}
 
 	/**
@@ -94,28 +101,33 @@ public class GroupBuyService {
 	}
 
 	@Transactional
-	public void updateStatus(final GroupBuy unmodifiedGroupBuy, final GroupBuyStatus status) {
-		GroupBuy groupBuy = unmodifiedGroupBuy.toBuilder()
+	public GroupBuy updateStatus(GroupBuy originGroupBuy, final GroupBuyStatus status) {
+		GroupBuy groupBuy = originGroupBuy.toBuilder()
 			.status(status)
 			.build();
 
-		groupBuyRepository.save(groupBuy);
-
-		log.debug(groupBuy.getId() + ": EXPIRED");
+		// TODO: 멤버 주문 생성 이벤트 publish
+		return groupBuyRepository.save(groupBuy);
 	}
 
 	/**
 	 * GroupBuy 의 endDate가 지나면 status를 PROGRESS -> ORDER로 업데이트
 	 */
-	//@Scheduled(cron = " 0 0/5 * * * *")
-	@Scheduled(cron = " 30 * * * * *") // 개발용
-	public void checkStatus(){
-		List<GroupBuy> expiredGroupBuys = groupBuyRepository.findByStatusAndEndDateBefore(GroupBuyStatus.PROGRESS, LocalDateTime.now());
-		for (GroupBuy groupBuy : expiredGroupBuys) {
-			groupBuy.toBuilder()
-				.status(GroupBuyStatus.ORDER)
-				.build();
-			groupBuyRepository.save(groupBuy);
+	@Scheduled(cron = "0 0/5 * * * *")
+	@Transactional
+	public void checkStatus() {
+		log.info("GroupBuyService.checkStatus() Executed");
+
+		List<GroupBuy> groupBuys = groupBuyRepository
+			.findByStatusAndEndDateBefore(GroupBuyStatus.PROGRESS, LocalDateTime.now());
+
+		groupBuys.forEach(e -> updateStatus(e, GroupBuyStatus.ORDER));
+
+		// TODO: OrderCreateEvent
+
+		if (groupBuys.size() > 0) {
+			groupBuys
+				.forEach(e -> log.info("GroupBuy Status Updated to ORDER : GroupBuyId = " + e.getId()));
 		}
 	}
 }

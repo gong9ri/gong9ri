@@ -22,28 +22,26 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 public class GroupBuyMemberService {
-	private final GroupBuyMemberRepository repository;
+	private final GroupBuyMemberRepository groupBuyMemberRepository;
 
 	@Transactional(readOnly = true)
 	public Optional<GroupBuyMember> findById(final Long id) {
-		return repository.findById(id);
+		return groupBuyMemberRepository.findById(id);
 	}
 
 	@Transactional(readOnly = true)
 	public List<GroupBuyMember> findAllByGroupBuyId(final Long groupBuyId) {
-		return repository.findAllByGroupBuyId(groupBuyId)
-			.stream().filter(e -> !e.getRole().equals(GroupBuyMemberRole.STORE))
-			.toList();
+		return groupBuyMemberRepository.findAllByGroupBuyId(groupBuyId);
 	}
 
 	@Transactional(readOnly = true)
 	public Integer getMemberCount(final Long groupId) {
-		return repository.countByGroupBuyId(groupId);
+		return groupBuyMemberRepository.countByGroupBuyId(groupId);
 	}
 
 	@Transactional(readOnly = true)
 	public boolean isExistGroupByMember(final GroupBuy groupBuy, final Member member) {
-		return repository.existsByGroupBuyIdAndMemberId(groupBuy.getId(), member.getId());
+		return groupBuyMemberRepository.existsByGroupBuyIdAndMemberId(groupBuy.getId(), member.getId());
 	}
 
 	public RsData<Void> canParticipateGroupBuy(final GroupBuy groupBuy, final Member member) {
@@ -55,7 +53,7 @@ public class GroupBuyMemberService {
 			return RsData.of("F-2", "진행중인 공동구매가 아닙니다.");
 		}
 
-		final Optional<GroupBuyMember> oGroupBuyMember = repository.findByGroupBuyIdAndMemberId(
+		final Optional<GroupBuyMember> oGroupBuyMember = groupBuyMemberRepository.findByGroupBuyIdAndMemberId(
 			groupBuy.getId(),
 			member.getId()
 		);
@@ -79,7 +77,7 @@ public class GroupBuyMemberService {
 			.groupBuy(groupBuy)
 			.build();
 
-		repository.save(groupBuyMember);
+		groupBuyMemberRepository.save(groupBuyMember);
 
 		return RsData.successOf(groupBuyMember);
 	}
@@ -97,7 +95,7 @@ public class GroupBuyMemberService {
 	}
 
 	public RsData<GroupBuyMember> update(final GroupBuy groupBuy, final Member member, final GroupBuyMemberRole role) {
-		final Optional<GroupBuyMember> oGroupBuyMember = repository.findByGroupBuyIdAndMemberId(
+		final Optional<GroupBuyMember> oGroupBuyMember = groupBuyMemberRepository.findByGroupBuyIdAndMemberId(
 			groupBuy.getId(),
 			member.getId()
 		);
@@ -109,13 +107,13 @@ public class GroupBuyMemberService {
 			.role(role)
 			.build();
 
-		repository.save(groupBuyMember);
+		groupBuyMemberRepository.save(groupBuyMember);
 
 		return RsData.successOf(groupBuyMember);
 	}
 
 	public RsData<Void> delete(final GroupBuy groupBuy, final Member member) {
-		final Optional<GroupBuyMember> oGroupBuyMember = repository.findByGroupBuyIdAndMemberId(
+		final Optional<GroupBuyMember> oGroupBuyMember = groupBuyMemberRepository.findByGroupBuyIdAndMemberId(
 			groupBuy.getId(),
 			member.getId()
 		);
@@ -127,7 +125,7 @@ public class GroupBuyMemberService {
 			return RsData.of("F-2", "참여자만 취소할 수 있습니다.");
 		}
 
-		repository.delete(oGroupBuyMember.get());
+		groupBuyMemberRepository.delete(oGroupBuyMember.get());
 
 		return RsData.of("S-1", groupBuy.getName() + " 참여를 취소했습니다.");
 	}

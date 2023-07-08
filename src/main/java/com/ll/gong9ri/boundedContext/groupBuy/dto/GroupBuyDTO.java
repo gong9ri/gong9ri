@@ -8,10 +8,12 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Builder
 @Getter
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class GroupBuyDTO {
 	private Long id;
 	private String name;
