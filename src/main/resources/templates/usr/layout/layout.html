@@ -160,11 +160,15 @@
         requestNotificationPermission(firebaseConfig);
 
         function submitToken(token) {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
             const url = '/v1/tokens';
             const requestOptions = {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({tokenString: token})
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({"tokenString": token})
             };
 
             fetch(url, requestOptions)
