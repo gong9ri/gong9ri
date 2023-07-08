@@ -19,6 +19,6 @@ public enum GroupBuyStatus {
 		return Arrays.stream(GroupBuyStatus.values())
 			.filter(e -> e.getValue().equals(status))
 			.findFirst()
-			.orElse(GroupBuyStatus.WAIT);
+			.orElse(null);  // nullable
 	}
 }

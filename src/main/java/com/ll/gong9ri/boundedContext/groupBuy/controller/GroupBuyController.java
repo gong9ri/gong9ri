@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
@@ -18,6 +19,7 @@ import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyMemberService;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyService;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
@@ -56,10 +58,17 @@ public class GroupBuyController {
 	}
 
 	@GetMapping("/list")
-	public String groupBuyList(Model model) {
-		// TODO: search option
-		final List<GroupBuyListDTO> groupBuyListDTOs = groupBuyService.getAllGroupBuyListDTO();
-		model.addAttribute("groupBuyList", groupBuyListDTOs);
+	public String groupBuyList(
+		@RequestParam(defaultValue = "") String status,
+		@RequestParam(defaultValue = "0") Integer isParticipate,
+		Model model
+	) {
+		final List<GroupBuyListDTO> dtos = groupBuyService.getAllGroupBuyListDTO(
+			GroupBuyStatus.of(status),
+			isParticipate == 1 && rq.isLogin() ? rq.getMember().getId() : null
+		);
+		model.addAttribute("groupBuyStatus", GroupBuyStatus.values());
+		model.addAttribute("groupBuyList", dtos);
 
 		return "groupBuy/list";
 	}
@@ -109,7 +118,10 @@ public class GroupBuyController {
 			return rq.historyBack("잘못된 접근입니다.");
 		}
 
-		GroupBuyDetailDTO groupBuyDetailDTO = groupBuyService.getGroupBuyDetailDTO(rq.getMember());
+		GroupBuyDetailDTO groupBuyDetailDTO = groupBuyService.getGroupBuyDetailDTO(
+			groupBuyId,
+			rq.isLogin() ? rq.getMember().getId() : null
+		);
 
 		model.addAttribute("groupBuy", groupBuyDetailDTO);
 

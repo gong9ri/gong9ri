@@ -16,7 +16,6 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepositoryImpl;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import lombok.RequiredArgsConstructor;
@@ -44,16 +43,12 @@ public class GroupBuyService {
 		return groupBuyRepository.findAll();
 	}
 
-	public List<GroupBuyListDTO> getAllGroupBuyListDTO() {
-		return groupBuyRepositoryImpl.getAllGroupBuyListDTO();
+	public List<GroupBuyListDTO> getAllGroupBuyListDTO(final GroupBuyStatus status, final Long memberId) {
+		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId);
 	}
 
-	public List<GroupBuyListDTO> getAllGroupBuyListDTOInProgress() {
-		return groupBuyRepositoryImpl.getAllGroupBuyListDTOInProgress();
-	}
-
-	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Member member) {
-		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(member);
+	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Long id, final Long memberId) {
+		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(id, memberId);
 	}
 
 	/**
@@ -125,7 +120,7 @@ public class GroupBuyService {
 
 		// TODO: OrderCreateEvent
 
-		if (groupBuys.size() > 0) {
+		if (!groupBuys.isEmpty()) {
 			groupBuys
 				.forEach(e -> log.info("GroupBuy Status Updated to ORDER : GroupBuyId = " + e.getId()));
 		}

@@ -2,7 +2,6 @@ package com.ll.gong9ri.boundedContext.groupBuy.dto;
 
 import java.time.LocalDateTime;
 
-import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 
 import lombok.AllArgsConstructor;
@@ -20,4 +19,5 @@ public class GroupBuyListDTO {
 	private LocalDateTime endDate;
 	private GroupBuyStatus status;
 	private Integer currentMemberCount;
+	private Boolean isParticipate;
 }

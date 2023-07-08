@@ -6,6 +6,18 @@
 </head>
 <body>
 <main layout:fragment="main">
+    <form>
+        <select name="status">
+            <option value="">전체</option>
+            <!-- 기본값 -->
+            <!-- th:list -> th:each option 들 추가 가능 -->
+        </select>
+        <select name="isParticipate">
+            <option value="0">전체</option>
+            <option value="1">내가 참여하지 않은 것 우선</option>
+        </select>
+        <button type="submit">검색</button>
+    </form>
     <div>
         <div th:if="${groupBuyList.isEmpty()}">공동구매 목록이 비어있습니다.</div>
         <table class="table">
