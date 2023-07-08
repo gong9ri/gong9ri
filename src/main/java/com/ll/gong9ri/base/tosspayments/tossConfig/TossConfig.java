@@ -25,7 +25,7 @@ public class TossConfig {
 		TossConfig.SECRET_KEY = secretKey;
 	}
 
-	@Value("${custom.toss.secretKey}")
+	@Value("${custom.orderIdPrefix}")
 	public void setOrderIdPrefix(String orderIdPrefix) {
 		TossConfig.ORDER_ID_PREFIX = orderIdPrefix;
 	}
