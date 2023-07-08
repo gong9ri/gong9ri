@@ -62,6 +62,8 @@ public class GroupBuyChatRoomController {
 
 		RsData<GroupBuyChatRoom> result = groupBuyChatRoomService.createNotice(chatRoom, dto.getNotice());
 
+		// TODO: 이벤트로 fcm에 전달해서 알림 발송
+
 		return rq.redirectWithMsg("{chatRoomId}", result);
 	}
 }
