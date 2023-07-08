@@ -65,7 +65,7 @@ public class GroupBuyController {
 	) {
 		final List<GroupBuyListDTO> dtos = groupBuyService.getAllGroupBuyListDTO(
 			GroupBuyStatus.of(status),
-			isParticipate == 1 && rq.isLogin() ? rq.getMember().getId() : null
+			isParticipate == 0 && rq.isLogin() ? rq.getMember().getId() : null
 		);
 		model.addAttribute("groupBuyStatus", GroupBuyStatus.values());
 		model.addAttribute("groupBuyList", dtos);
