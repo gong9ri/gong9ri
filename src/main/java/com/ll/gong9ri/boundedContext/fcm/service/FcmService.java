@@ -9,6 +9,7 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.Notification;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
 import com.ll.gong9ri.boundedContext.fcm.repository.TokenRepository;
@@ -40,12 +41,15 @@ public class FcmService {
 		FirebaseMessagingException {
 
 		MulticastMessage message = MulticastMessage.builder()
-			.putData(messageHead, messageContent)
+			.setNotification(Notification.builder()
+				.setTitle(messageHead)
+				.setBody(messageContent)
+				.build())
 			.addAllTokens(clientTokens)
 			.build();
 
 		// send Message and get response
-		BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+		BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
 
 		System.out.println(response.getSuccessCount() + " messages were sent successfully");
 	}

@@ -1,5 +1,8 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatRoom.controller;
 
+import java.util.List;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ll.gong9ri.base.event.NoticeUpdatedEvent;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
@@ -26,6 +30,7 @@ public class GroupBuyChatRoomController {
 	private final GroupBuyChatRoomService groupBuyChatRoomService;
 	private final ChatRoomParticipantService chatRoomParticipantService;
 	private final Rq rq;
+	private final ApplicationEventPublisher publisher;
 
 	@GetMapping("/make")
 	public String create() {
@@ -62,8 +67,11 @@ public class GroupBuyChatRoomController {
 
 		RsData<GroupBuyChatRoom> result = groupBuyChatRoomService.createNotice(chatRoom, dto.getNotice());
 
-		// TODO: 이벤트로 fcm에 전달해서 알림 발송
+		List<String> tokensByChatRoomId = chatRoomParticipantService.getTokensByChatRoomId(chatRoomId);
 
-		return rq.redirectWithMsg("{chatRoomId}", result);
+		publisher.publishEvent(
+			new NoticeUpdatedEvent(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
+
+		return rq.redirectWithMsg("/groupbuy/{chatRoomId}", result);
 	}
 }

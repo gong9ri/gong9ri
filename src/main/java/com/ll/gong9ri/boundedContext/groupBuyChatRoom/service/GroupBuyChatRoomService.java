@@ -17,7 +17,9 @@ public class GroupBuyChatRoomService {
 
 	@Transactional
 	public GroupBuyChatRoom createChatRoom() {
+		// TODO: 공동구매 생성 시 채팅방 생성?
 		GroupBuyChatRoom chatRoom = GroupBuyChatRoom.builder()
+			.name("chatRoomName")
 			.build();
 
 		return groupBuyChatRoomRepository.save(chatRoom);
