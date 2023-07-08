@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.fcm.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,22 @@ public class FcmService {
 	private final TokenRepository tokenRepository;
 
 	@Transactional
-	public RsData<Token> saveToken(TokenDTO token, Member member) {
+	public RsData<Token> saveToken(TokenDTO tokenDTO, Member member) {
+
+		Optional<Token> existingToken = tokenRepository.findByMemberId(member.getId());
+
+		if (existingToken.isPresent()) {
+			Token token = existingToken.get().toBuilder()
+				.tokenString(tokenDTO.getTokenString())
+				.build();
+
+			tokenRepository.save(token);
+
+			return RsData.of("S-2", "token 이 저장되었습니다.", token);
+		}
 
 		Token newToken = Token.builder()
-			.tokenString(token.getTokenString())
+			.tokenString(tokenDTO.getTokenString())
 			.member(member)
 			.build();
 
