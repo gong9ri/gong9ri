@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>공동구매 목록</title>
+</head>
+<body>
+<main layout:fragment="main">
+    <form>
+        <select name="status">
+            <option value="">전체</option>
+            <!-- 기본값 -->
+            <!-- th:list -> th:each option 들 추가 가능 -->
+        </select>
+        <select name="isParticipate">
+            <option value="0">전체</option>
+            <option value="1">참여중인 공동구매</option>
+        </select>
+        <button type="submit">검색</button>
+    </form>
+    <div>
+        <div th:if="${groupBuyList.isEmpty()}">공동구매 목록이 비어있습니다.</div>
+        <table class="table">
+            <tr class="table-header" th:if="${!groupBuyList.isEmpty()}">
+                <th>상품 이미지</th>
+                <th>번호</th>
+                <th>상품명</th>
+                <th>진행 상태</th>
+                <th>참여 여부</th>
+                <th>현재 인원</th>
+                <th>시작일</th>
+                <th>종료일</th>
+            </tr>
+            <tr th:each="groupBuy : ${groupBuyList}">
+                <td>
+                    <div>
+                        <!-- TODO: 상품 이미지 불러오기 -->
+                        <img alt="상품 이미지">
+                    </div>
+                </td>
+                <td>
+                    <a th:href="@{|detail/${groupBuy.id}|}" th:text="${groupBuy.id}"></a>
+                </td>
+                <td>
+                    <div th:href="@{|detail/${groupBuy.id}|}" th:text="${groupBuy.name}"></div>
+                </td>
+                <td>
+                    <div th:href="@{|detail/${groupBuy.id}|}" th:text="${groupBuy.status.value}"></div>
+                </td>
+                <td>
+                    <div th:href="@{|detail/${groupBuy.id}|}" th:text="${groupBuy.isParticipate}"></div>
+                </td>
+                <td>
+                    <div th:href="@{|detail/${groupBuy.id}|}" th:text="${groupBuy.currentMemberCount}"></div>
+                </td>
+                <td>
+                    <div th:text="${#temporals.format(groupBuy.startDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </td>
+                <td>
+                    <div th:text="${#temporals.format(groupBuy.endDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+</main>
+</body>
+</html>

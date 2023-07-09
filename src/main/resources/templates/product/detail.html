@@ -39,6 +39,14 @@
         <button class="btn">저장</button>
         <button type="reset" class="btn">취소</button>
     </form>
+
+    <!--    공동구매 버튼-->
+    <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
+        <button type="submit" class="btn btn-light border" href="/list"
+                onclick="return confirm('공동구매를 생성하시겠습니까?')">
+            총대되기
+        </button>
+    </form>
 </main>
 </body>
 </html>

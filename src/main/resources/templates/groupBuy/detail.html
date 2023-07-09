@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 상세</title>
+</head>
+<body>
+<main layout:fragment="main">
+    <table>
+        <tr>
+            <th>상품명</th>
+            <td>
+                <div th:text="${groupBuy.name}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>가격</th>
+            <td>
+                <div th:text="${groupBuy.price}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>현재 참여 인원</th>
+            <td>
+                <div th:text="${groupBuy.currentMemberCount}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>시작 시간</th>
+            <td>
+                <div th:text="${groupBuy.startDate}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>종료 시간</th>
+            <td>
+                <div th:text="${groupBuy.endDate}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>공동구매 상태</th>
+            <td>
+                <div th:text="${groupBuy.status.value}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>공동구매 참여 여부</th>
+            <td>
+                <div th:text="${groupBuy.isParticipate}"></div>
+            </td>
+        </tr>
+    </table>
+
+    <!--    공동구매 참여 버튼-->
+    <form th:action="@{|/groupBuy/${groupBuy.id}/participate|}" method="post" th:href="@{|detail/${groupBuy.id}|}">
+        <button type="submit" class="btn btn-light border"
+                onclick="return confirm('공동구매에 참여하시겠습니까?')">
+            공동구매 참여하기
+        </button>
+    </form>
+</main>
+</body>
+</html>
