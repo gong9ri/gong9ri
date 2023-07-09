@@ -31,7 +31,7 @@ public class StoreController {
 		}
 
 		model.addAttribute("store", rsStore.getData());
-		model.addAttribute("products", productService.getProductsByStoreId(storeId));
+		model.addAttribute("products", productService.getProductsByStoreId(storeId)); // TODO: dto
 
 		return "usr/store/index";
 	}
