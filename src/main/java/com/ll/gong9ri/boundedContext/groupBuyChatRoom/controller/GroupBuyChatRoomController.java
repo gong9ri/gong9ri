@@ -32,13 +32,6 @@ public class GroupBuyChatRoomController {
 	private final Rq rq;
 	private final ApplicationEventPublisher publisher;
 
-	@GetMapping("/makechat")
-	public String create() {
-		groupBuyChatRoomService.createChatRoom();
-
-		return rq.redirectWithMsg("1", "");
-	}
-
 	@GetMapping("/{chatRoomId}")
 	public String showChatRoom(@PathVariable Long chatRoomId, Model model) {
 

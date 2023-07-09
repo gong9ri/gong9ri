@@ -1,10 +1,10 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatMessage.service;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.util.List;
 import java.util.Optional;
 
-import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
-import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,11 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
-
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
+import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
+import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
@@ -62,7 +63,8 @@ class GroupBuyChatMessageServiceTest {
 		// given
 		final String username = "testUser1";
 		RsData<Member> rsMember = memberService.join(username, username + username);
-		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom();
+		GroupBuy testGroupBuy2 = new GroupBuy().toBuilder().name("testGroupBuy2").build();
+		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom(testGroupBuy2);
 		fcmService.saveToken(new TokenDTO("newTestToken1"), rsMember.getData());
 		ChatRoomParticipant participant = chatRoomParticipantService.createNewParticipant(groupBuyChatRoom,
 			rsMember.getData());

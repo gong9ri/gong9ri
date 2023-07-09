@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.groupBuy.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ll.gong9ri.base.event.EventAfterGroupBuyCreated;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
@@ -35,6 +37,7 @@ public class GroupBuyController {
 	private final ProductService productService;
 	private final GroupBuyMemberService groupBuyMemberService;
 	private final Rq rq;
+	private final ApplicationEventPublisher publisher;
 
 	private RsData<GroupBuy> validateGroupBuy(final Long groupBuyId) {
 		final Optional<GroupBuy> oGroupBuy = groupBuyService.getProgressGroupBuy(groupBuyId);
@@ -53,6 +56,9 @@ public class GroupBuyController {
 		final RsData<GroupBuy> rsGroupBuy = groupBuyService.create(optionalProduct.get());
 		groupBuyMemberService.addLeader(rq.getMember(), rsGroupBuy.getData());
 		groupBuyMemberService.addStore(optionalProduct.get().getStore().getMember(), rsGroupBuy.getData());
+
+		// publish createChatRoomEvent
+		publisher.publishEvent(new EventAfterGroupBuyCreated(rsGroupBuy.getData()));
 
 		return rq.redirectWithMsg("/groupBuy/list", rsGroupBuy);
 	}
