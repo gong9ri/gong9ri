@@ -30,7 +30,7 @@ public class ProductDetailDTO {
 	 * when optionOne only Exist, "optionOneName, null"
 	 * when optionOne, Two Exist, "optionOneName, Lists of optionTwoNames"
 	 */
-	private Map<String, List<String>> options;
+	private Map<String, List<ProductOptionNameDTO>> options;
 	private List<ProductDiscountDTO> discounts = new ArrayList<>();
 
 	public static ProductDetailDTO of(final Product product) {
@@ -47,7 +47,11 @@ public class ProductDetailDTO {
 			.options(product.getProductOptions()
 				.stream()
 				.collect(Collectors.groupingBy(ProductOption::getOptionOneName,
-					Collectors.mapping(ProductOption::getOptionTwoName, Collectors.toList())))
+					Collectors.mapping(option -> ProductOptionNameDTO.builder()
+						.id(option.getId())
+						.optionOneName(option.getOptionOneName())
+						.optionTwoName(option.getOptionTwoName())
+						.build(), Collectors.toList())))
 			)
 			.discounts(product.getProductDiscounts()
 				.stream().map(e -> ProductDiscountDTO.builder()
@@ -57,4 +61,5 @@ public class ProductDetailDTO {
 				.toList())
 			.build();
 	}
+
 }
