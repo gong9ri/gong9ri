@@ -53,9 +53,8 @@ public class ChatRoomParticipantService {
 	}
 
 	public List<String> getTokensByChatRoomId(Long roomId) {
-		List<ChatRoomParticipant> participants = chatRoomParticipantRepository.findByGroupBuyChatRoomId(roomId);
-
-		return participants.stream()
+		return chatRoomParticipantRepository.findByGroupBuyChatRoomId(roomId)
+			.stream()
 			.map(ChatRoomParticipant::getToken)
 			.toList();
 	}

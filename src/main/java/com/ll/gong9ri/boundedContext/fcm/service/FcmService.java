@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
@@ -17,27 +16,20 @@ import com.ll.gong9ri.boundedContext.fcm.repository.TokenRepository;
 import com.ll.gong9ri.boundedContext.fcm.token.Token;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmService {
-
 	private final TokenRepository tokenRepository;
 
 	@Transactional
 	public RsData<Token> saveToken(TokenDTO tokenDTO, Member member) {
-
 		Optional<Token> existingToken = tokenRepository.findByMemberId(member.getId());
-
 		if (existingToken.isPresent()) {
-			Token token = existingToken.get().toBuilder()
-				.tokenString(tokenDTO.getTokenString())
-				.build();
-
-			tokenRepository.save(token);
-
-			return RsData.of("S-2", "token 이 저장되었습니다.", token);
+			return update(tokenDTO, existingToken.get());
 		}
 
 		Token newToken = Token.builder()
@@ -50,10 +42,22 @@ public class FcmService {
 		return RsData.of("S-1", "token 이 저장되었습니다.", newToken);
 	}
 
-	public void sendMessageToClients(List<String> clientTokens, String messageHead, String messageContent) throws
-		FirebaseMessagingException {
+	private RsData<Token> update(final TokenDTO tokenDTO, final Token existingToken) {
+		final Token token = existingToken.toBuilder()
+			.tokenString(tokenDTO.getTokenString())
+			.build();
 
-		MulticastMessage message = MulticastMessage.builder()
+		tokenRepository.save(token);
+
+		return RsData.of("S-2", "token 이 저장되었습니다.", token);
+	}
+
+	public void sendMessageToClients(
+		final List<String> clientTokens,
+		final String messageHead,
+		final String messageContent
+	) {
+		final MulticastMessage message = MulticastMessage.builder()
 			.setNotification(Notification.builder()
 				.setTitle(messageHead)
 				.setBody(messageContent)
@@ -61,10 +65,14 @@ public class FcmService {
 			.addAllTokens(clientTokens)
 			.build();
 
-		// send Message and get response
-		BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
-
-		System.out.println(response.getSuccessCount() + " messages were sent successfully");
+		try {
+			// send Message and get response
+			// BatchResponse response = : am i need?
+			FirebaseMessaging.getInstance().sendEachForMulticast(message);
+		} catch (FirebaseMessagingException e) {
+			// ignore fcm exception
+			e.printStackTrace();
+		}
 	}
 
 	public Token findByMemberId(Long id) {
