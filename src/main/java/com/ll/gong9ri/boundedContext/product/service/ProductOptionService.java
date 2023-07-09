@@ -52,9 +52,9 @@ public class ProductOptionService {
 	@Transactional
 	public RsData<ProductOption> create(final Product product, final ProductOptionNameDTO dto) {
 		final ProductOption productOption = ProductOption.builder()
-			.product(product)
-			.optionOneName(dto.getOptionOneName())
-			.optionTwoName(dto.getOptionOneName())
+				.product(product)
+				.optionOneName(dto.getOptionOneName())
+				.optionTwoName(dto.getOptionTwoName())
 			.build();
 
 		repository.save(productOption);
