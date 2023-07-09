@@ -6,10 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.event.EventGroupBuyProgress;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
@@ -30,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final GroupBuyRepositoryImpl groupBuyRepositoryImpl;
-	private final GroupBuyMemberService groupBuyMemberService;
+	private final ApplicationEventPublisher publisher;
 
 	public Optional<GroupBuy> getProgressGroupBuy(final Long id) {
 		return groupBuyRepository.findById(id)
@@ -109,7 +111,6 @@ public class GroupBuyService {
 			.status(status)
 			.build();
 
-		// TODO: 멤버 주문 생성 이벤트 publish
 		return groupBuyRepository.save(groupBuy);
 	}
 
@@ -121,12 +122,18 @@ public class GroupBuyService {
 	public void checkStatus() {
 		log.info("GroupBuyService.checkStatus() Executed");
 
-		List<GroupBuy> groupBuys = groupBuyRepository
+		final List<GroupBuy> groupBuys = groupBuyRepository
 			.findByStatusAndEndDateBefore(GroupBuyStatus.PROGRESS, LocalDateTime.now());
 
-		groupBuys.forEach(e -> updateStatus(e, GroupBuyStatus.ORDER));
-
-		// TODO: OrderCreateEvent
+		groupBuys.forEach(e -> {
+			updateStatus(e, GroupBuyStatus.ORDER);
+			e.getGroupBuyMembers()
+				.forEach(m -> publisher.publishEvent(new EventGroupBuyProgress(
+					m.getMember(),
+					e.getProduct(),
+					e.getCurrentSalePrice()
+				)));
+		});
 
 		if (!groupBuys.isEmpty()) {
 			groupBuys
