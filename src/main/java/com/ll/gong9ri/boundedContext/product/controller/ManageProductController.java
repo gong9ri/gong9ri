@@ -12,7 +12,7 @@ import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
+//@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 @RequestMapping("/manage/product")
 @RequiredArgsConstructor
 public class ManageProductController {
@@ -100,13 +100,15 @@ public class ManageProductController {
 	}
 
 	@PutMapping("/{productId}/option")
-	public String addProductOptions(@PathVariable Long productId, @Valid ProductOptionDTO dto) {
+	@ResponseBody
+	public ResponseEntity<Long> addProductOptions(@PathVariable Long productId, @RequestBody @Valid ProductOptionDTO dto) {
 		RsData<Product> productRs = productService.addOptions(productId, dto);
+
 		if (productRs.isFail()) {
-			return rq.historyBack("상품 상세 옵션 등록에 실했습니다.");
+			return ResponseEntity.badRequest().build();
 		}
 
-		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
+		return ResponseEntity.ok().body(productRs.getData().getId());
 	}
 
 	@GetMapping("/{productId}/image")

@@ -3,22 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>상품 상세 옵션</title>
+    <script th:inline="javascript">
+        const token = /*[[${_csrf.token}]]*/ '';
+    </script>
 </head>
 <body>
 <main layout:fragment="main">
     <script>
-        function submitOptionForm(form) {
+        function submitOptionForm() {
             if (confirm('상품 상세 옵션을 저장 하시겠습니까?')) {
-                form.submit();
+                const optionOneValue = document.getElementById('optionOne').value;
+                const optionTwoValue = document.getElementById('optionTwo').value;
+                const optionNames = [];
+
+                const optionOneInputs = document.querySelectorAll('.optionOneName');
+                const optionTwoInputs = document.querySelectorAll('.optionTwoName');
+
+                for (let i = 0; i < optionOneInputs.length; i++) {
+                    const optionOneName = optionOneInputs[i].querySelector('[id^=optionOneName_]').value;
+                    const optionTwoName = optionTwoInputs[i].querySelector('[id^=optionTwoName_]').value;
+
+                    const optionName = {optionOneName, optionTwoName};
+                    optionNames.push(optionName);
+                }
+
+                const data = {
+                    optionOne: optionOneValue,
+                    optionTwo: optionTwoValue,
+                    optionNames: optionNames,
+                };
+
+                console.log(data);
+
+                fetch(window.location.href, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    body: JSON.stringify(data)
+                }).then((response) => {
+                    return response.json();
+                }).then((responseData) => {
+                    window.location.href = `/manage/product/${responseData}/detail`
+                }).catch((error) => {
+                    console.error(error);
+                });
             }
         }
 
         function showOptions() {
-            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneDetails_"]'));
-            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoDetails_"]'));
+            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneName_"]'));
+            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoName_"]'));
 
-            let message = '';
-            if (optionTwoValues.length === 0) {
+            let message = '상품 옵션 미리보기\n\n';
+
+            if (optionTwoValues.at(0).value === '') {
                 optionOneValues.forEach(optionOne => {
                     message += optionOne.value + '\n\n';
                 });
@@ -34,65 +74,46 @@
             alert(message);
         }
 
-        let optCnt = 1;
+        let optOneCnt = 1;
+        let optTwoCnt = 1;
+        let optCnt;
 
-        function addDetailOptionRow(idPrefix) {
-            const details = document.getElementById(idPrefix);
+        function addDetailOptionRow(prefix) {
+            if (prefix === 'optionOneName') {
+                optCnt = optOneCnt++;
+            } else {
+                optCnt = optTwoCnt++;
+            }
+
+            const details = document.getElementById(prefix);
             if (confirm('상세 옵션을 추가하시겠습니까?')) {
-                const newRow = document.createElement('td');
-                newRow.style.setProperty('width', '150px');
                 const input = document.createElement('input');
-                input.name = `optionNames[${optCnt}].optionOneName`;
-                input.id = `${idPrefix}_${optCnt}`;
+                input.name = `optionName[${optCnt}].${prefix}`;
+                input.id = `${prefix}_${optCnt}`;
                 input.type = 'text';
-                newRow.appendChild(input);
-                details.appendChild(newRow);
-                optCnt++;
+                details.appendChild(input);
             }
         }
     </script>
-    <form th:action method="post" onsubmit="submitOptionForm(this); return false;">
-        <input type="hidden" name="_method" value="PUT">
-        <table>
-            <tr>
-                <td>
-                    <label for="optionOne">상품 옵션1 이름</label>
-                </td>
-                <td>
-                    <input name="optionOne" id="optionOne" type="text">
-                </td>
-                <td>
-                    <input class="btn" type="button" onclick="addDetailOptionRow('optionOneName')" value="+">
-                </td>
-            </tr>
-            <tr id="optionOneName">
-                <td>
-                    <label>옵션1의 상세 옵션명</label>
-                </td>
-                <td>
-                    <input name="optionNames[0].optionOneName" id="optionOneName_0" type="text">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="optionTwo">상품 옵션2 이름</label>
-                </td>
-                <td>
-                    <input name="optionTwo" id="optionTwo" type="text">
-                </td>
-                <td>
-                    <input class="btn" type="button" onclick="addDetailOptionRow('optionTwoName')" value="+">
-                </td>
-            </tr>
-            <tr id="optionTwoName">
-                <td>
-                    <label>옵션2의 상세 옵션명</label>
-                </td>
-                <td>
-                    <input name="optionNames[0].optionTwoName" id="optionTwoName_0" type="text">
-                </td>
-            </tr>
-        </table>
+    <form onsubmit="submitOptionForm(); return false;">
+        <div>
+            <label for="optionOne">상품 옵션1 이름</label>
+            <input name="optionOne" id="optionOne" type="text">
+            <button class="btn" type="button" onclick="addDetailOptionRow('optionOneName')" value="+"></button>
+        </div>
+        <div class="optionOneName" id="optionOneName">
+            <label>옵션1의 상세 옵션명</label>
+            <input name="optionName[0]" id="optionOneName_0" type="text">
+        </div>
+        <div>
+            <label for="optionTwo">상품 옵션2 이름</label>
+            <input name="optionTwo" id="optionTwo" type="text">
+            <button class="btn" type="button" onclick="addDetailOptionRow('optionTwoName')" value="+"></button>
+        </div>
+        <div class="optionTwoName" id="optionTwoName">
+            <label>옵션2의 상세 옵션명</label>
+            <input name="optionName[0]" id="optionTwoName_0" type="text">
+        </div>
         <button class="btn">저장</button>
         <a class="btn" onclick="showOptions()">옵션 미리보기</a>
         <a class="btn" href="/product/list">상품 목록</a>
