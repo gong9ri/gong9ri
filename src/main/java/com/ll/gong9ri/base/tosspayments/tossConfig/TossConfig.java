@@ -12,6 +12,8 @@ public class TossConfig {
 
 	@Getter
 	private static String SECRET_KEY;
+	@Getter
+	private static String ORDER_ID_PREFIX;
 
 	@Value("${custom.toss.clientKey}")
 	public void setClientKey(String clientKey) {
@@ -21,5 +23,10 @@ public class TossConfig {
 	@Value("${custom.toss.secretKey}")
 	public void setSecretKey(String secretKey) {
 		TossConfig.SECRET_KEY = secretKey;
+	}
+
+	@Value("${custom.orderIdPrefix}")
+	public void setOrderIdPrefix(String orderIdPrefix) {
+		TossConfig.ORDER_ID_PREFIX = orderIdPrefix;
 	}
 }
