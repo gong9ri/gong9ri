@@ -1,7 +1,7 @@
-package com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity;
+package com.ll.gong9ri.boundedContext.fcm.token;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,11 +15,11 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-@ToString(callSuper = true)
-public class GroupBuyChatRoom extends BaseEntity {
+public class Token extends BaseEntity {
+
+	private String tokenString;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	private GroupBuy groupBuy;
-	private String name;
-	private String notice;
+	@ToString.Exclude
+	private Member member;
 }

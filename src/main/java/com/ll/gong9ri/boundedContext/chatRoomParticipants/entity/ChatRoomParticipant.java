@@ -30,4 +30,6 @@ public class ChatRoomParticipant extends BaseEntity {
 	private Member member;
 
 	private String chatOffset;
+
+	private String token;
 }
