@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ll.gong9ri.base.event.NoticeUpdatedEvent;
+import com.ll.gong9ri.base.event.EventAfterNoticeUpdated;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
@@ -70,7 +70,7 @@ public class GroupBuyChatRoomController {
 		List<String> tokensByChatRoomId = chatRoomParticipantService.getTokensByChatRoomId(chatRoomId);
 
 		publisher.publishEvent(
-			new NoticeUpdatedEvent(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
+			new EventAfterNoticeUpdated(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
 
 		return rq.redirectWithMsg("/groupbuy/{chatRoomId}", result);
 	}
