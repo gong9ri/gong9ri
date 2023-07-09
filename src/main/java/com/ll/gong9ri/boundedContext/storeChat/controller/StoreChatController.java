@@ -33,14 +33,6 @@ public class StoreChatController {
 	private final Rq rq;
 
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("/")
-	public String list(Model model) {
-		model.addAttribute("rooms", roomService.getMemberChatRooms(rq.getMember().getId()));
-
-		return "usr/store/chat/list";
-	}
-
-	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{roomId}")
 	public String chatRoom(Model model, @PathVariable Long roomId) {
 		final Optional<StoreChatRoom> oRoom = roomService.findRoomById(roomId);
