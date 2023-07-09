@@ -89,6 +89,8 @@ public class GroupBuyController {
 			return rq.historyBack(rsGroupBuyMember);
 		}
 
+		groupBuyService.updateDiscount(rsGroupBuy.getData());
+
 		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
 	}
 
