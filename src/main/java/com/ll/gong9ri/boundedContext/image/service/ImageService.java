@@ -18,10 +18,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ll.gong9ri.boundedContext.image.dto.ImageDTO;
 import com.ll.gong9ri.boundedContext.image.entity.ChatImage;
-import com.ll.gong9ri.boundedContext.image.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.image.repository.ChatImageRepository;
-import com.ll.gong9ri.boundedContext.image.repository.MemberImageRepository;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.repository.MemberImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,26 +46,6 @@ public class ImageService {
 
 		return uploadImages(multipartFiles, "sample-folder");
 
-	}
-
-	/**
-	 * 업로드된 이미지 파일을 member객체와 연결 후 DB에 저장
-	 * @param member
-	 * @param multipartFiles
-	 * @return
-	 */
-	@Transactional
-	public List<ImageDTO> uploadImageMember(Member member, List<MultipartFile> multipartFiles){
-
-		List<ImageDTO> dtos = uploadImages(multipartFiles, "member");
-
-		MemberImage memberImage = MemberImage.builder()
-			.member(member)
-			.build();
-
-		memberImageRepository.save(memberImage);
-
-		return dtos;
 	}
 
 	/**
@@ -131,4 +109,5 @@ public class ImageService {
 
 		return dtos;
 	}
+
 }

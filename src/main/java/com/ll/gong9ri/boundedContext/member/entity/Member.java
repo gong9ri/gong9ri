@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
 	private AuthLevel authLevel;
 	@Column(unique = true, nullable = false)
 	private String username;
-	@Column(nullable = false)
+	// @Column(nullable = false)
 	@JsonIgnore
 	private String password;
 	private String nickname;
