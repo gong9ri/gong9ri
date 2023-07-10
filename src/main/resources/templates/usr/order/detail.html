@@ -63,7 +63,7 @@
     <button th:href="@{|/order/list|}" th:text="목록으로"></button>
     <!-- 주문의 상태에 따라 이동할 수 있는 링크를 controller에서 평문으로 전달하여 action에 적용, 실제 적용되는지? -->
     <button th:action="@{|confirmOrder|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
-    <button th:action="@{|createPayment|}" th:if="${createPayment != null}" th:method="PUT" th:text="결제"></button>
+    <button th:action="@{|createPayment|}" th:if="${createPayment != null}" th:method="POST" th:text="결제"></button>
 </main>
 </body>
 </html>
