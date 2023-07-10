@@ -46,8 +46,12 @@ public class ProductService {
 		return RsData.of("S-1", "모든 상품의 리스트를 가져옵니다.", repository.findAll());
 	}
 
-	public RsData<List<Product>> getProductsByStoreId(final Long id) {
-		List<Product> products = repository.findByStoreId(id);
+	public List<Product> getAllProductsByStore(final Long storeId) {
+		return repository.findByStoreId(storeId);
+	}
+
+	public RsData<List<Product>> getProductsByStoreId(final Long storeId) {
+		List<Product> products = repository.findByStoreId(storeId);
 		return RsData.of("S-1", "해당 스토어의 모든 상품 리스트를 가져옵니다.", products);
 	}
 
