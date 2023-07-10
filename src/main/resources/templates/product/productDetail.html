@@ -82,7 +82,7 @@
             border-collapse: collapse;
         }
 
-        .options tr{
+        .options tr {
             display: flex;
             flex-direction: column;
             margin-bottom: 10px;
@@ -142,105 +142,108 @@
 <main layout:fragment="main">
     <div class="container max-w-2xl mx-auto">
         <div class="form-container form-control border-0">
-            <form onsubmit="submitOptionForm(); return false;">
-                <!-- 이미지 슬라이드 -->
+            <!-- 이미지 슬라이드 -->
 
-                <!-- 샘플 이미지 슬라이드 -->
-                <div class="carousel carousel-center max-w-md p-4 space-x-4 rounded-box">
-                    <div class="carousel-item">
-                        <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png" class="rounded-box carousel-image" />
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png" class="rounded-box carousel-image" />
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png" class="rounded-box carousel-image" />
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png" class="rounded-box carousel-image" />
+            <!-- 샘플 이미지 슬라이드 -->
+            <div class="carousel carousel-center max-w-md p-4 space-x-4 rounded-box">
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+            </div>
+
+            <!-- 실제 이미지 슬라이드 -->
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleIndicators" th:each="image, idx : *{product.images}"
+                        th:data-slide-to="${idx.index}" th:class="${idx.index == 0} ? 'active' : ''"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item" th:each="image, idx : *{product.images}"
+                         th:class="${idx.index == 0} ? 'active' : ''">
+                        <img th:src="${image}" class="d-block w-100 rounded-box" alt="Slide Image">
                     </div>
                 </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
+                   data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only"> < </span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
+                   data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only"> > </span>
+                </a>
+            </div>
+            <!-- 이미지 슬라이드 끝 -->
 
-                <!-- 실제 이미지 슬라이드 -->
-                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        <li data-target="#carouselExampleIndicators" th:each="image, idx : *{product.images}"
-                            th:data-slide-to="${idx.index}" th:class="${idx.index == 0} ? 'active' : ''"></li>
-                    </ol>
-                    <div class="carousel-inner">
-                        <div class="carousel-item" th:each="image, idx : *{product.images}"
-                             th:class="${idx.index == 0} ? 'active' : ''">
-                            <img th:src="${image}" class="d-block w-100 rounded-box" alt="Slide Image">
-                        </div>
-                    </div>
-                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
-                       data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only"> < </span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
-                       data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only"> > </span>
-                    </a>
-                </div>
-                <!-- 이미지 슬라이드 끝 -->
-
-                <!-- 상품 정보 -->
-                <div class="product">
-                    <span class="product-name" th:text="*{product.name}"></span>
-                    <div class="discounts">
-                        <ul>
-                            <li th:each="discount : *{product.discounts}">
-                                <p><span th:text="*{discount.headCount}"></span>명 모일 시</p>
-                                <p><span th:text="*{discount.salePrice}"></span> 원 </p>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- 옵션 선택 (Options) -->
-                <table class="options">
-                    <tr th:each="entry, entryIdx : *{product.options}">
-                        <!-- 옵션1 표시(ex. 사이즈) -->
-                        <td th:text="${entry.key}" style="font-weight: bold; font-size: 20px;"></td>
-                        <div class="options-detail" th:if="${entry.value.isEmpty}" id="${entryIdx.index}">
-                            <!--     옵션 바로 선택         -->
-                        </div>
-
-                        <!-- 옵션2 표시 (ex. S, M, L, XL) -->
-                        <div class="options-detail" th:if="${!entry.value.isEmpty}">
-                            <td>
-                                <ul>
-                                    <li th:each="option : ${entry.value}">
-                                        <input hidden th:value="${option.id}" id="optionId_${option.id}">
-                                        <input hidden th:value="${option.optionOneName}" id="optionOptionOne_${option.id}">
-                                        <input hidden th:value="${option.optionTwoName}" id="optionOptionTwo_${option.id}">
-                                        <button onclick="addToMyChoice('optionId_${option.id}', 'optionOptionTwo_${option.id}',
-                                        '${option.optionOneName}', '${option.optionTwoName}')">
-                                            <span th:text="${option.optionTwoName}"></span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </td>
-                        </div>
-                    </tr>
-                </table>
-
-                <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
-                <div>
-                    <p>내 선택</p>
-                    <ul class="my-choice" id="myChoice">
-                        <!-- 내 선택 리스트(옵션1 이름, 옵션2 이름 및 구매할 개수) 표시되는 부분 -->
+            <!-- 상품 정보 -->
+            <div class="product">
+                <span class="product-name" th:text="*{product.name}"></span>
+                <div class="discounts">
+                    <ul>
+                        <li th:each="discount : *{product.discounts}">
+                            <p><span th:text="*{discount.headCount}"></span>명 모일 시</p>
+                            <p><span th:text="*{discount.salePrice}"></span> 원 </p>
+                        </li>
                     </ul>
                 </div>
-                <button onclick="addToCart(selectCnt)">장바구니에 추가</button>
+            </div>
 
-                <!-- 나중에 리뷰 추가 -->
+            <!-- 나중에 리뷰 추가 -->
 
-                <!-- 제품 구매하는 페이지로 이동하는 버튼 추가 -->
+            <!-- 제품 구매하는 페이지로 이동하는 버튼 추가 -->
 
-            </form>
+            <!-- 옵션 선택 (Options) -->
+            <table class="options">
+                <tr th:each="entry, entryIdx : ${product.options}">
+
+                    <!-- 옵션1 표시(ex. 사이즈) -->
+                    <!--
+                    <td th:text="${entry.key}" style="font-weight: bold; font-size: 20px;"></td>
+                    -->
+
+                    <!-- 옵션2 표시 (ex. S, M, L, XL) -->
+                    <td th:id="|category_${entryIdx.index}|" th:text="${entry.key}"
+                        style="font-weight: bold; font-size: 20px;"></td>
+                    <td>
+                    <ul>
+
+                        <li th:each="option : ${entry.value}">
+                            <span th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}"></span>
+                        </li>
+                        <!--                                <input hidden th:value="${option.id}" th:id="|optionId_${optionIdx.index}|">-->
+                        <!--                                <input hidden th:value="${option.optionOneName}" th:id="|optionOne_${optionIdx.index}|">-->
+                        <!--                                <input hidden th:value="${option.optionTwoName}" th:id="|optionTwo_${optionIdx.index}|">-->
+                        <!--                                <button onclick="addToMyChoice('optionId_${optionIdx.index}', 'optionTwo_${optionIdx.index}',-->
+                        <!--                                        '${option.optionOneName}', '${option.optionTwoName}')"-->
+                        <!--                                        th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}">-->
+                        <!--                                </button>-->
+                    </ul></td>
+                </tr>
+            </table>
+
+            <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
+            <div>
+                <p>내 선택</p>
+                <ul class="my-choice" id="myChoice">
+                    <!-- 내 선택 리스트(옵션1 이름, 옵션2 이름 및 구매할 개수) 표시되는 부분 -->
+                </ul>
+            </div>
+            <button onclick="addToCart(selectCnt)">장바구니에 추가</button>
+
 
             <!-- 공동구매 버튼 -->
             <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
@@ -296,7 +299,7 @@
             item.onclick = () => selectChoice(cnt);
             myChoice.appendChild(item);
 
-            const option = { optionOneId, optionOneName, optionTwoId, optionTwoName, quantity };
+            const option = {optionOneId, optionOneName, optionTwoId, optionTwoName, quantity};
             addToSelectedOptions(option);
         }
 
@@ -348,6 +351,7 @@
         }
 
         let optCnt = 0;
+
         function addDetailOptionRow(prefix) {
             optCnt++;
 
@@ -363,6 +367,7 @@
 
         // 장바구니
         const choices = [];
+
         function collectChoices(selectCnt) {
             for (let i = 0; i < selectCnt; i++) {
                 const choiceId = document.getElementById(`choiceId_${i}`).value;
