@@ -75,11 +75,11 @@ public class OrderController {
 		model.addAttribute("currentStatus", currentStatus);
 
 		if (currentStatus == OrderStatus.PRE_CREATED || currentStatus == OrderStatus.GROUP_BUY_CREATED) {
-			model.addAttribute("confirmOrder", "/confirm/" + orderId);
+			model.addAttribute("confirmOrder", "/order/confirm/" + orderId);
 		}
 
 		if (currentStatus == OrderStatus.OPTION_SELECTED) {
-			model.addAttribute("createPayment", "/create/payment/" + orderId);
+			model.addAttribute("createPayment", "/order/create/payment/" + orderId);
 		}
 
 		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrder.getData().getRecentOrderLogId());
