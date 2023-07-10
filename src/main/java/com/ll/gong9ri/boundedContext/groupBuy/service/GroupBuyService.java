@@ -5,10 +5,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.event.EventAfterGroupBuyCreated;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
@@ -29,6 +31,7 @@ public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final GroupBuyRepositoryImpl groupBuyRepositoryImpl;
 	private final GroupBuyMemberService groupBuyMemberService;
+	private final ApplicationEventPublisher publisher;
 
 	public Optional<GroupBuy> getProgressGroupBuy(final Long id) {
 		return groupBuyRepository.findById(id)
@@ -75,7 +78,10 @@ public class GroupBuyService {
 			.status(GroupBuyStatus.PROGRESS)
 			.build();
 
-		groupBuyRepository.save(groupBuy);
+		groupBuy = groupBuyRepository.save(groupBuy);
+
+		// 이벤트로 채팅방 생성
+		publisher.publishEvent(new EventAfterGroupBuyCreated(groupBuy));
 
 		return RsData.successOf(groupBuy);
 	}

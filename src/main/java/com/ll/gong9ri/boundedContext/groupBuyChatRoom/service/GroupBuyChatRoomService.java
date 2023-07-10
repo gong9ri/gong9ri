@@ -1,5 +1,7 @@
 package com.ll.gong9ri.boundedContext.groupBuyChatRoom.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class GroupBuyChatRoomService {
 	public GroupBuyChatRoom createChatRoom(GroupBuy groupBuy) {
 
 		GroupBuyChatRoom chatRoom = GroupBuyChatRoom.builder()
+			.groupBuy(groupBuy)
 			.name(groupBuy.getName())
 			.build();
 
@@ -28,6 +31,10 @@ public class GroupBuyChatRoomService {
 
 	public GroupBuyChatRoom findById(Long chatRoomId) {
 		return groupBuyChatRoomRepository.findById(chatRoomId).orElseThrow();
+	}
+
+	public Optional<GroupBuyChatRoom> findByGroupBuyId(Long groupBuyId) {
+		return groupBuyChatRoomRepository.findByGroupBuyId(groupBuyId);
 	}
 
 	@Transactional
