@@ -219,19 +219,16 @@
                     <td th:id="|category_${entryIdx.index}|" th:text="${entry.key}"
                         style="font-weight: bold; font-size: 20px;"></td>
                     <td>
-                    <ul>
-
-                        <li th:each="option : ${entry.value}">
-                            <span th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}"></span>
-                        </li>
-                        <!--                                <input hidden th:value="${option.id}" th:id="|optionId_${optionIdx.index}|">-->
-                        <!--                                <input hidden th:value="${option.optionOneName}" th:id="|optionOne_${optionIdx.index}|">-->
-                        <!--                                <input hidden th:value="${option.optionTwoName}" th:id="|optionTwo_${optionIdx.index}|">-->
-                        <!--                                <button onclick="addToMyChoice('optionId_${optionIdx.index}', 'optionTwo_${optionIdx.index}',-->
-                        <!--                                        '${option.optionOneName}', '${option.optionTwoName}')"-->
-                        <!--                                        th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}">-->
-                        <!--                                </button>-->
-                    </ul></td>
+                        <ul>
+                            <li th:each="option, optionIdx : ${entry.value}">
+                                <input hidden th:value="${option.id}" th:id="|optionId_${entryIdx.index}_${optionIdx.index}|">
+                                <input hidden th:value="${option.optionOneName}" th:id="|optionOne_${entryIdx.index}_${optionIdx.index}|">
+                                <input hidden th:value="${option.optionTwoName}" th:id="|optionTwo_${entryIdx.index}_${optionIdx.index}|">
+                                <button onclick="addToMyChoice('optionId_${optionIdx.index}', 'optionTwo_${optionIdx.index}','${option.optionOneName}', '${option.optionTwoName}')" th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}">
+                                </button>
+                            </li>
+                        </ul>
+                    </td>
                 </tr>
             </table>
 
