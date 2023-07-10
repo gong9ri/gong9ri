@@ -52,4 +52,10 @@ public class MemberController {
 		return rq.redirectWithMsg("/", rsMember);
 	}
 
+	@GetMapping("/me")
+	@PreAuthorize("isAuthenticated()")
+	public String showMyPage() {
+		return "usr/member/me";
+	}
+
 }
