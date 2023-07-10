@@ -66,25 +66,6 @@ public class MemberController {
 		return "usr/member/me";
 	}
 
-/*	@PostMapping("/nickname")
-	@PreAuthorize("isAuthenticated()")
-	public String setNickname(@Valid MemberInfoForm form) {
-		final RsData<Member> rsMember = memberService.setNickname(rq.getMember(), form.getNickname());
-		if (rsMember.isFail())
-			return rq.historyBack(rsMember);
-
-		return rq.redirectWithMsg("/", rsMember);
-	}
-
-	@PostMapping("/image")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<Object> uploadImageMember(
-		@RequestPart(value = "files") List<MultipartFile> multipartFiles) {
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.body(memberService.uploadMemberImage(rq.getMember(), multipartFiles));
-	}*/
-
 	@PostMapping("/update-profile")
 	@PreAuthorize("isAuthenticated()")
 	public String updateProfile(
