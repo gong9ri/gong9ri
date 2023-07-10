@@ -1,5 +1,6 @@
 package com.ll.gong9ri.boundedContext.order.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +17,11 @@ import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.service.PaymentService;
 import com.ll.gong9ri.boundedContext.order.dto.OrderCreateDTO;
+import com.ll.gong9ri.boundedContext.order.dto.OrderInfoListDTO;
 import com.ll.gong9ri.boundedContext.order.dto.OrderRecipientDTO;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
 import com.ll.gong9ri.boundedContext.order.entity.OrderLog;
+import com.ll.gong9ri.boundedContext.order.entity.OrderStatus;
 import com.ll.gong9ri.boundedContext.order.service.OrderInfoService;
 import com.ll.gong9ri.boundedContext.order.service.OrderLogService;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
@@ -48,11 +51,40 @@ public class OrderController {
 		return RsData.successOf(oOrderInfo.get());
 	}
 
+	@GetMapping("/list")
+	public String list(Model model) {
+		final List<OrderInfoListDTO> orderInfos = orderInfoService.findByMemberId(rq.getMember().getId())
+			.stream()
+			.map(OrderInfoListDTO::of)
+			.toList();
+
+		model.addAttribute("orders", orderInfos);
+
+		return "usr/order/list";
+	}
+
 	@GetMapping("/detail/{orderId}")
 	public String getDetail(@PathVariable Long orderId, Model model) {
-		RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail()) {
+			return rq.historyBack(rsOrder);
+		}
 
-		model.addAttribute("orderInfo", rsOrder.getData()); // DTO 변환 필요함
+		final OrderStatus currentStatus = rsOrder.getData().getOrderStatus();
+		model.addAttribute("orderId", orderId);
+		model.addAttribute("currentStatus", currentStatus);
+
+		if (currentStatus == OrderStatus.PRE_CREATED || currentStatus == OrderStatus.GROUP_BUY_CREATED) {
+			model.addAttribute("confirmOrder", "/confirm/" + orderId);
+		}
+
+		if (currentStatus == OrderStatus.OPTION_SELECTED) {
+			model.addAttribute("createPayment", "/create/payment/" + orderId);
+		}
+
+		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrder.getData().getRecentOrderLogId());
+		oOrderLog.ifPresent(orderLog -> model.addAttribute("order", orderLog));
+
 		return "usr/order/detail";
 	}
 
@@ -116,7 +148,7 @@ public class OrderController {
 		);
 	}
 
-	@PostMapping("/create/Payment/{orderId}")
+	@PostMapping("/create/payment/{orderId}")
 	public String createPayment(@PathVariable Long orderId, Model model) {
 		final RsData<OrderInfo> rsOrderInfo = orderValidate(orderId);
 		if (rsOrderInfo.isFail()) {

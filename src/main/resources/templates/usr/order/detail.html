@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 상세</title>
+</head>
+<body>
+<main layout:fragment="main">
+    <table>
+        <tr>
+            <th>주문번호</th>
+            <td>
+                <div th:text="${orderId}"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>주문상태</th>
+            <td>
+                <div th:text="${currentStatus}"></div>
+            </td>
+        </tr>
+        <tr th:if="${order == null}">
+            <th>주문 정보</th>
+            <td>주문 정보가 존재하지 않습니다.</td>
+        </tr>
+        <tr th:if="${order!=null}">
+            <th>주문명</th>
+            <td>
+                <a th:href="@{|/product/detail/order.id|}">
+                    <span th:text="${order.name}"></span>
+                </a>
+            </td>
+            <th>스토어명</th>
+            <td>
+                <a th:href="@{|/product/detail/order.storeId|}">
+                    <span th:text="${order.storeName}"></span>
+                </a>
+            </td>
+            <th>상품명</th>
+            <td>
+                <a th:href="@{|/product/detail/order.productId|}">
+                    <span th:text="${order.productName}"></span>
+                </a>
+            </td>
+            <th>가격</th>
+            <td>
+                <div th:text="${order.price}"></div>
+            </td>
+            <th>적용된 할인 가격</th>
+            <td>
+                <div th:text="${order.salePrice}"></div>
+            </td>
+            <th>배송자명</th>
+            <td th:text="${order.recipient}"></td>
+            <th>주소</th>
+            <td th:text="${order.mainAddress}"></td>
+            <th>상세주소</th>
+            <td th:text="${order.subAddress}"></td>
+            <th>결제금액</th>
+            <td th:text="${order.totalPrice}"></td>
+        </tr>
+    </table>
+    <button th:href="@{|/order/list|}" th:text="목록으로"></button>
+    <!-- 주문의 상태에 따라 이동할 수 있는 링크를 controller에서 평문으로 전달하여 action에 적용, 실제 적용되는지? -->
+    <button th:action="@{|confirmOrder|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
+    <button th:action="@{|createPayment|}" th:if="${createPayment != null}" th:method="PUT" th:text="결제"></button>
+</main>
+</body>
+</html>
