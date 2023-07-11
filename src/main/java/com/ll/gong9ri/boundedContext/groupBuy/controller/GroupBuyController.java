@@ -1,8 +1,8 @@
 package com.ll.gong9ri.boundedContext.groupBuy.controller;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,16 +59,15 @@ public class GroupBuyController {
 
 	@GetMapping("/list")
 	public String groupBuyList(
-		@RequestParam(defaultValue = "") String status,
-		@RequestParam(defaultValue = "0") Integer isParticipate,
+		@RequestParam(value = "status", required = false) GroupBuyStatus status,
+		@RequestParam(required = false) Long memberId,
+		@RequestParam(value = "page", defaultValue = "1") int page,
 		Model model
 	) {
-		final List<GroupBuyListDTO> dtos = groupBuyService.getAllGroupBuyListDTO(
-			GroupBuyStatus.of(status),
-			isParticipate == 0 && rq.isLogin() ? rq.getMember().getId() : null
-		);
-		model.addAttribute("groupBuyStatus", GroupBuyStatus.values());
-		model.addAttribute("groupBuyList", dtos);
+		Page<GroupBuyListDTO> groupBuyPage = groupBuyService.searchGroupBuyList(status, memberId, page);
+
+		model.addAttribute("groupBuyList", groupBuyPage.getContent());
+		model.addAttribute("page", groupBuyPage);
 
 		return "groupBuy/list";
 	}

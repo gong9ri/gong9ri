@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +50,10 @@ public class GroupBuyService {
 		return groupBuyRepository.findAll();
 	}
 
-	public List<GroupBuyListDTO> getAllGroupBuyListDTO(final GroupBuyStatus status, final Long memberId) {
-		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId);
+	public Page<GroupBuyListDTO> searchGroupBuyList(GroupBuyStatus status, Long memberId, int page) {
+		Pageable pageable = PageRequest.of(page - 1, 10);
+		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId, pageable);
 	}
-
 	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Long id, final Long memberId) {
 		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(id, memberId);
 	}
