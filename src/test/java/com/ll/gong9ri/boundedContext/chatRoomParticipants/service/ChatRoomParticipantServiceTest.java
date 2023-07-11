@@ -1,5 +1,7 @@
 package com.ll.gong9ri.boundedContext.chatRoomParticipants.service;
 
+import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
+import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ class ChatRoomParticipantServiceTest {
 	private MemberService memberService;
 	@Autowired
 	private GroupBuyChatRoomService groupBuyChatRoomService;
+	@Autowired
+	private FcmService fcmService;
 
 	// @Test
 	// @DisplayName("create new ChatRoomParticipants")
@@ -43,6 +47,7 @@ class ChatRoomParticipantServiceTest {
 		final String username = "testUser2";
 		RsData<Member> rsMember = memberService.join(username, username + username);
 		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom();
+		fcmService.saveToken(new TokenDTO("newTestToken2"), rsMember.getData());
 
 		// when
 		ChatRoomParticipant newParticipant = chatRoomParticipantService.createNewParticipant(groupBuyChatRoom,

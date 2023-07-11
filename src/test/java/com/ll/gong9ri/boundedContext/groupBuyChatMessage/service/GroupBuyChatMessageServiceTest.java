@@ -3,6 +3,8 @@ package com.ll.gong9ri.boundedContext.groupBuyChatMessage.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
+import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -38,6 +40,8 @@ class GroupBuyChatMessageServiceTest {
 	private GroupBuyChatRoomService groupBuyChatRoomService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private FcmService fcmService;
 
 	@Test
 	@DisplayName("샘플메시지 테스트")
@@ -59,6 +63,7 @@ class GroupBuyChatMessageServiceTest {
 		final String username = "testUser1";
 		RsData<Member> rsMember = memberService.join(username, username + username);
 		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom();
+		fcmService.saveToken(new TokenDTO("newTestToken1"), rsMember.getData());
 		ChatRoomParticipant participant = chatRoomParticipantService.createNewParticipant(groupBuyChatRoom,
 			rsMember.getData());
 

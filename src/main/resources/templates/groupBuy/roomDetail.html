@@ -15,9 +15,15 @@
 
     <!-- content 시작 -->
     <div class="max-w-2xl w-full my-3">
-        <div class="font-semibold text-2xl my-1 text-center my-4 sticky top-16" text="">채팅방 이름</div>
+        <div class="font-semibold text-2xl my-1 text-center my-4 sticky top-16 bg-blue-100" text="">채팅방 이름</div>
+
+        <div id="notice">
+            <a th:href="@{{chatRoomId}/notice(chatRoomId=${chatRoomId})}"></a>
+            <i class="fa-solid fa-hammer"></i>
+            공지! <span class="truncate" th:text="${chatRoom.getNotice()}"></span>
+        </div>
         <!-- 채팅 내용 -->
-        <div class="chat__message-ul"></div>
+        <div class="chat__message-ul overflow-y-scroll"></div>
 
         <!-- 채팅 입력 -->
         <form id="messageForm" onsubmit="chatWriteMessage(this); return false;" class="my-5">
