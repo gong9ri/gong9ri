@@ -134,6 +134,6 @@ public class MemberNicknameUt {
 	};
 
 	public String getNickname(final int hsh) {
-		return prefix[hsh % prefix.length] + " " + suffix[hsh % suffix.length];
+		return prefix[Math.abs(hsh) % prefix.length] + " " + suffix[Math.abs(hsh) % suffix.length];
 	}
 }
