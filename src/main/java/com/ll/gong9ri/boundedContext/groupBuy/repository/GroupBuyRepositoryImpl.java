@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
+import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMemberRole;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
@@ -64,17 +65,12 @@ public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 				isParticipate(memberId)
 			))
 			.from(groupBuy)
+			.where(
+				eqStatus(status),
+				groupBuyMember.role.ne(GroupBuyMemberRole.STORE)
+			)
 			.leftJoin(groupBuy.groupBuyMembers, groupBuyMember)
-			.where(eqStatus(status), groupBuyMember.member.id.eq(memberId))
 			.groupBy(groupBuy.id);
-
-		if (status != null) {
-			query.where(groupBuy.status.eq(status));
-		}
-
-		if (memberId != null) {
-			query.having(groupBuyMember.member.id.eq(memberId));
-		}
 
 		if (pageable.isPaged()) {
 			query.offset(pageable.getOffset()).limit(pageable.getPageSize());

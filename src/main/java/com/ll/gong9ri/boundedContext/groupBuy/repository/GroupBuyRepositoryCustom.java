@@ -11,7 +11,8 @@ public interface GroupBuyRepositoryCustom {
 	Page<GroupBuyListDTO> searchGroupBuyListDTO(
 		final GroupBuyStatus status,
 		final Long memberId,
-		Pageable pageable);
+		Pageable pageable
+	);
 
 	GroupBuyDetailDTO getGroupBuyDetailDTO(final Long id, final Long memberId);
 }
