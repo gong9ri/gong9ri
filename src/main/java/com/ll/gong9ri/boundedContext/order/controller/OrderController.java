@@ -48,7 +48,7 @@ public class OrderController {
 
 	private RsData<OrderInfo> orderValidate(final Long orderId) {
 		final Optional<OrderInfo> oOrderInfo = orderInfoService.findById(orderId);
-		if (oOrderInfo.isEmpty() || oOrderInfo.get().getMember().getId().equals(rq.getMember().getId())) {
+		if (oOrderInfo.isEmpty() || !oOrderInfo.get().getMember().getId().equals(rq.getMember().getId())) {
 			return RsData.of("F-1", FORBIDDEN_MESSAGE, null);
 		}
 

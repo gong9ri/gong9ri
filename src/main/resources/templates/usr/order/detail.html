@@ -26,19 +26,17 @@
         <tr th:if="${order!=null}">
             <th>주문명</th>
             <td>
-                <a th:href="@{|/product/detail/order.id|}">
-                    <span th:text="${order.name}"></span>
-                </a>
+                <span th:text="${order.name}"></span>
             </td>
             <th>스토어명</th>
             <td>
-                <a th:href="@{|/product/detail/order.storeId|}">
+                <a th:href="@{|/product/detail/${order.storeId}|}">
                     <span th:text="${order.storeName}"></span>
                 </a>
             </td>
             <th>상품명</th>
             <td>
-                <a th:href="@{|/product/detail/order.productId|}">
+                <a th:href="@{|/product/detail/${order.productId}|}">
                     <span th:text="${order.productName}"></span>
                 </a>
             </td>
@@ -60,10 +58,10 @@
             <td th:text="${order.totalPrice}"></td>
         </tr>
     </table>
-    <button th:href="@{|/order/list|}" th:text="목록으로"></button>
+    <a th:href="@{|/order/list|}" th:text="목록으로"></a>
     <!-- 주문의 상태에 따라 이동할 수 있는 링크를 controller에서 평문으로 전달하여 action에 적용, 실제 적용되는지? -->
-    <button th:action="@{|confirmOrder|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
-    <button th:action="@{|createPayment|}" th:if="${createPayment != null}" th:method="POST" th:text="결제"></button>
+    <button th:action="@{|${confirmOrder}|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
+    <button th:action="@{|${createPayment}|}" th:if="${createPayment != null}" th:method="POST" th:text="결제"></button>
 </main>
 </body>
 </html>
