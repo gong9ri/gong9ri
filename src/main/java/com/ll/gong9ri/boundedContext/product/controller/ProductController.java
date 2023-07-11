@@ -1,21 +1,16 @@
 package com.ll.gong9ri.boundedContext.product.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
 import com.ll.gong9ri.boundedContext.product.dto.DetailDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDetailDTO;
@@ -94,14 +89,5 @@ public class ProductController {
 		model.addAttribute(PRODUCT, dto);
 
 		return "product/productDetail";
-	}
-
-	@PostMapping("/cartItems")
-	@ResponseBody
-	public RsData cartItems(Model model, @RequestBody Map<String, List<ProductOptionQuantity>> choices) {
-		choices.get("choices")
-			.forEach(e -> System.out.println(e.getOptionId() + " " + e.getOptionDetail() + " " + e.getQuantity()));
-
-		return RsData.of("S-1", "장바구니에 추가되었습니다.");
 	}
 }

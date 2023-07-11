@@ -290,7 +290,7 @@
             const carts = {choices: Object.values(cartOptions)};
             console.log(JSON.stringify(carts));
 
-            fetch('/product/cartItems', {
+            fetch(`/order/create/${productId}`, {
                 method: 'POST',
                 headers: {
                     [header]: token,
@@ -302,7 +302,7 @@
                 .then(res => {
                     if (res.msg) {
                         alert(res.msg);
-                        location.href = '/cart';
+                        location.href = `/order/detail/${res.data}`;
                     } else {
                         alert(res.msg);
                     }
