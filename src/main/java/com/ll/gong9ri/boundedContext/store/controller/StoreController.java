@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import com.ll.gong9ri.boundedContext.store.dto.StoreHomeDTO;
 import com.ll.gong9ri.boundedContext.store.service.StoreService;
 
@@ -20,15 +21,17 @@ import lombok.RequiredArgsConstructor;
 public class StoreController {
 	private final Rq rq;
 	private final StoreService storeService;
+	private final ProductService productService;
 
 	@GetMapping("/{storeId}")
-	public String home(Model model, @PathVariable Long storeId) {
+	public String detail(Model model, @PathVariable Long storeId) {
 		RsData<StoreHomeDTO> rsStore = storeService.getStoreHome(storeId);
 		if (rsStore.isFail()) {
 			return rq.historyBack(rsStore);
 		}
 
 		model.addAttribute("store", rsStore.getData());
+		model.addAttribute("products", productService.getProductsByStoreId(storeId)); // TODO: dto
 
 		return "usr/store/index";
 	}
