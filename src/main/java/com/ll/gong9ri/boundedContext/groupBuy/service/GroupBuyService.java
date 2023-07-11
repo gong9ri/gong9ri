@@ -2,13 +2,16 @@ package com.ll.gong9ri.boundedContext.groupBuy.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.event.EventGroupBuyProgress;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyListDTO;
@@ -17,6 +20,7 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepositoryImpl;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupBuyService {
 	private final GroupBuyRepository groupBuyRepository;
 	private final GroupBuyRepositoryImpl groupBuyRepositoryImpl;
-	private final GroupBuyMemberService groupBuyMemberService;
+	private final ApplicationEventPublisher publisher;
 
 	public Optional<GroupBuy> getProgressGroupBuy(final Long id) {
 		return groupBuyRepository.findById(id)
@@ -66,18 +70,26 @@ public class GroupBuyService {
 			return RsData.of("F-1", "진행중인 공동구매가 있습니다.", null);
 		}
 
-		GroupBuy groupBuy = GroupBuy.builder()
+		final List<ProductDiscount> discounts = product.getProductDiscounts();
+
+		final ProductDiscount nextDiscount = discounts.stream()
+			.min(Comparator.comparing(ProductDiscount::getHeadCount))
+			.orElse(null);
+
+		final GroupBuy groupBuy = GroupBuy.builder()
 			.product(product)
 			.name(product.getName())
 			.startDate(LocalDateTime.now())
 			// 종료 시간을 현재 시간의 '시'만 가져와서 25시간을 더한 값으로 설정
 			.endDate(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(25))
 			.status(GroupBuyStatus.PROGRESS)
+			.currentHeadCount(0)
+			.currentSalePrice(product.getPrice())
+			.nextHeadCount(nextDiscount == null ? 0 : nextDiscount.getHeadCount())
+			.nextSalePrice(nextDiscount == null ? 0 : nextDiscount.getSalePrice())
 			.build();
 
-		groupBuyRepository.save(groupBuy);
-
-		return RsData.successOf(groupBuy);
+		return RsData.successOf(groupBuyRepository.save(groupBuy));
 	}
 
 	@Transactional
@@ -90,9 +102,7 @@ public class GroupBuyService {
 			.endDate(unmodifiedGroupBuy.get().getEndDate().plusHours(hour))
 			.build();
 
-		groupBuyRepository.save(groupBuy);
-
-		return RsData.successOf(groupBuy);
+		return RsData.successOf(groupBuyRepository.save(groupBuy));
 	}
 
 	@Transactional
@@ -101,7 +111,6 @@ public class GroupBuyService {
 			.status(status)
 			.build();
 
-		// TODO: 멤버 주문 생성 이벤트 publish
 		return groupBuyRepository.save(groupBuy);
 	}
 
@@ -113,16 +122,57 @@ public class GroupBuyService {
 	public void checkStatus() {
 		log.info("GroupBuyService.checkStatus() Executed");
 
-		List<GroupBuy> groupBuys = groupBuyRepository
+		final List<GroupBuy> groupBuys = groupBuyRepository
 			.findByStatusAndEndDateBefore(GroupBuyStatus.PROGRESS, LocalDateTime.now());
 
-		groupBuys.forEach(e -> updateStatus(e, GroupBuyStatus.ORDER));
-
-		// TODO: OrderCreateEvent
+		groupBuys.forEach(e -> {
+			updateStatus(e, GroupBuyStatus.ORDER);
+			e.getGroupBuyMembers()
+				.forEach(m -> publisher.publishEvent(new EventGroupBuyProgress(
+					m.getMember(),
+					e.getProduct(),
+					e.getCurrentSalePrice()
+				)));
+		});
 
 		if (!groupBuys.isEmpty()) {
 			groupBuys
 				.forEach(e -> log.info("GroupBuy Status Updated to ORDER : GroupBuyId = " + e.getId()));
 		}
+	}
+
+	@Transactional
+	public RsData<GroupBuy> updateDiscount(final GroupBuy unmodifiedGroupBuy) {
+		final Integer currentCnt = unmodifiedGroupBuy.getGroupBuyMembers().size();
+		if (currentCnt < unmodifiedGroupBuy.getNextHeadCount()) {
+			return RsData.successOf(unmodifiedGroupBuy);
+		}
+
+		final List<ProductDiscount> discounts = unmodifiedGroupBuy.getProduct().getProductDiscounts();
+
+		final ProductDiscount currentDiscount = discounts.stream()
+			.filter(e -> e.getHeadCount() <= currentCnt)
+			.max(Comparator.comparing(ProductDiscount::getHeadCount))
+			.orElse(ProductDiscount.builder()
+				.headCount(unmodifiedGroupBuy.getCurrentHeadCount())
+				.salePrice(unmodifiedGroupBuy.getCurrentSalePrice())
+				.build());
+
+		final ProductDiscount nextDiscount = discounts.stream()
+			.filter(e -> e.getHeadCount() < currentCnt)
+			.min(Comparator.comparing(ProductDiscount::getHeadCount))
+			.orElse(ProductDiscount.builder()
+				.headCount(unmodifiedGroupBuy.getNextHeadCount())
+				.salePrice(unmodifiedGroupBuy.getNextSalePrice())
+				.build());
+
+		GroupBuy groupBuy = unmodifiedGroupBuy.toBuilder()
+			.currentHeadCount(currentDiscount.getHeadCount())
+			.currentSalePrice(currentDiscount.getSalePrice())
+			.nextHeadCount(nextDiscount.getHeadCount())
+			.nextSalePrice(nextDiscount.getSalePrice())
+			.build();
+
+		return RsData.successOf(groupBuyRepository.save(groupBuy));
 	}
 }

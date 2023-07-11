@@ -55,6 +55,8 @@ public class StoreChatController {
 
 		messageService.createMessage(oRoom.get(), content, LocalDateTime.now(), rq.getMember());
 
+		// TODO : noti push event
+
 		return ResponseEntity.ok(messageService.getNewMessages(roomId, oRoom.get().getMemberChatOffset()));
 	}
 }
