@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.image.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,12 +19,11 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ll.gong9ri.boundedContext.image.dto.ImageDTO;
 import com.ll.gong9ri.boundedContext.image.entity.ChatImage;
-import com.ll.gong9ri.boundedContext.image.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.image.repository.ChatImageRepository;
-import com.ll.gong9ri.boundedContext.image.repository.MemberImageRepository;
-import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.repository.MemberImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Sinks;
 
 @Slf4j
 @Service
@@ -51,26 +51,6 @@ public class ImageService {
 	}
 
 	/**
-	 * 업로드된 이미지 파일을 member객체와 연결 후 DB에 저장
-	 * @param member
-	 * @param multipartFiles
-	 * @return
-	 */
-	@Transactional
-	public List<ImageDTO> uploadImageMember(Member member, List<MultipartFile> multipartFiles){
-
-		List<ImageDTO> dtos = uploadImages(multipartFiles, "member");
-
-		MemberImage memberImage = MemberImage.builder()
-			.member(member)
-			.build();
-
-		memberImageRepository.save(memberImage);
-
-		return dtos;
-	}
-
-	/**
 	 * 네이버 스토리지에 이미지 업로드
 	 * @param multipartFiles 이미지 파일
 	 * @param filePath 이미지 저장 마지막 경로 : 앞에 '/' 안붙여도 됨
@@ -78,6 +58,9 @@ public class ImageService {
 	 */
 
 	public List<ImageDTO> uploadImages(List<MultipartFile> multipartFiles, String filePath) {
+		if(multipartFiles == null){
+			return Collections.emptyList();
+		}
 
 		List<ImageDTO> s3Images = new ArrayList<>();
 
@@ -130,5 +113,21 @@ public class ImageService {
 		chatImageRepository.save(chatImage);
 
 		return dtos;
+	}
+
+	public ImageDTO uploadMemberImage(MultipartFile file, String filePath) {
+		if (file == null || file.isEmpty()) {
+			return null;
+		}
+
+		List<MultipartFile> files = new ArrayList<>();
+		files.add(file);
+
+		List<ImageDTO> images = uploadImages(files, filePath);
+
+		if (images == null || images.isEmpty()) {
+			return null;
+		}
+		return images.get(0);
 	}
 }
