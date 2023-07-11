@@ -19,6 +19,7 @@ import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.service.PaymentService;
+import com.ll.gong9ri.boundedContext.order.dto.OrderInfoListDTO;
 import com.ll.gong9ri.boundedContext.order.dto.OrderRecipientDTO;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
 import com.ll.gong9ri.boundedContext.order.entity.OrderLog;
@@ -26,6 +27,7 @@ import com.ll.gong9ri.boundedContext.order.entity.OrderStatus;
 import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
 import com.ll.gong9ri.boundedContext.order.service.OrderInfoService;
 import com.ll.gong9ri.boundedContext.order.service.OrderLogService;
+import com.ll.gong9ri.boundedContext.product.dto.ProductGroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 
@@ -77,18 +79,55 @@ public class OrderController {
 		model.addAttribute("currentStatus", currentStatus);
 
 		// TODO: 이 로직을 html에서 처리하는 대신, spring 에서 처리, 동작하지 않는다면 html에 이부분 추가
-		if (currentStatus == OrderStatus.PRE_CREATED || currentStatus == OrderStatus.GROUP_BUY_CREATED) {
+		if (currentStatus == OrderStatus.GROUP_BUY_CREATED) {
 			model.addAttribute("confirmOrder", "/order/confirm/" + orderId);
 		}
 
-		if (currentStatus == OrderStatus.OPTION_SELECTED) {
-			model.addAttribute("createPayment", "/order/create/payment/" + orderId);
+		if (currentStatus == OrderStatus.CREATED) {
+			model.addAttribute("createPayment", "/order/confirm/" + orderId);
 		}
 
 		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrder.getData().getRecentOrderLogId());
 		oOrderLog.ifPresent(orderLog -> model.addAttribute("order", orderLog));
 
 		return "usr/order/detail";
+	}
+
+	@GetMapping("/choose/{orderId}")
+	public String chooseForm(Model model, @PathVariable Long orderId) {
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail() || rsOrder.getData().getOrderStatus() != OrderStatus.GROUP_BUY_CREATED) {
+			return rq.historyBack(rsOrder);
+		}
+
+		final ProductGroupBuyDetailDTO dto = ProductGroupBuyDetailDTO.of(rsOrder.getData());
+		model.addAttribute("product", dto);
+		model.addAttribute("orderId", orderId);
+
+		return "usr/order/choose";
+	}
+
+	@PutMapping("/choose/{orderId}")
+	@ResponseBody
+	public RsData<Long> chooseOptionOrder(
+		@PathVariable Long orderId,
+		@RequestBody Map<String, List<ProductOptionQuantity>> choices
+	) {
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail()) {
+			return RsData.of("F-1", FORBIDDEN_MESSAGE, null);
+		}
+
+		final RsData<OrderInfo> rsCreateOrderInfo = orderInfoService.groupBuyConfirm(
+			rsOrder.getData(),
+			choices.get("choices")
+		);
+
+		if (rsCreateOrderInfo.isFail()) {
+			return RsData.of("F-2", FORBIDDEN_MESSAGE, null);
+		}
+
+		return RsData.successOf(rsCreateOrderInfo.getData().getId());
 	}
 
 	@PostMapping("/create/{productId}")
@@ -112,7 +151,6 @@ public class OrderController {
 			return RsData.of("F-2", FORBIDDEN_MESSAGE, null);
 		}
 
-		System.out.println("am i success?");
 		return RsData.successOf(rsCreateOrderInfo.getData().getId());
 	}
 
