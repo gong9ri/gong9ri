@@ -24,7 +24,7 @@
                     </div>
                 </td>
                 <td>
-                    <a th:href="@{|details?productId=${product.id}|}" th:text="${product.id}"></a>
+                    <a th:href="@{|/manage/product/${product.id}/detail|}" th:text="${product.id}"></a>
                 </td>
                 <td>
                     <div th:text="${product.name}"></div>
@@ -37,7 +37,7 @@
                 </td>
             </tr>
         </table>
-        <a class="btn" href="/product/registration">상품 등록</a>
+        <a class="btn" href="/manage/product/registration">상품 등록</a>
     </div>
 </main>
 </body>
