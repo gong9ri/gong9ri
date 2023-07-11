@@ -111,7 +111,6 @@
             margin-right: 10px;
             padding: 10px 8px;
             display: inline-flex;
-            width: 60px;
             height: 60px;
             text-align: center;
             align-items: center;
@@ -211,22 +210,13 @@
                 <tr th:each="entry, entryIdx : ${product.options}">
 
                     <!-- 옵션1 표시(ex. 사이즈) -->
-                    <td th:id="|category_${entryIdx.index}|" th:text="${entry.key}"
-                        style="font-weight: bold; font-size: 20px;"></td>
-                    <!-- 옵션2 표시 (ex. S, M, L, XL) -->
                     <td>
                         <ul>
                             <li th:each="option, optionIdx : ${entry.value}">
-                                <input hidden th:value="${option.id}" th:id="|optionId_${entryIdx.index}_${optionIdx.index}|">
-                                <input hidden th:value="${option.optionOneName}" th:id="|optionOne_${entryIdx.index}_${optionIdx.index}|">
-                                <input hidden th:value="${option.optionTwoName}" th:id="|optionTwo_${entryIdx.index}_${optionIdx.index}|">
-                                <button onclick="addToMyChoice('optionId_${optionIdx.index}', 'optionTwo_${optionIdx.index}','${option.optionOneName}', '${option.optionTwoName}')" th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}">
-
-                                <!--                               <button onclick="addToMyChoice(/*[[${'optionId_${entryIdx.index}_${optionIdx.index}', 'optionTwo_${entryIdx.index}_${optionIdx.index}',-->
-<!--                                '${option.optionOneName}', '${option.optionTwoName'}]]*/)"-->
-<!--                                        th:text="${option.optionTwoName == null ? '선택' : option.optionTwoName}">-->
-<!--                                </button>-->
-
+                                <button th:option-id="${option.id}"
+                                        th:option-name="${option.optionTwoName == null ? '기본' : option.optionTwoName}"
+                                        onclick="addToCartForm(this)"
+                                        th:text="|${option.optionTwoName == null ? '기본' : option.optionTwoName}|"/>
                             </li>
                         </ul>
                     </td>
@@ -237,11 +227,11 @@
             <div>
                 <p>내 선택</p>
                 <ul class="my-choice" id="myChoice">
-                    <!-- 내 선택 리스트(옵션1 이름, 옵션2 이름 및 구매할 개수) 표시되는 부분 -->
+
                 </ul>
             </div>
-            <button onclick="addToCart(selectCnt)">장바구니에 추가</button>
 
+            <button onclick="addToCart()">상품 주문하기</button>
 
             <!-- 공동구매 버튼 -->
             <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
@@ -254,132 +244,73 @@
     </div>
 
     <script>
-        let selectedOptions = [];
+        const cartOptions = {};
 
-        function addToSelectedOptions(option) {
-            selectedOptions.push(option);
-        }
+        function addToCartForm(el) {
+            const optionId = el.getAttribute('option-id');
+            const optionName = el.getAttribute('option-name');
 
-        let cart = [];
-
-        function addToMyChoice(optionId, optionTwoId, optionOneName, optionTwoName) {
-            const myChoice = document.getElementById('myChoice');
-            const cnt = myChoice.childElementCount;
-
-            // 선택한 옵션 항목 만들기
-            const item = document.createElement('li');
-            item.id = `choice_${cnt}`;
-            item.innerHTML = `
-                                <input type="hidden" id="choiceId_${cnt}" value="${cnt}">
-                                <input type="hidden" id="choiceOptionOne_${cnt}" value="${optionOneName}">
-                                <input type="hidden" id="choiceOptionTwo_${cnt}" value="${optionTwoName}">
-                                <span value="${optionOneName}"></span>
-                                <br>
-                                구매 개수: <input id="choiceCount_${cnt}" type="number" value="1" min="1" onchange="updateChoiceCount(${cnt})">
-                            `;
-            myChoice.appendChild(item);
-
-            // 선택한 옵션을 내부 배열에 추가
-            const option = { optionOneName, optionTwoName, quantity: 1 };
-            cart.push(option);
-        }
-
-        // 선택한 항목의 개수를 변경하면 내부 배열에서 개수 업데이트
-        function updateChoiceCount(idx) {
-            const count = document.getElementById(`choiceCount_${idx}`).value;
-            cart[idx].quantity = count;
-        }
-
-
-        function submitOptionForm() {
-            if (confirm('선택한 옵션을 장바구니에 담으시겠습니까?')) {
-                const optionOneValue = document.getElementById('optionOne').value;
-                const optionTwoValue = document.getElementById('optionTwo').value;
-                const optionNames = [];
-
-                const optionOneInputs = document.querySelectorAll('.optionOneName');
-                const optionTwoInputs = document.querySelectorAll('.optionTwoName');
-
-                for (let i = 0; i < optionOneInputs.length; i++) {
-                    const optionOneName = optionOneInputs[i].querySelector('[id^=optionOneName_]').value;
-                    const optionTwoName = optionTwoInputs[i].querySelector('[id^=optionTwoName_]').value;
-
-                    const optionName = {optionOneName, optionTwoName};
-                    optionNames.push(optionName);
-                }
-
-                const data = {
-                    optionOne: optionOneValue,
-                    optionTwo: optionTwoValue,
-                    optionNames: optionNames,
+            if (cartOptions[optionId] === undefined) {
+                cartOptions[optionId] = {
+                    optionId: optionId,
+                    optionName: optionName,
+                    cnt: 1
                 };
-
-                fetch(window.location.href, {
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': token,
-                        'Content-Type': 'application/json; charset=utf-8'
-                    },
-                    body: JSON.stringify(data)
-                }).then((response) => {
-                    return response.json();
-                }).then((responseData) => {
-                    window.location.href = `/manage/product/${responseData}/detail`
-                }).catch((error) => {
-                    console.error(error);
-                });
+            } else {
+                cartOptions[optionId].cnt++;
             }
+
+            drawCartForm();
         }
 
-        let optCnt = 0;
+        function removeOption(optionId) {
+            delete cartOptions[optionId];
 
-        function addDetailOptionRow(prefix) {
-            optCnt++;
-
-            const details = document.getElementById('myChoice');
-            if (confirm('선택한 옵션을 추가하시겠습니까?')) {
-                const input = document.createElement('input');
-                input.name = `optionName[${optCnt}].${prefix}`;
-                input.id = `${prefix}_${optCnt}`;
-                input.type = 'text';
-                details.appendChild(input);
-            }
+            drawCartForm();
         }
 
-        // 장바구니
-        const choices = [];
+        function drawCartForm() {
+            $('#myChoice').empty();
 
-        function collectChoices(selectCnt) {
-            for (let i = 0; i < selectCnt; i++) {
-                const choiceId = document.getElementById(`choiceId_${i}`).value;
-                const optionOneId = document.getElementById(`choiceOptionOne_${i}`).value;
-                const optionTwoId = document.getElementById(`choiceOptionTwo_${i}`).value;
-                const quantityId = document.getElementById(`choiceCount_${i}`).value;
+            for (const key in cartOptions) {
+                const option = cartOptions[key];
 
-                const choice = {
-                    choiceId,
-                    optionOneId,
-                    optionTwoId,
-                    quantityId,
-                };
-
-                choices.push(choice);
-            }
-        }
-
-        function addToCart(selectCnt) {
-            // 선택한 옵션 정보를 가져와 `cart` 배열에 저장
-            collectChoices(selectCnt);
-
-            // `cart` 배열에 저장된 정보를 이용해 장바구니 DOM 업데이트 또는 추가 작업 수행
-            for (const choice of choices) {
-                console.log(`
-                    선택 ID: ${choice.choiceId}
-                    옵션1 ID: ${choice.optionOneId}
-                    옵션2 ID: ${choice.optionTwoId}
-                    구매할 개수 ID: ${choice.quantityId}
+                $('#myChoice').append(`
+                    <li>
+                        <span>${option.optionName}</span>
+                        <span>${option.cnt}개</span>
+                        <button onclick="removeOption(${option.optionId})">X</button>
+                    </li>
                 `);
             }
+        }
+
+        function addToCart() {
+            if (Object.keys(cartOptions).length === 0) {
+                alert('옵션을 선택해주세요.');
+                return;
+            }
+
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
+            const token = document.querySelector('meta[name="_csrf"]').content;
+
+            fetch('/product/cartItems', {
+                method: 'POST',
+                headers: {
+                    [header]: token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cartOptions)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.msg) {
+                        alert(res.msg);
+                        location.href = '/cart';
+                    } else {
+                        alert(res.msg);
+                    }
+                });
         }
     </script>
 </main>

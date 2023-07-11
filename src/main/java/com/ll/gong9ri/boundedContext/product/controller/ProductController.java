@@ -1,14 +1,5 @@
 package com.ll.gong9ri.boundedContext.product.controller;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.product.dto.DetailDTO;
@@ -17,9 +8,17 @@ import com.ll.gong9ri.boundedContext.product.dto.ProductDetailDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/product")
@@ -89,5 +88,19 @@ public class ProductController {
 		model.addAttribute(PRODUCT, dto);
 
 		return "product/productDetail";
+	}
+
+	@PostMapping("/cartItems")
+	@ResponseBody
+	public RsData cartItems(Model model, @RequestBody Map<String, Object> data) {
+		Map<Long, Long> quantities = data.values().stream()
+			.map(row -> (Map<String, Object>) row)
+			.collect(Collectors.toMap(
+				map -> Long.parseLong(map.get("optionId").toString()),
+				map -> Long.parseLong(map.get("cnt").toString()),
+				(oldValue, newValue) -> oldValue
+			));
+
+		return RsData.of("S-1", "장바구니에 추가되었습니다.");
 	}
 }

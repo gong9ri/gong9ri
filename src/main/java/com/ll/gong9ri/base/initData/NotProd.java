@@ -52,14 +52,14 @@ public class NotProd {
 			ProductOptionNameDTO defaultOption = productOptionService.getProductOptions(products[0].getId()).get(0);
 
 			productService.addOptions(products[0].getId(), ProductOptionDTO.builder()
-				.optionOne("색상")
-				.optionTwo("용량")
+				.optionOne("")
+				.optionTwo("")
 				.optionNames(
-					LongStream.range(0L, 3L)
+					LongStream.range(1L, 3L)
 						.mapToObj(i -> ProductOptionNameDTO.builder()
 							.id(i == 0 ? defaultOption.getId() : null) // TODO: update service
-							.optionOneName("색상 " + i)
-							.optionTwoName((i * 100) + "GB")
+							.optionOneName("기본 옵션")
+							.optionTwoName("RED + " + (i * 100) + "GB")
 							.build())
 						.toList())
 				.build());
