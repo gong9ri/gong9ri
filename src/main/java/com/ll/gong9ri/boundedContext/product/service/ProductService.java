@@ -73,6 +73,7 @@ public class ProductService {
 
 		repository.save(product);
 
+		addImages(product.getId(), productRegisterDTO.getImages());
 
 		optionService.defaultCreate(product);
 
