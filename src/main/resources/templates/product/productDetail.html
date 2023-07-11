@@ -207,19 +207,12 @@
 
             <!-- 옵션 선택 (Options) -->
             <table class="options">
-                <tr th:each="entry, entryIdx : ${product.options}">
-
+                <tr th:each="option, optionIdx : ${product.options}">
                     <!-- 옵션1 표시(ex. 사이즈) -->
-                    <td>
-                        <ul>
-                            <li th:each="option, optionIdx : ${entry.value}">
-                                <button th:option-id="${option.id}"
-                                        th:option-name="${option.optionTwoName == null ? '기본' : option.optionTwoName}"
-                                        onclick="addToCartForm(this)"
-                                        th:text="|${option.optionTwoName == null ? '기본' : option.optionTwoName}|"/>
-                            </li>
-                        </ul>
-                    </td>
+                    <button onclick="addToCartForm(this)"
+                            th:option-id="${option.id}"
+                            th:option-name="${option.optionDetail == null ? '기본' : option.optionDetail}"
+                            th:text="|${option.optionDetail == null ? '기본' : option.optionDetail}|"/>
                 </tr>
             </table>
 

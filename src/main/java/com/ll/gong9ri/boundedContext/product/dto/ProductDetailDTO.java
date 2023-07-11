@@ -3,11 +3,8 @@ package com.ll.gong9ri.boundedContext.product.dto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,13 +21,10 @@ public class ProductDetailDTO {
 	@Builder.Default
 	private List<String> images = new ArrayList<>();
 	private LocalDateTime createDate;
-	private String optionOne;
-	private String optionTwo;
-	/**
-	 * when optionOne only Exist, "optionOneName, null"
-	 * when optionOne, Two Exist, "optionOneName, Lists of optionTwoNames"
-	 */
-	private Map<String, List<ProductOptionNameDTO>> options;
+	private String optionName;
+	@Builder.Default
+	private List<ProductOptionDetailDTO> options = new ArrayList<>();
+	@Builder.Default
 	private List<ProductDiscountDTO> discounts = new ArrayList<>();
 
 	public static ProductDetailDTO of(final Product product) {
@@ -42,17 +36,14 @@ public class ProductDetailDTO {
 				.map(e -> String.valueOf(e.getId())) // TODO: image url
 				.toList())
 			.createDate(product.getCreateDate())
-			.optionOne(product.getOptionOne())
-			.optionTwo(product.getOptionTwo())
+			.optionName(product.getOptionName())
 			.options(product.getProductOptions()
 				.stream()
-				.collect(Collectors.groupingBy(ProductOption::getOptionOneName,
-					Collectors.mapping(option -> ProductOptionNameDTO.builder()
-						.id(option.getId())
-						.optionOneName(option.getOptionOneName())
-						.optionTwoName(option.getOptionTwoName())
-						.build(), Collectors.toList())))
-			)
+				.map(e -> ProductOptionDetailDTO.builder()
+					.id(e.getId())
+					.optionDetail(e.getOptionDetail())
+					.build())
+				.toList())
 			.discounts(product.getProductDiscounts()
 				.stream().map(e -> ProductDiscountDTO.builder()
 					.headCount(e.getHeadCount())

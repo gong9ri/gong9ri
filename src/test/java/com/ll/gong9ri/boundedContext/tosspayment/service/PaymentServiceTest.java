@@ -79,16 +79,14 @@ class PaymentServiceTest {
 			.store(store)
 			.name("dfvozin")
 			.price(10000)
-			.optionOne("s")
-			.optionTwo("red")
+			.optionName("s red")
 			.build();
 
 		List<ProductOption> options = LongStream.range(3L, 12L)
 			.mapToObj(l -> ProductOption.builder()
 				.id(3477L + l)
 				.product(initProduct)
-				.optionOneName("asdas" + l)
-				.optionOneName("iojptr" + l)
+				.optionDetail("asdas" + l + "iojptr" + l)
 				.build())
 			.collect(Collectors.toList());
 
