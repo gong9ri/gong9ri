@@ -47,7 +47,7 @@ public class OrderLogService {
 			.orderStatus(OrderStatus.CREATED)
 			.totalPrice(orderInfo.getPrice() * quantities.stream()
 				.mapToInt(ProductOptionQuantity::getQuantity)
-				.sum() * orderInfo.getPrice())
+				.sum())
 			.productOptionQuantities(quantities)
 			.build();
 
