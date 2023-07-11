@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductOptionQuantity {
+	private Long optionId;
 	private String optionDetail;
 	private Integer quantity;
 }
