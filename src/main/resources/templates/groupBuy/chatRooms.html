@@ -6,17 +6,26 @@
     <script th:src="@{/app.js}"></script>
 <body>
 
-<main class="flex items-center justify-center" layout:fragment="main">
+<main class="flex flex-col items-center justify-center" layout:fragment="main">
 
     <!-- content 시작 -->
     <div>
         채팅방 목록
-        <div th:if="${chatRooms.isEmpty()}">등록된 상품이 없습니다.</div>
-        <div th:each="chatRoom: ${chatRooms}">
-            <div th:href="@{/groupbuy/{chatRoomId}(chatRoomId=${chatRoom.groupBuyChatRoomId})}"
-                 th:text="${chatRoom.name}"></div>
-        </div>
     </div>
+    <div th:if="${chatRooms.isEmpty()}">현재 입장한 채팅방이 없습니다.</div>
+    <table class="flex items-center justify-center table table-zebra">
+        <tr>
+            <th>채팅방 이름</th>
+            <th>공동구매 종료시간</th>
+        </tr>
+        <tr th:each="chatRoom: ${chatRooms}">
+            <td>
+                <a th:href="@{/groupbuy/{chatRoomId}(chatRoomId=${chatRoom.groupBuyChatRoomId})}"
+                   th:text="${chatRoom.name}"></a>
+            </td>
+            <td th:text="${chatRoom.endDate}"></td>
+        </tr>
+    </table>
     <!-- content 끝 -->
 </main>
 </body>

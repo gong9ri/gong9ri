@@ -21,7 +21,9 @@ public class GroupBuyChatRoomRepositoryImpl implements GroupBuyChatRoomRepositor
 		return queryFactory.select(Projections.constructor(
 				GroupBuyChatRoomDto.class,
 				groupBuyChatRoom.id,
-				groupBuyChatRoom.name))
+				groupBuyChatRoom.name,
+				groupBuyChatRoom.groupBuy.endDate)
+			)
 			.from(groupBuyChatRoom)
 			.join(chatRoomParticipant)
 			.on(chatRoomParticipant.groupBuyChatRoom.id.eq(groupBuyChatRoom.id))
