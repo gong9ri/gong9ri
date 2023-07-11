@@ -2,9 +2,7 @@ package com.ll.gong9ri.boundedContext.tosspayment.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -28,6 +26,7 @@ import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.entity.ProviderTypeCode;
 import com.ll.gong9ri.boundedContext.order.dto.OrderRecipientDTO;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
+import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
 import com.ll.gong9ri.boundedContext.order.service.OrderInfoService;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
@@ -98,16 +97,13 @@ class PaymentServiceTest {
 	@Test
 	@DisplayName("Create Order Test")
 	void createOrderTest() {
-		RsData<OrderInfo> rsPreCreate = orderInfoService.preCreate(member, product);
-		assertThat(rsPreCreate.isSuccess()).isTrue();
-
-		RsData<OrderInfo> rsCreateOrderInfo = orderInfoService.create(rsPreCreate.getData());
-		assertThat(rsCreateOrderInfo.isSuccess()).isTrue();
-
-		final Map<ProductOption, Integer> options = new HashMap<>();
-		options.put(product.getProductOptions().get(1), 3);
-		options.put(product.getProductOptions().get(4), 1);
-		options.put(product.getProductOptions().get(5), 2);
+		ProductOptionQuantity productOptionQuantity = ProductOptionQuantity.builder()
+			.optionId(product.getProductOptions().get(0).getId())
+			.optionDetail(product.getProductOptions().get(0).getOptionDetail())
+			.quantity(3)
+			.build();
+		RsData<OrderInfo> rsCreate = orderInfoService.create(member, product, List.of(productOptionQuantity));
+		assertThat(rsCreate.isSuccess()).isTrue();
 
 		final OrderRecipientDTO orderRecipientDTO = OrderRecipientDTO.builder()
 			.recipient(member.getUsername())
@@ -116,9 +112,8 @@ class PaymentServiceTest {
 			.build();
 
 		final RsData<OrderInfo> rsConfirmOrderInfo = orderInfoService.confirm(
-			rsCreateOrderInfo.getData(),
-			orderRecipientDTO,
-			options
+			rsCreate.getData(),
+			orderRecipientDTO
 		);
 
 		assertThat(rsConfirmOrderInfo.isSuccess()).isTrue();
