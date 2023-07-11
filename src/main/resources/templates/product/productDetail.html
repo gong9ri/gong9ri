@@ -5,6 +5,7 @@
     <title>상품 상세 옵션 주문</title>
     <script th:inline="javascript">
         const token = /*[[${_csrf.token}]]*/ '';
+        const productId = /*[[${product.id}]]*/;
     </script>
     <style>
         .carousel-image {
