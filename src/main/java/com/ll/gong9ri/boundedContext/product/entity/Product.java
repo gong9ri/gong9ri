@@ -44,9 +44,7 @@ public class Product extends BaseEntity {
 	@Builder.Default
 	private List<ProductImage> images = new ArrayList<>();
 	@Setter
-	private String optionOne;
-	@Setter
-	private String optionTwo;
+	private String optionName;
 	private Integer maxPurchaseNum;
 	@OneToMany(mappedBy = "product", cascade = {CascadeType.ALL})
 	@LazyCollection(LazyCollectionOption.EXTRA)

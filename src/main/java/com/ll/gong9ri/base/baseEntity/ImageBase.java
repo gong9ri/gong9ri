@@ -24,6 +24,6 @@ public class ImageBase extends BaseEntity{
 	// TODO: read authotites
 
 	public String getURL() {
-		return AppConfig.getDefaultImageUploadURL() + filePath + fileName;
+		return AppConfig.getDefaultImageUploadURL() + filePath + "/" + fileName;
 	}
 }

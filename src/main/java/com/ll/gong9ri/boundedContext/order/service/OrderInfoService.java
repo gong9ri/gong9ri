@@ -1,7 +1,6 @@
 package com.ll.gong9ri.boundedContext.order.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import com.ll.gong9ri.boundedContext.order.entity.OrderStatus;
 import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
 import com.ll.gong9ri.boundedContext.order.repository.OrderInfoRepository;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
-import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,26 +41,6 @@ public class OrderInfoService {
 	}
 
 	/**
-	 * OrderInfo 를 생성하고 OrderId 를 받습니다.
-	 * @param member
-	 * @param product
-	 * @return OrderInfo
-	 */
-	public RsData<OrderInfo> preCreate(final Member member, final Product product) {
-		OrderInfo orderInfo = OrderInfo.builder()
-			.member(member)
-			.store(product.getStore())
-			.product(product)
-			.price(product.getPrice())
-			.orderStatus(OrderStatus.PRE_CREATED)
-			.build();
-
-		repository.save(orderInfo);
-
-		return RsData.successOf(orderInfo);
-	}
-
-	/**
 	 * GroupBuy 가 OrderInfo 를 생성하고 OrderId 를 받습니다.
 	 * @param member
 	 * @param product
@@ -83,37 +61,68 @@ public class OrderInfoService {
 		return RsData.successOf(orderInfo);
 	}
 
-	public RsData<OrderInfo> create(final OrderInfo preCreatedOrderInfo) {
-		final RsData<OrderLog> rsOrderLog = orderLogService.create(preCreatedOrderInfo);
+	/**
+	 * Member 가 직접 Product 를 구매합니다.
+	 *
+	 * @param member 구매한 Member
+	 * @param product 구매할 Product
+	 * @param quantities 구매할 Product 의 Option 과 개수 List
+	 * @return OrderInfo CREATED
+	 */
+	public RsData<OrderInfo> create(
+		final Member member,
+		final Product product,
+		final List<ProductOptionQuantity> quantities
+	) {
+		final Integer totCount = quantities.stream().mapToInt(ProductOptionQuantity::getQuantity).sum();
+
+		OrderInfo orderInfo = OrderInfo.builder()
+			.name(product.getName() + " " + totCount + "개")
+			.member(member)
+			.store(product.getStore())
+			.product(product)
+			.orderStatus(OrderStatus.CREATED)
+			.price(product.getPrice())
+			.build();
+
+		orderInfo = repository.save(orderInfo);
+
+		final RsData<OrderLog> rsOrderLog = orderLogService.create(orderInfo, quantities);
 		if (rsOrderLog.isFail()) {
 			return RsData.of(rsOrderLog.getResultCode(), rsOrderLog.getMsg(), null);
 		}
 
-		OrderInfo orderInfo = preCreatedOrderInfo.toBuilder()
-			.orderStatus(OrderStatus.CREATED)
+		orderInfo = orderInfo.toBuilder()
 			.recentOrderLogId(rsOrderLog.getData().getId())
 			.build();
 
-		repository.save(orderInfo);
-
-		return RsData.of("S-1", "주문이 생성되었습니다.", orderInfo);
+		return RsData.of("S-1", "주문이 생성되었습니다.", repository.save(orderInfo));
 	}
 
-	public RsData<OrderInfo> confirm(
-		final OrderInfo createdOrderInfo,
-		final OrderRecipientDTO orderRecipientDTO,
-		final Map<ProductOption, Integer> options
+	/**
+	 * GroupBuy 에 의해 생성된 Order 에 옵션을 선택해 구매를 결정합니다.
+	 *
+	 * @param groupBuyOrderInfo GroupBuy 가 생성한 Order
+	 * @param quantities 구매할 Product 의 Option 과 개수 List
+	 * @return OrderInfo CREATED
+	 */
+	public RsData<OrderInfo> groupBuyConfirm(
+		final OrderInfo groupBuyOrderInfo,
+		final List<ProductOptionQuantity> quantities
 	) {
-		final Optional<OrderLog> createdOrderLog = orderLogService.findById(createdOrderInfo.getRecentOrderLogId());
+		final Optional<OrderLog> createdOrderLog = orderLogService.findById(groupBuyOrderInfo.getRecentOrderLogId());
 		if (createdOrderLog.isEmpty()) {
 			return RsData.failOf(null);
 		}
 
-		final RsData<OrderLog> rsOrderLog = orderLogService.confirm(createdOrderLog.get(), orderRecipientDTO, options);
+		final RsData<OrderLog> rsOrderLog = orderLogService.groupBuyConfirm(
+			createdOrderLog.get(),
+			quantities
+		);
 
-		final OrderInfo orderInfo = createdOrderInfo.toBuilder()
+		final OrderInfo orderInfo = groupBuyOrderInfo.toBuilder()
 			.recentOrderLogId(rsOrderLog.getData().getId())
-			.orderStatus(OrderStatus.OPTION_SELECTED)
+			.orderStatus(OrderStatus.CREATED)
 			.name(rsOrderLog.getData().getProductName()
 				+ " "
 				+ rsOrderLog.getData().getProductOptionQuantities()
@@ -121,6 +130,30 @@ public class OrderInfoService {
 				.mapToInt(ProductOptionQuantity::getQuantity)
 				.sum()
 				+ "개")
+			.build();
+
+		repository.save(orderInfo);
+
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderInfo);
+	}
+
+	public RsData<OrderInfo> confirm(
+		final OrderInfo createdOrderInfo,
+		final OrderRecipientDTO orderRecipientDTO
+	) {
+		final Optional<OrderLog> createdOrderLog = orderLogService.findById(createdOrderInfo.getRecentOrderLogId());
+		if (createdOrderLog.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		final RsData<OrderLog> rsOrderLog = orderLogService.confirm(createdOrderLog.get(), orderRecipientDTO);
+		if (rsOrderLog.isFail()) {
+			return RsData.of(rsOrderLog.getResultCode(), rsOrderLog.getMsg(), null);
+		}
+
+		final OrderInfo orderInfo = createdOrderInfo.toBuilder()
+			.recentOrderLogId(rsOrderLog.getData().getId())
+			.orderStatus(OrderStatus.RECIPIENT_DONE)
 			.build();
 
 		repository.save(orderInfo);

@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductOptionNameDTO {
+public class ProductOptionDetailDTO {
 	private Long id;
 	@NotBlank
-	private String optionOneName;
-	@NotBlank
-	private String optionTwoName;
+	private String optionDetail;
 }
