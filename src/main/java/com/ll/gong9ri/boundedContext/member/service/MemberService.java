@@ -1,6 +1,5 @@
 package com.ll.gong9ri.boundedContext.member.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,13 +19,14 @@ import com.ll.gong9ri.base.event.EventAfterMemberJoinAttr;
 import com.ll.gong9ri.base.event.EventAfterStoreJoinAccept;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.image.dto.ImageDTO;
-import com.ll.gong9ri.boundedContext.member.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.image.service.ImageService;
 import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.member.entity.ProviderTypeCode;
 import com.ll.gong9ri.boundedContext.member.repository.MemberImageRepository;
 import com.ll.gong9ri.boundedContext.member.repository.MemberRepository;
+import com.ll.gong9ri.boundedContext.member.util.MemberNicknameUt;
 import com.ll.gong9ri.boundedContext.member.util.MemberUt;
 
 import lombok.RequiredArgsConstructor;
@@ -62,6 +62,7 @@ public class MemberService {
 			.builder()
 			.providerTypeCode(providerTypeCode)
 			.username(username)
+			.nickname(new MemberNicknameUt().getNickname(username.hashCode()))
 			.password(password)
 			.authLevel(AuthLevel.MEMBER)
 			.build();
@@ -101,6 +102,7 @@ public class MemberService {
 			.builder()
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
 			.username(storeDBName)
+			.nickname(storeName)
 			.password(password)
 			.authLevel(AuthLevel.STORE)
 			.build();
