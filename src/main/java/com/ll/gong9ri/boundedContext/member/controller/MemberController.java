@@ -25,7 +25,9 @@ import com.ll.gong9ri.boundedContext.store.dto.StoreJoinDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -69,19 +71,18 @@ public class MemberController {
 	@PostMapping("/update-profile")
 	@PreAuthorize("isAuthenticated()")
 	public String updateProfile(
-		@RequestPart(value = "files") List<MultipartFile> multipartFiles,
+		@RequestPart(value = "files") MultipartFile multipartFile,
 		@Valid MemberInfoForm form,
 		BindingResult bindingResult){
 		if (bindingResult.hasErrors()) {
 			return rq.redirectWithErrorMsg("/member/me", "프로필 수정 실패");
 		}
+
 		final RsData<Member> rsMember = memberService.setNickname(rq.getMember(), form.getNickname());
 		if (rsMember.isFail())
 			return rq.historyBack(rsMember);
 
-		if (!multipartFiles.isEmpty()) {
-			memberService.uploadMemberImage(rq.getMember(), multipartFiles);
-		}
+		memberService.uploadMemberImage(rq.getMember(), multipartFile);
 
 		return rq.redirectWithMsg("/member/me", "프로필이 변경되었습니다.");
 	}

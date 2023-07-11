@@ -153,9 +153,18 @@ public class MemberService {
 	}
 
 	@Transactional
-	public ImageDTO uploadMemberImage(Member member, List<MultipartFile> multipartFiles){
+	public ImageDTO uploadMemberImage(Member member, MultipartFile multipartFile){
+		Optional<MemberImage> originMemberImage = memberImageRepository.findByMemberId(member.getId());
 
-		ImageDTO dto = imageService.uploadImages(multipartFiles, "member").get(0);
+		ImageDTO dto = imageService.uploadMemberImage(multipartFile, "member");
+
+		if(dto == null){
+			return null;
+		}
+
+		if(originMemberImage.isPresent()){
+			deleteMemberImage(originMemberImage.get());
+		}
 
 		MemberImage memberImage = MemberImage.builder()
 			.fileName(dto.getUploadFileName())
@@ -166,5 +175,11 @@ public class MemberService {
 		memberImageRepository.save(memberImage);
 
 		return dto;
+	}
+
+	@Transactional
+	public void deleteMemberImage(final MemberImage memberImage){
+		memberImageRepository.delete(memberImage);
+		memberImageRepository.flush();
 	}
 }

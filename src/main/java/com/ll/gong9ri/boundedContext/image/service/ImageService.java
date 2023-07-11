@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.image.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ import com.ll.gong9ri.boundedContext.image.repository.ChatImageRepository;
 import com.ll.gong9ri.boundedContext.member.repository.MemberImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Sinks;
 
 @Slf4j
 @Service
@@ -56,6 +58,9 @@ public class ImageService {
 	 */
 
 	public List<ImageDTO> uploadImages(List<MultipartFile> multipartFiles, String filePath) {
+		if(multipartFiles == null){
+			return Collections.emptyList();
+		}
 
 		List<ImageDTO> s3Images = new ArrayList<>();
 
@@ -110,4 +115,19 @@ public class ImageService {
 		return dtos;
 	}
 
+	public ImageDTO uploadMemberImage(MultipartFile file, String filePath) {
+		if (file == null || file.isEmpty()) {
+			return null;
+		}
+
+		List<MultipartFile> files = new ArrayList<>();
+		files.add(file);
+
+		List<ImageDTO> images = uploadImages(files, filePath);
+
+		if (images == null || images.isEmpty()) {
+			return null;
+		}
+		return images.get(0);
+	}
 }
