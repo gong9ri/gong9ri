@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>공동구매 채팅방 목록</title>
+    <script th:src="@{/app.js}"></script>
+<body>
+
+<main class="flex items-center justify-center" layout:fragment="main">
+
+    <!-- content 시작 -->
+    <div>
+        채팅방 목록
+        <div th:if="${chatRooms.isEmpty()}">등록된 상품이 없습니다.</div>
+        <div th:each="chatRoom: ${chatRooms}">
+            <div th:href="@{/groupbuy/{chatRoomId}(chatRoomId=${chatRoom.groupBuyChatRoomId})}"
+                 th:text="${chatRoom.name}"></div>
+        </div>
+    </div>
+    <!-- content 끝 -->
+</main>
+</body>

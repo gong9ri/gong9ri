@@ -15,6 +15,7 @@ import com.ll.gong9ri.base.event.EventAfterNoticeUpdated;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.dto.GroupBuyChatRoomDto;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.dto.NoticeDto;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
@@ -66,5 +67,18 @@ public class GroupBuyChatRoomController {
 			new EventAfterNoticeUpdated(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
 
 		return rq.redirectWithMsg("/groupbuy/{chatRoomId}", result);
+	}
+
+	@PreAuthorize("isAuthenticated")
+	@GetMapping("/mychatrooms")
+	public String showChatRooms(Model model) {
+
+		Long memberId = rq.getMember().getId();
+		List<GroupBuyChatRoomDto> allByMemberId = groupBuyChatRoomService.findAllByMemberId(memberId);
+
+		model.addAttribute("chatRooms", allByMemberId);
+		model.addAttribute("memberId", memberId);
+
+		return "groupBuy/chatRooms";
 	}
 }
