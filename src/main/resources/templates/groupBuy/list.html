@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공동구매 목록</title>
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+    </style>
 </head>
 <body>
 <main layout:fragment="main">
@@ -12,7 +23,7 @@
         <form class="mb-4">
             <div class="flex items-center mb-2">
                 <label for="status" class="mr-2">진행 상태:</label>
-                <select id="status" name="status" class="border rounded px-2 py-1">
+                <select id="status" name="status" class="border rounded px-2 py-1" onchange="updateGroupBuyList()">
                     <option value="">전체</option>
                     <option value="PROGRESS">모집 진행중</option>
                     <option value="ORDER">주문 진행중</option>
@@ -20,10 +31,11 @@
                 </select>
             </div>
             <div class="flex items-center mb-2">
-                <input type="radio" id="participate-all" name="participate" value="0" checked class="mr-2">
-                <label for="participate-all">전체</label>
-                <input type="radio" id="participate-true" name="participate" value="1" class="mr-2">
-                <label for="participate-true">참여중인 공동구매</label>
+                <label for="status" class="mr-2">참여 여부:</label>
+                <select id="participate" name="participate" class="border rounded px-2 py-1" onchange="updateGroupBuyList()">
+                    <option value="0">전체</option>
+                    <option value="1">참여중인 공동구매</option>
+                </select>
             </div>
             <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
                 검색
@@ -93,25 +105,99 @@
             </table>
         </div>
         <!-- Pagination -->
-        <div class="mt-4">
+        <div class="mt-4" th:if="${!groupBuyList.isEmpty()}">
             <nav class="flex justify-center">
                 <ul class="pagination">
-                    <li class="page-item" th:classappend="${page.number == 0} ? 'disabled'">
-                        <a class="page-link" href="#" th:href="@{?status=${status}&participate=${participate}&page=1}">&laquo;</a>
+                    <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{|/groupBuy/list?status=${status}&participate=${participate}&page=0|}">&laquo;</a>
                     </li>
-                    <li class="page-item" th:classappend="${page.number == 0} ? 'disabled'">
-                        <a class="page-link" href="#" th:href="@{?status=${status}&participate=${participate}&page=${page.number - 1}}">&lsaquo;</a>
+                    <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{|/groupBuy/list?status=${status}&participate=${participate}&page=${page - 1}|}">&lsaquo;</a>
                     </li>
-                    <li class="page-item" th:classappend="${page.number == page.totalPages - 1} ? 'disabled'">
-                        <a class="page-link" href="#" th:href="@{?status=${status}&participate=${participate}&page=${page.number + 1}}">&rsaquo;</a>
+                    <li th:each="pageNum : ${#numbers.sequence(1, groupBuyList.totalPages)}"
+                        th:if="${pageNum >= page - 5 and pageNum <= page + 5}"
+                        th:classappend="${pageNum == page + 1} ? 'active'"
+                        class="page-item">
+                        <a th:text="${pageNum}" class="page-link" th:href="@{|/groupBuy/list?status=${status}&participate=${participate}&page=${pageNum - 1}|}"></a>
                     </li>
-                    <li class="page-item" th:classappend="${page.number == page.totalPages - 1} ? 'disabled'">
-                        <a class="page-link" href="#" th:href="@{?status=${status}&participate=${participate}&page=${page.totalPages - 1}}">&raquo;</a>
+                    <li class="page-item" th:classappend="${page == groupBuyList.totalPages - 1} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{|/groupBuy/list?status=${status}&participate=${participate}&page=${page + 1}|}">&rsaquo;</a>
+                    </li>
+                    <li class="page-item" th:classappend="${page == groupBuyList.totalPages - 1} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{|/groupBuy/list?status=${status}&participate=${participate}&page=${groupBuyList.totalPages - 1}|}">&raquo;</a>
                     </li>
                 </ul>
             </nav>
         </div>
     </div>
 </main>
+
+<script>
+    var statusSelect  = document.getElementById('status');
+    var participateSelect  = document.getElementById('participate');
+
+    statusSelect.addEventListener('change', updateGroupBuyList);
+    participateSelect.addEventListener('change', updateGroupBuyList);
+
+    function updateGroupBuyList() {
+        var status = statusSelect.value;
+        var participate = participateSelect.value;
+        var urlParams = new URLSearchParams(window.location.search);
+
+        urlParams.set('status', status);
+        urlParams.set('participate', participate);
+        urlParams.set('page', '0');
+
+        var newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.location.href = newUrl;
+    }
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var status = urlParams.get('status');
+    var participate = urlParams.get('participate');
+
+    if (status) {
+        var selectedOption = statusSelect.querySelector('option[value="' + status + '"]');
+        if (selectedOption) {
+            statusSelect.value = status;
+        }
+    }
+
+    if (participate) {
+        var selectedOption = participateSelect.querySelector('option[value="' + participate + '"]');
+        if (selectedOption) {
+            participateSelect.value = participate;
+        }
+    }
+
+    function saveFilterOptions() {
+        localStorage.setItem('selectedStatus', statusSelect.value);
+        localStorage.setItem('selectedParticipate', participateSelect.value);
+    }
+
+    function restoreFilterOptions() {
+        const savedStatus = localStorage.getItem('selectedStatus');
+        const savedParticipate = localStorage.getItem('selectedParticipate');
+
+        if (savedStatus) {
+            const selectedOption = statusSelect.querySelector('option[value="' + savedStatus + '"]');
+            if (selectedOption) {
+                statusSelect.value = savedStatus;
+            }
+        }
+
+        if (savedParticipate) {
+            const selectedOption = participateSelect.querySelector('option[value="' + savedParticipate + '"]');
+            if (selectedOption) {
+                participateSelect.value = savedParticipate;
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', restoreFilterOptions);
+    window.addEventListener('beforeunload', saveFilterOptions);
+
+</script>
+
 </body>
 </html>

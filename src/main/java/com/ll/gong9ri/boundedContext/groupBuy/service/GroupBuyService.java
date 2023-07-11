@@ -51,9 +51,18 @@ public class GroupBuyService {
 	}
 
 	public Page<GroupBuyListDTO> searchGroupBuyList(GroupBuyStatus status, Long memberId, int page) {
-		Pageable pageable = PageRequest.of(page - 1, 10);
+		Pageable pageable = PageRequest.of(page, 10);
 		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId, pageable);
 	}
+
+/*
+	public Page<GroupBuyListDTO> searchGroupBuyListByKeyword(String keyword, GroupBuyStatus status, Long memberId, int page) {
+		Pageable pageable = PageRequest.of(page, 10);
+		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId, pageable);
+	}
+*/
+
+
 	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Long id, final Long memberId) {
 		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(id, memberId);
 	}

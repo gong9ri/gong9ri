@@ -60,18 +60,20 @@ public class GroupBuyController {
 	@GetMapping("/list")
 	public String groupBuyList(
 		@RequestParam(value = "status", required = false) String status,
-		@RequestParam(value = "participate", defaultValue = "0") Integer isParticipate,
-		@RequestParam(value = "page", defaultValue = "1") int page,
+		@RequestParam(value = "participate", defaultValue = "0") Integer participate,
+		@RequestParam(value = "page", defaultValue = "0") int page,
 		Model model
 	) {
 
-		Page<GroupBuyListDTO> groupBuyPage = groupBuyService.searchGroupBuyList(
+		Page<GroupBuyListDTO> groupBuyListDTOS = groupBuyService.searchGroupBuyList(
 			GroupBuyStatus.of(status),
-			isParticipate == 0 && rq.isLogin() ? rq.getMember().getId() : null,
+			participate == 0 && rq.isLogin() ? rq.getMember().getId() : null,
 			page);
 
-		model.addAttribute("groupBuyList", groupBuyPage.getContent());
-		model.addAttribute("page", groupBuyPage);
+		model.addAttribute("groupBuyList", groupBuyListDTOS);
+		model.addAttribute("status", status);
+		model.addAttribute("participate", participate);
+		model.addAttribute("page", page);
 
 		return "groupBuy/list";
 	}
