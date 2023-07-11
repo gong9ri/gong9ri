@@ -125,7 +125,7 @@ public class ManageProductController {
 		return ResponseEntity.ok().body(productRs.getData().getId());
 	}
 
-	@GetMapping("/{productId}/image")
+/*	@GetMapping("/{productId}/image")
 	public String showProductImageForm(@PathVariable Long productId, Model model) {
 		List<ProductImageDTO> images = imageService.getProductImages(productId);
 
@@ -142,7 +142,7 @@ public class ManageProductController {
 		}
 
 		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
-	}
+	}*/
 
 	@GetMapping("/{productId}/discount")
 	public String showProductDiscountForm(@PathVariable Long productId, Model model) {

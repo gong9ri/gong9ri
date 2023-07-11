@@ -1,5 +1,9 @@
 package com.ll.gong9ri.boundedContext.product.dto;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +23,7 @@ public class ProductRegisterDTO {
 	private String description;
 	@Builder.Default
 	private Integer maxPurchaseNum = 0;
+	private List<MultipartFile> images;
 
 	public Product toEntity() {
 		return Product.builder()

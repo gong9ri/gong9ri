@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
+import com.ll.gong9ri.boundedContext.product.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductImageDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
@@ -29,7 +29,7 @@ public class ProductService {
 	private final ProductRepository repository;
 	private final ProductOptionService optionService;
 	private final ProductDiscountService discountService;
-	private final ProductImageService imageService;
+	private final ProductImageService productImageService;
 
 	public Optional<Product> getProduct(final Long id) {
 		return repository.findById(id);
@@ -72,6 +72,7 @@ public class ProductService {
 			.build();
 
 		repository.save(product);
+
 
 		optionService.defaultCreate(product);
 
@@ -116,20 +117,18 @@ public class ProductService {
 	}
 
 	@Transactional
-	public RsData<Product> addImages(final Long id, final List<ProductImageDTO> dtos) {
+	public RsData<Product> addImages(final Long id, final List<MultipartFile> images) {
 		Optional<Product> unModifiedProduct = repository.findById(id);
 		if (unModifiedProduct.isEmpty()) {
 			return RsData.failOf(null);
 		}
 
-		List<ProductImage> images = imageService.writeImages(unModifiedProduct.get(), dtos);
+		List<ProductImage> productImages = productImageService.uploadProductImages(unModifiedProduct.get(), images);
 
 		Product product = unModifiedProduct.get().toBuilder()
-			.images(images)
+			.images(productImages)
 			.build();
 
-		repository.save(product);
-
-		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", product);
+		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", repository.save(product));
 	}
 }
