@@ -19,5 +19,8 @@ public class GroupBuyListDTO {
 	private LocalDateTime endDate;
 	private GroupBuyStatus status;
 	private Integer currentMemberCount;
+	private Integer nextMemberCount;
+	private Integer currentSalePrice;
+	private Integer nextSalePrice;
 	private Boolean isParticipate;
 }

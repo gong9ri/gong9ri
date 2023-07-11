@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 상세 옵션</title>
+</head>
+<body>
+<main layout:fragment="main">
+
+    <!-- content 시작 -->
+    <div class="font-semibold p-3 pb-0 text-center text-lg">공지 작성</div>
+
+    <div class="flex flex-col center max-w-2xl my-3 mx-auto w-5/6">
+        <form class="space-y-4" method="post" th:action="@{/groupbuy/{chatRoomId}/notice(chatRoomId=${chatRoomId})}">
+            <div class="flex flex-col gap-2">
+
+                <label for="notice">공지 내용</label>
+                <textarea class="textarea textarea-bordered h-48" id="notice" name="notice"
+                          placeholder="공지를 입력하세요." required="required"></textarea>
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">등록</button>
+                <input class="btn btn-error mx-1" type="button" value="취소"/>
+            </div>
+        </form>
+    </div>
+    <!-- content 종료 -->
+</main>
+</body>

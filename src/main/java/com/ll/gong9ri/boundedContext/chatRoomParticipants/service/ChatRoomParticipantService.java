@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.repository.ChatRoomParticipantRepository;
+import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomParticipantService {
 
 	private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+	private final FcmService fcmService;
 
 	@Transactional
 	public ChatRoomParticipant createNewParticipant(GroupBuyChatRoom groupBuyChatRoom, Member member) {
@@ -26,6 +28,7 @@ public class ChatRoomParticipantService {
 			.groupBuyChatRoom(groupBuyChatRoom)
 			.member(member)
 			.chatOffset("000000000000000000000000")
+			.token(fcmService.findByMemberId(member.getId()).getTokenString())
 			.build();
 
 		return chatRoomParticipantRepository.save(chatRoomParticipant);
@@ -47,5 +50,12 @@ public class ChatRoomParticipantService {
 
 	public Optional<ChatRoomParticipant> findByMemberIdAndGroupBuyChatRoomId(Long memberId, Long groupBuyChatRoomId) {
 		return chatRoomParticipantRepository.findByMemberIdAndGroupBuyChatRoomId(memberId, groupBuyChatRoomId);
+	}
+
+	public List<String> getTokensByChatRoomId(Long roomId) {
+		return chatRoomParticipantRepository.findByGroupBuyChatRoomId(roomId)
+			.stream()
+			.map(ChatRoomParticipant::getToken)
+			.toList();
 	}
 }

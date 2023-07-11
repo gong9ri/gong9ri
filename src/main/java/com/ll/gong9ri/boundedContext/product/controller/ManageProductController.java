@@ -34,7 +34,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-//@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
+@PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 @RequestMapping("/manage/product")
 @RequiredArgsConstructor
 public class ManageProductController {

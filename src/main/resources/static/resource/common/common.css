@@ -34,3 +34,7 @@ html > body .label-text {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+.chat__message-ul {
+    height: 600px;
+}
