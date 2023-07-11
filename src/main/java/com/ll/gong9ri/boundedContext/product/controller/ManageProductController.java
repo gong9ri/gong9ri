@@ -74,14 +74,35 @@ public class ManageProductController {
 	@GetMapping("/{productId}/detail")
 	public String detail(@PathVariable Long productId, Model model) {
 		RsData<ProductDTO> rsProduct = productService.getProductDetail(productId);
-		// TODO: rq.getMember`s store_id == rsProduct.getStore_id fail
+
 		if (rsProduct.isFail()) {
 			return rq.historyBack(rsProduct);
+		}
+
+		if (Boolean.FALSE.equals(storeValidation(productId))) {
+			return rq.historyBack("접근 권한이 없습니다.");
 		}
 
 		model.addAttribute(PRODUCT, rsProduct.getData());
 
 		return "product/detail";
+	}
+
+	@PostMapping("/{productId}/detail")
+	public String saveDetail(@PathVariable Long productId, Model model) {
+		RsData<ProductDTO> rsProduct = productService.getProductDetail(productId);
+
+		if (rsProduct.isFail()) {
+			return rq.historyBack(rsProduct);
+		}
+
+		if (Boolean.FALSE.equals(storeValidation(productId))) {
+			return rq.historyBack("접근 권한이 없습니다.");
+		}
+
+		model.addAttribute(PRODUCT, rsProduct.getData());
+
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productId), "상품 상세 정보 저장에 성공했습니다.");
 	}
 
 	@GetMapping("/registration")
@@ -90,7 +111,8 @@ public class ManageProductController {
 	}
 
 	@PostMapping("/registration")
-	public String registerProduct(@Valid ProductRegisterDTO productRegisterDTO) {
+	public String registerProduct(@Valid ProductRegisterDTO productRegisterDTO,
+		@Valid List<ProductDiscountDTO> productDiscountDTO) {
 		final Optional<Store> oStore = storeService.findByMemberId(rq.getMember().getId());
 		if (oStore.isEmpty()) {
 			return rq.historyBack("잘못된 접근입니다.");
@@ -101,12 +123,23 @@ public class ManageProductController {
 			return rq.historyBack(productRs);
 		}
 
-		return rq.redirectWithMsg("/manage/product/" + productRs.getData().getId() + "/detail", productRs);
+		RsData<Product> discountAddRs = productService.addDiscounts(productRs.getData().getId(), productDiscountDTO);
+
+		if (discountAddRs.isFail()) {
+			return rq.historyBack(discountAddRs);
+		}
+
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
 	}
 
 	@GetMapping("/{productId}/option")
 	public String showProductOptionForm(@PathVariable Long productId, Model model) {
+		Optional<Product> oProduct = productService.getProduct(productId);
 		List<ProductOptionDetailDTO> options = optionService.getProductOptions(productId);
+
+		if (oProduct.isEmpty() || Boolean.FALSE.equals(storeValidation(productId))) {
+			return rq.historyBack("잘못된 접근입니다.");
+		}
 
 		model.addAttribute("options", options);
 

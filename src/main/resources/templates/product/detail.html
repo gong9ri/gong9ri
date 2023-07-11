@@ -6,8 +6,39 @@
 </head>
 <body>
 <main layout:fragment="main">
+    <script>
+        function addDiscountRow() {
+            const detailTable = document.getElementById('detailTable');
+
+            const tableRow = document.createElement('tr');
+            tableRow.className = 'discountInfo';
+
+            const createInputCell = () => {
+                const cell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'text';
+                cell.appendChild(input);
+                return cell;
+            };
+
+            const headCountsTd = createInputCell();
+            headCountsTd.firstChild.name = 'headCounts';
+
+            const salePricesTd = createInputCell();
+            salePricesTd.firstChild.name = 'salePrices';
+
+            const firstColumnTd = detailTable.querySelector('.discountInfo td:first-child');
+            const currentRowSpan = parseInt(firstColumnTd.getAttribute('rowspan'));
+            firstColumnTd.rowSpan = currentRowSpan + 1;
+
+            tableRow.appendChild(headCountsTd);
+            tableRow.appendChild(salePricesTd);
+
+            detailTable.querySelector('tbody').appendChild(tableRow);
+        }
+    </script>
     <form th:action method="post">
-        <table>
+        <table id="detailTable">
             <tr>
                 <th>상품명</th>
                 <td><input name="name" th:value="${product.name}"></td>
@@ -21,31 +52,34 @@
                 <td><a class="btn btn-primary" th:href="@{|/manage/product/${product.id}/option|}">옵션 관리</a></td>
             </tr>
             <tr>
-                <th rowspan="2">공동구매 할인</th>
+                <td></td>
                 <td>인원</td>
                 <td>할인가격</td>
+                <td>
+                    <button class="btn" type="button" onclick="addDiscountRow()">+</button>
+                </td>
             </tr>
             <tr th:if="${product.getProductDiscountList()} == null">
                 <td>등록된 할인 정보 없음</td>
                 <td>
-                    <form th:action="/product/option"></form>
-                    <a href="">할인율 관리</a></td>
+                    <form th:action="/manage/product/${productId}/option"></form>
+                    <a href="">할인율 관리</a>
+                </td>
             </tr>
-            <tr th:each="discount : ${product.getProductDiscountList()}">
+            <tr class="discountInfo" th:if="${product.getProductDiscountList().size() == 0}">
+                <td rowspan="2">공동구매 할인</td>
+                <td><input name="headCounts" type="text"></td>
+                <td><input name="salePrices" type="text"></td>
+            </tr>
+            <tr class="discountInfo" th:each="discount, discountIdx : ${product.getProductDiscountList()}">
+                <td th:if="${discountIdx.index == 0}" th:rowspan="${product.getProductDiscountList().size()}">공동구매 할인
+                </td>
                 <td><input name="headCounts" type="text" th:value="${discount.getHeadCount()}"></td>
                 <td><input name="salePrices" type="text" th:value="${discount.getSalePrice()}"></td>
             </tr>
         </table>
         <button class="btn">저장</button>
         <button type="reset" class="btn">취소</button>
-    </form>
-
-    <!--    공동구매 버튼-->
-    <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
-        <button type="submit" class="btn btn-light border" href="/list"
-                onclick="return confirm('공동구매를 생성하시겠습니까?')">
-            총대되기
-        </button>
     </form>
 </main>
 </body>
