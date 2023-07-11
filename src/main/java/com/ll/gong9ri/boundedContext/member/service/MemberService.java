@@ -102,6 +102,7 @@ public class MemberService {
 			.builder()
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
 			.username(storeDBName)
+			.nickname(storeName)
 			.password(password)
 			.authLevel(AuthLevel.STORE)
 			.build();
