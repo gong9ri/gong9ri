@@ -1,44 +1,42 @@
 <!DOCTYPE html>
-<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<html layout:decorate="~{usr/layout/layout.html}">
 <head>
-    <meta charset="UTF-8">
     <title>상품 목록</title>
 </head>
-<body>
-<main layout:fragment="main">
-    <div>
-        <div th:if="${products.isEmpty()}">등록된 상품이 없습니다.</div>
-        <table class="table">
-            <tr class="table-header" th:if="${!products.isEmpty()}">
-                <th>상품 이미지</th>
-                <th>번호</th>
-                <th>상품명</th>
-                <th>등록일</th>
-                <th>수정일</th>
-            </tr>
-            <tr th:each="product : ${products}">
-                <td>
-                    <div>
-                        <!-- TODO: 상품 이미지 불러오기 -->
-                        <img alt="상품 이미지">
-                    </div>
-                </td>
-                <td>
-                    <a th:href="@{|/manage/product/${product.id}/detail|}" th:text="${product.id}"></a>
-                </td>
-                <td>
-                    <div th:text="${product.name}"></div>
-                </td>
-                <td>
-                    <div th:text="${#temporals.format(product.createDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
-                </td>
-                <td>
-                    <div th:text="${#temporals.format(product.modifyDate, 'yyyy-MM-dd HH:mm:ss')}"></div>
-                </td>
-            </tr>
-        </table>
-        <a class="btn" href="/manage/product/registration">상품 등록</a>
+<body class="bg-gray-100">
+<main class="container max-w-2xl mx-auto" layout:fragment="main">
+    <div class="p-4">
+        <a class="btn btn-primary mb-4" href="/manage/product/registration">상품 등록</a>
     </div>
+    <!-- 상품 목록 -->
+    <div class="p-4 grid grid-cols-1 gap-4">
+
+        <div th:each="product : ${products}">
+
+            <!-- card 시작 -->
+            <a class="flex flex-col" th:href="@{|detail/${product.id}|}">
+                <div class="card card-side  bg-base-100 shadow-lg">
+
+                    <!-- 이미지 -->
+                    <figure class="flex flex-row w-36">
+                        <img alt="이미지가 없습니다." class="h-full w-full object-cover"
+                             src="https://via.placeholder.com/150" th:if="${product.images.size() eq 0}"/>
+                        <img alt="상품 이미지" class="h-full w-full object-cover"
+                             th:if="${product.images.size() ne 0}" th:src="${product.images.get(0).getURL()}"/>
+                    </figure>
+
+                    <!-- 상품 이름, 내용-->
+                    <div class="card-body">
+                        <p class="text-black text-lg font-semibold" th:text="${product.name}"></p>
+                        <p th:text="${'할인가 ' + product.salePrices}"></p>
+                        <p th:text="${'정상가 ' + product.price}"></p>
+                    </div>
+                </div>
+            </a>
+            <!-- card 종료 -->
+        </div>
+    </div>
+    <!-- 상품목록 끝-->
 </main>
 </body>
 </html>

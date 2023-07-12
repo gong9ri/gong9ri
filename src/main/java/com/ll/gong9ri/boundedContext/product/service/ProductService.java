@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
+import com.ll.gong9ri.boundedContext.product.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductImageDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
@@ -20,8 +20,11 @@ import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,7 +32,7 @@ public class ProductService {
 	private final ProductRepository repository;
 	private final ProductOptionService optionService;
 	private final ProductDiscountService discountService;
-	private final ProductImageService imageService;
+	private final ProductImageService productImageService;
 
 	public Optional<Product> getProduct(final Long id) {
 		return repository.findById(id);
@@ -65,17 +68,37 @@ public class ProductService {
 	}
 
 	@Transactional
-	public RsData<Product> registerProduct(final Store store, final ProductRegisterDTO productRegisterDTO) {
-		Product product = productRegisterDTO.toEntity()
-			.toBuilder()
+	public RsData<Product> registerProduct(final Store store, @Valid ProductRegisterDTO productRegisterDTO) {
+		Product product = Product.builder()
+			.name(productRegisterDTO.getName())
+			.price(productRegisterDTO.getPrice())
+			.description(productRegisterDTO.getDescription())
+			.maxPurchaseNum(productRegisterDTO.getMaxPurchaseNum())
 			.store(store)
 			.build();
 
 		repository.save(product);
 
+		addImages(product.getId(), productRegisterDTO.getImages());
+
 		optionService.defaultCreate(product);
 
 		return RsData.of("S-1", "상품이 성공적으로 등록되었습니다.", product);
+	}
+	@Transactional
+	public RsData<Product> addImages(final Long id, final List<MultipartFile> images) {
+		Optional<Product> unModifiedProduct = repository.findById(id);
+		if (unModifiedProduct.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		List<ProductImage> productImages = productImageService.uploadProductImages(unModifiedProduct.get(), images);
+
+		Product product = unModifiedProduct.get().toBuilder()
+			.images(productImages)
+			.build();
+
+		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", repository.save(product));
 	}
 
 	@Transactional
@@ -113,23 +136,5 @@ public class ProductService {
 		repository.save(product);
 
 		return RsData.of("S-1", "인원 별 할인이 성공적으로 등록되었습니다.", product);
-	}
-
-	@Transactional
-	public RsData<Product> addImages(final Long id, final List<ProductImageDTO> dtos) {
-		Optional<Product> unModifiedProduct = repository.findById(id);
-		if (unModifiedProduct.isEmpty()) {
-			return RsData.failOf(null);
-		}
-
-		List<ProductImage> images = imageService.writeImages(unModifiedProduct.get(), dtos);
-
-		Product product = unModifiedProduct.get().toBuilder()
-			.images(images)
-			.build();
-
-		repository.save(product);
-
-		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", product);
 	}
 }
