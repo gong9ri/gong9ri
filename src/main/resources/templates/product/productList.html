@@ -18,7 +18,7 @@
                 <div class="card card-side  bg-base-100 shadow-lg">
 
                     <!-- 이미지 -->
-                    <figure class="flex flex-row w-36 h-36">
+                    <figure class="flex flex-row w-36">
                         <img alt="이미지가 없습니다." class="h-full w-full object-cover"
                              src="https://via.placeholder.com/150" th:if="${product.images.size() eq 0}"/>
                         <img alt="상품 이미지" class="h-full w-full object-cover"
@@ -28,6 +28,8 @@
                     <!-- 상품 이름, 내용-->
                     <div class="card-body">
                         <p class="text-black text-lg font-semibold" th:text="${product.name}"></p>
+                        <p th:text="${'할인가 ' + product.salePrices}"></p>
+                        <p th:text="${'정상가 ' + product.price}"></p>
                     </div>
                 </div>
             </a>
