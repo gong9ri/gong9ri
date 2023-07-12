@@ -56,9 +56,7 @@ public class OrderInfoService {
 			.orderStatus(OrderStatus.GROUP_BUY_CREATED)
 			.build();
 
-		repository.save(orderInfo);
-
-		return RsData.successOf(orderInfo);
+		return RsData.successOf(repository.save(orderInfo));
 	}
 
 	/**
@@ -110,13 +108,15 @@ public class OrderInfoService {
 		final OrderInfo groupBuyOrderInfo,
 		final List<ProductOptionQuantity> quantities
 	) {
-		final Optional<OrderLog> createdOrderLog = orderLogService.findById(groupBuyOrderInfo.getRecentOrderLogId());
-		if (createdOrderLog.isEmpty()) {
+		final Optional<OrderLog> groupBuyCreatedOrderLog = orderLogService.findById(
+				groupBuyOrderInfo.getRecentOrderLogId()
+		);
+		if (groupBuyCreatedOrderLog.isEmpty()) {
 			return RsData.failOf(null);
 		}
 
 		final RsData<OrderLog> rsOrderLog = orderLogService.groupBuyConfirm(
-			createdOrderLog.get(),
+			groupBuyCreatedOrderLog.get(),
 			quantities
 		);
 
@@ -132,9 +132,7 @@ public class OrderInfoService {
 				+ "개")
 			.build();
 
-		repository.save(orderInfo);
-
-		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderInfo);
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", repository.save(orderInfo));
 	}
 
 	public RsData<OrderInfo> confirm(
@@ -156,8 +154,28 @@ public class OrderInfoService {
 			.orderStatus(OrderStatus.RECIPIENT_DONE)
 			.build();
 
-		repository.save(orderInfo);
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", repository.save(orderInfo));
+	}
 
-		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderInfo);
+	public RsData<OrderInfo> payment(
+			final OrderInfo confirmedOrderInfo,
+			final String paymentKey
+	) {
+		final Optional<OrderLog> confirmedOrderLog = orderLogService.findById(confirmedOrderInfo.getRecentOrderLogId());
+		if (confirmedOrderLog.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		final RsData<OrderLog> rsOrderLog = orderLogService.payment(confirmedOrderLog.get(), paymentKey);
+		if (rsOrderLog.isFail()) {
+			return RsData.of(rsOrderLog.getResultCode(), rsOrderLog.getMsg(), null);
+		}
+
+		final OrderInfo orderInfo = confirmedOrderInfo.toBuilder()
+				.recentOrderLogId(rsOrderLog.getData().getId())
+				.orderStatus(OrderStatus.PURCHASE_REQUESTED)
+				.build();
+
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", repository.save(orderInfo));
 	}
 }

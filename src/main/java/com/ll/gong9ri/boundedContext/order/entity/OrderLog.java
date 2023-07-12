@@ -41,26 +41,9 @@ public class OrderLog {
 	private Integer totalPrice;
 	@Builder.Default
 	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
+	private String paymentKey;
 
 	public OrderLog newLogOf() {
-		return OrderLog.builder()
-				.orderId(orderId)
-				.name(name)
-				.memberId(memberId)
-				.username(username)
-				.storeId(storeId)
-				.storeName(storeName)
-				.productId(productId)
-				.productName(productName)
-				.price(price)
-				.salePrice(salePrice)
-				.orderStatus(orderStatus)
-				.recipient(recipient)
-				.phoneNumber(phoneNumber)
-				.mainAddress(mainAddress)
-				.subAddress(subAddress)
-				.totalPrice(totalPrice)
-				.productOptionQuantities(productOptionQuantities)
-				.build();
+		return this.toBuilder().id(null).build();
 	}
 }
