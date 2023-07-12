@@ -53,11 +53,16 @@
 
     <!--    공동구매 참여 버튼-->
     <form th:action="@{|/groupBuy/${groupBuy.id}/participate|}" method="post" th:href="@{|detail/${groupBuy.id}|}">
-        <button type="submit" class="btn btn-light border"
+        <button class="btn btn-primary border" type="submit"
                 onclick="return confirm('공동구매에 참여하시겠습니까?')">
             공동구매 참여하기
         </button>
     </form>
+    <a th:href="@{|/groupbuy/${chatRoomId}|}">
+        <button class="btn btn-primary my-2">
+            채팅방 입장하기
+        </button>
+    </a>
 </main>
 </body>
 </html>
