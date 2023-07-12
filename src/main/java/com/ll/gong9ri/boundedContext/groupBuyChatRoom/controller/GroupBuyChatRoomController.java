@@ -33,6 +33,7 @@ public class GroupBuyChatRoomController {
 	private final Rq rq;
 	private final ApplicationEventPublisher publisher;
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{chatRoomId}")
 	public String showChatRoom(@PathVariable Long chatRoomId, Model model) {
 
@@ -48,13 +49,13 @@ public class GroupBuyChatRoomController {
 		return "groupBuy/roomDetail";
 	}
 
-	@PreAuthorize("isAuthenticated")
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{chatRoomId}/notice")
 	public String getNoticeForm(@PathVariable Long chatRoomId) {
 		return "groupBuy/noticeForm";
 	}
 
-	@PreAuthorize("isAuthenticated")
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/{chatRoomId}/notice")
 	public String createNotice(@PathVariable Long chatRoomId, @Valid NoticeDto dto) {
 		GroupBuyChatRoom chatRoom = groupBuyChatRoomService.findById(chatRoomId);
@@ -69,7 +70,7 @@ public class GroupBuyChatRoomController {
 		return rq.redirectWithMsg("/groupbuy/{chatRoomId}", result);
 	}
 
-	@PreAuthorize("isAuthenticated")
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mychatrooms")
 	public String showChatRooms(Model model) {
 
