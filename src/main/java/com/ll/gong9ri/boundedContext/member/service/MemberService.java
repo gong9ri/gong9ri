@@ -90,9 +90,8 @@ public class MemberService {
 
 	@Transactional
 	public RsData<Member> storeJoin(final String storeName, String password) {
-		final String storeDBName = storeNamePrefix + storeName;
-		if (findByUsername(storeDBName).isPresent()) {
-			return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(storeDBName));
+		if (findByUsername(storeName).isPresent()) {
+			return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(storeName));
 		}
 
 		if (StringUtils.hasText(password))
@@ -101,8 +100,8 @@ public class MemberService {
 		Member member = Member
 			.builder()
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
-			.username(storeDBName)
-			.nickname(storeName)
+			.username(storeName)
+			.nickname(storeNamePrefix + storeName)
 			.password(password)
 			.authLevel(AuthLevel.STORE)
 			.build();
@@ -164,9 +163,7 @@ public class MemberService {
 			return null;
 		}
 
-		if(originMemberImage.isPresent()){
-			deleteMemberImage(originMemberImage.get());
-		}
+		originMemberImage.ifPresent(this::deleteMemberImage);
 
 		MemberImage memberImage = MemberImage.builder()
 			.fileName(dto.getUploadFileName())

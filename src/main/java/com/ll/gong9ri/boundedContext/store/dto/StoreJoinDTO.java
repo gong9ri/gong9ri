@@ -10,7 +10,5 @@ public class StoreJoinDTO {
 	@NotBlank
 	private String username;
 	@NotBlank
-	private String storeName;
-	@NotBlank
 	private String password;
 }
