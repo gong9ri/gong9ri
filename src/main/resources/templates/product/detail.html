@@ -41,12 +41,14 @@
     </form>
 
     <!--    공동구매 버튼-->
-    <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
-        <button type="submit" class="btn btn-light border" href="/list"
-                onclick="return confirm('공동구매를 생성하시겠습니까?')">
-            총대되기
-        </button>
-    </form>
+    <div class="flex justify-center mx-auto">
+        <form method="post" th:action="@{|/groupBuy/make/${product.id}|}">
+            <button class="btn btn-light border" href="/list" onclick="return confirm('공동구매를 생성하시겠습니까?')"
+                    type="submit">
+                총대되기
+            </button>
+        </form>
+    </div>
 </main>
 </body>
 </html>

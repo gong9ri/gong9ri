@@ -47,7 +47,7 @@
 
             <!-- 옵션 선택 (Options) -->
             <table class="options">
-                <p class="text-2xl font-bold rounded py-2">옵션 선택</p>
+                <p class="text-2xl font-bold rounded py-2">✅ 옵션 선택</p>
                 <tr class="flex flex-col justify-center items-center" th:each="option, optionIdx : ${product.options}">
                     <!-- 옵션1 표시(ex. 사이즈) -->
                     <button onclick="addToCartForm(this)"
@@ -59,22 +59,25 @@
             </table>
 
             <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
-            <div>
-                <p class="text-2xl font-bold rounded py-2">내 선택</p>
-                <ul class="my-choice" id="myChoice">
+            <div class="rounded border border-primary">
+                <p class="text-xl font-bold rounded mx-2 my-2">🛒 선택된 옵션</p>
+                <ul class="my-choice mx-2 my-1" id="myChoice">
 
                 </ul>
             </div>
 
-            <button class="btn btn-primary" onclick="addToCart()">상품 주문하기</button>
+            <button class="btn btn-primary my-2" onclick="addToCart()">상품 주문하기</button>
 
             <!-- 공동구매 버튼 -->
-            <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
-                <button class="btn btn-light border my-2" href="/list" type="submit"
-                        onclick="return confirm('공동구매를 생성하시겠습니까?')">
-                    총대되기
-                </button>
-            </form>
+            <div class="flex justify-center">
+                <form method="post" th:action="@{|/groupBuy/make/${product.id}|}">
+                    <button class="btn btn-secondary btn-light border my-2" href="/list" onclick="return confirm('공동구매를 생성하시겠습니까?')"
+                            type="submit">
+                        총대되기
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 
