@@ -102,7 +102,7 @@ public class GroupBuyController {
 		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
 	}
 
-	@PutMapping("/{groupBuyId}/cancel")
+	@PostMapping("/{groupBuyId}/cancel")
 	@PreAuthorize("isAuthenticated()")
 	public String participateCancelGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
 		final RsData<GroupBuy> rsGroupBuy = validateGroupBuy(groupBuyId);

@@ -62,7 +62,8 @@ public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 				groupBuy.nextHeadCount,
 				groupBuy.currentSalePrice,
 				groupBuy.nextSalePrice,
-				isParticipate(memberId)
+				isParticipate(memberId),
+				groupBuy.product
 			))
 			.from(groupBuy)
 			.where(

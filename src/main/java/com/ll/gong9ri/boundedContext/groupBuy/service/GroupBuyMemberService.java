@@ -112,12 +112,13 @@ public class GroupBuyMemberService {
 		return RsData.successOf(groupBuyMember);
 	}
 
+	@Transactional
 	public RsData<Void> delete(final GroupBuy groupBuy, final Member member) {
 		final Optional<GroupBuyMember> oGroupBuyMember = groupBuyMemberRepository.findByGroupBuyIdAndMemberId(
 			groupBuy.getId(),
 			member.getId()
 		);
-		if (oGroupBuyMember.isEmpty() || oGroupBuyMember.get().getMember().getId().equals(member.getId())) {
+		if (oGroupBuyMember.isEmpty() || !oGroupBuyMember.get().getMember().getId().equals(member.getId())) {
 			return RsData.of("F-1", "잘못된 접근입니다.");
 		}
 

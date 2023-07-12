@@ -31,6 +31,9 @@
             <!-- 상품 정보 -->
             <div class="product flex flex-col">
                 <span class="product-name" th:text="*{product.name}"></span>
+                <div class="fs-5 has-text-black text-left">
+                    <span th:text="${product.description}"></span>
+                </div>
                 <div class="discounts">
                     <ul>
                         <li th:each="discount : *{product.discounts}">
@@ -71,7 +74,7 @@
             <!-- 공동구매 버튼 -->
             <div class="flex justify-center">
                 <form method="post" th:action="@{|/groupBuy/make/${product.id}|}">
-                    <button class="btn btn-secondary btn-light border my-2" href="/list" onclick="return confirm('공동구매를 생성하시겠습니까?')"
+                    <button class="btn btn-secondary btn-light border my-2" href="/list" onclick="return confirm('총대가 되면 공동구매에 반드시 참여해야 합니다.\n 공동구매를 생성 하시겠습니까?')"
                             type="submit">
                         총대되기
                     </button>
