@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.ll.gong9ri.base.appConfig.AppConfig;
+import com.ll.gong9ri.base.tosspayments.tossConfig.TossConfig;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.service.PaymentService;
 import com.ll.gong9ri.boundedContext.order.dto.OrderInfoListDTO;
 import com.ll.gong9ri.boundedContext.order.dto.OrderRecipientDTO;
@@ -173,8 +174,8 @@ public class OrderController {
 		return rq.redirectWithMsg("/order/detail/" + rsConfirmOrder.getData().getId(), rsConfirmOrder);
 	}
 
-	@PostMapping("/create/payment/{orderId}")
-	public String createPayment(@PathVariable Long orderId, Model model) {
+	@GetMapping("/payment/{orderId}")
+	public String paymentForm(@PathVariable Long orderId, Model model) {
 		final RsData<OrderInfo> rsOrderInfo = orderValidate(orderId);
 		if (rsOrderInfo.isFail()) {
 			return rq.historyBack(rsOrderInfo);
@@ -185,15 +186,40 @@ public class OrderController {
 			return rq.historyBack(FORBIDDEN_MESSAGE);
 		}
 
-		// TODO: purchase redirect
+		model.addAttribute("clientKey", TossConfig.getCLIENT_KEY());
+		model.addAttribute("successUrl", AppConfig.getBaseUrl() + "/payment/" + orderId + "/success");
+		model.addAttribute("failUrl", AppConfig.getBaseUrl() + "/payment/" + orderId + "/fail");
+		model.addAttribute("orderLog", oOrderLog.get());
+		return "usr/order/payment";
+	}
 
-		final RsData<PaymentResult> paymentResult = paymentService.createPayment(oOrderLog.get());
-		if (paymentResult.isFail()) {
-			return rq.historyBack(paymentResult);
+	@GetMapping("/payment/{orderId}/success")
+	public String paymentSuccess(@PathVariable Long orderId, Model model) {
+		final RsData<OrderInfo> rsOrderInfo = orderValidate(orderId);
+		if (rsOrderInfo.isFail()) {
+			return rq.historyBack(rsOrderInfo);
 		}
 
-		model.addAttribute("paymentResult", paymentResult.getData().getPaymentKey());
+		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrderInfo.getData().getRecentOrderLogId());
+		if (oOrderLog.isEmpty()) {
+			return rq.historyBack(FORBIDDEN_MESSAGE);
+		}
 
-		return "order/payment";
+		return "usr/order/payment";
+	}
+
+	@GetMapping("/payment/{orderId}/fail")
+	public String paymentFail(@PathVariable Long orderId, Model model) {
+		final RsData<OrderInfo> rsOrderInfo = orderValidate(orderId);
+		if (rsOrderInfo.isFail()) {
+			return rq.historyBack(rsOrderInfo);
+		}
+
+		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrderInfo.getData().getRecentOrderLogId());
+		if (oOrderLog.isEmpty()) {
+			return rq.historyBack(FORBIDDEN_MESSAGE);
+		}
+
+		return "usr/order/payment";
 	}
 }

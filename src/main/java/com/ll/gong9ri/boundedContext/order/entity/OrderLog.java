@@ -35,6 +35,7 @@ public class OrderLog {
 	@Builder.Default
 	private OrderStatus orderStatus = OrderStatus.PRE_CREATE;
 	private String recipient;
+	private String phoneNumber;
 	private String mainAddress;
 	private String subAddress;
 	private Integer totalPrice;
@@ -44,6 +45,7 @@ public class OrderLog {
 	public OrderLog newLogOf() {
 		return OrderLog.builder()
 				.orderId(orderId)
+				.name(name)
 				.memberId(memberId)
 				.username(username)
 				.storeId(storeId)
@@ -54,6 +56,7 @@ public class OrderLog {
 				.salePrice(salePrice)
 				.orderStatus(orderStatus)
 				.recipient(recipient)
+				.phoneNumber(phoneNumber)
 				.mainAddress(mainAddress)
 				.subAddress(subAddress)
 				.totalPrice(totalPrice)

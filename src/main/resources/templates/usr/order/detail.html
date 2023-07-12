@@ -60,11 +60,11 @@
     </table>
     <a th:href="@{|/order/list|}" th:text="목록으로"></a>
 
-    <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}" th:text="옵션 선택">
-    </a>
+    <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}">옵션 선택</a>
 
-    <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}" th:text="결제">
-    </a>
+    <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}">배송지 입력</a>
+
+    <a th:href="@{|/order/payment/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).RECIPIENT_DONE}">결제</a>
 </main>
 </body>
 </html>

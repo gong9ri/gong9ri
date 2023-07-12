@@ -86,8 +86,9 @@ public class OrderLogService {
 		}
 
 		final OrderLog orderLog = createOrderLog.newLogOf().toBuilder()
-			.orderStatus(OrderStatus.CREATED)
+			.orderStatus(OrderStatus.RECIPIENT_DONE)
 			.recipient(orderRecipientDTO.getRecipient())
+			.phoneNumber(orderRecipientDTO.getPhoneNumber())
 			.mainAddress(orderRecipientDTO.getMainAddress())
 			.subAddress(orderRecipientDTO.getSubAddress())
 			.build();

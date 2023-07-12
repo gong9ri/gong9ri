@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <title>결제 페이지</title>
+    <meta charset="UTF-8"/>
+
+    <script th:inline="javascript">
+        const token = /*[[${_csrf.token}]]*/ '';
+        const orderLog = /*[[${orderLog}]]*/;
+        const clientKey = /*[[${clientKey}]]*/;
+        const successUrl = /*[[${successUrl}]]*/;
+        const failUrl = /*[[${failUrl}]]*/;
+    </script>
+
+    <!-- tosspayments -->
+    <script src="https://js.tosspayments.com/v1"></script>
+</head>
+<body>
+<main layout:fragment="main">
+    <div class="container max-w-2xl mx-auto">
+        <div class="form-container form-control border-0">
+            <!-- 상품 정보 -->
+            <div class="product">
+                <th>주문명</th>
+                <td>
+                    <span th:text="${orderLog.name}"></span>
+                </td>
+                <th>스토어명</th>
+                <td>
+                    <a th:href="@{|/product/detail/${orderLog.storeId}|}">
+                        <span th:text="${orderLog.storeName}"></span>
+                    </a>
+                </td>
+                <th>상품명</th>
+                <td>
+                    <a th:href="@{|/product/detail/${orderLog.productId}|}">
+                        <span th:text="${orderLog.productName}"></span>
+                    </a>
+                </td>
+                <div class="discount">
+                    <p>할인가<span th:text="${orderLog.salePrice}"></span>원</p>
+                </div>
+            </div>
+            <table class="options">
+                <tr th:each="option : ${orderLog.productOptionQuantities}">
+                    <span th:text="${option.optionDetail}"></span>
+                    <span th:text="${option.quantity}"></span>
+                </tr>
+            </table>
+
+            <!-- 결제 금액 -->
+            <section>
+                <span>총 주문 금액</span>
+                <span th:text="${orderLog.totalPrice}"></span>
+
+                <button onclick="pay('카드', reqCard);">결제하기</button>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        let tossPayments = TossPayments(clientKey);
+
+        function pay(method, requestJson) {
+            console.log(requestJson);
+            tossPayments.requestPayment(method, requestJson)
+                .catch(function (error) {
+                    if (error.code === "USER_CANCEL") {
+                        alert('유저가 취소했습니다.');
+                    } else {
+                        alert(error.message);
+                    }
+                });
+        }
+
+        let reqCard = {
+                "amount": orderLog.totalPrice,
+                "orderId": orderLog.orderId,
+                "orderName": orderLog.name,
+                "successUrl": successUrl,
+                "failUrl": failUrl,
+                "cardCompany": null,
+                "cardInstallmentPlan": null,
+                "maxCardInstallmentPlan": null,
+                "useCardPoint": false,
+                "customerName": orderLog.recipient,
+                "customerEmail": null,
+                "customerMobilePhone": orderLog.phoneNumber,
+                "taxFreeAmount": null,
+                "useInternationalCardOnly": false,
+                "flowMode": "DEFAULT",
+                "discountCode": null,
+                "appScheme": null
+        };
+    </script>
+</main>
+</body>
+</html>
