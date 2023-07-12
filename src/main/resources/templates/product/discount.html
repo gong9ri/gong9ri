@@ -5,6 +5,122 @@
     <title>상품 할인 등록</title>
 </head>
 <body>
+<main layout:fragment="main">
+    <script>
+        function submitForm() {
+            const headCounts = document.querySelectorAll("[name='headCount']");
+            const salePrices = document.querySelectorAll("[name='salePrice']");
+            const dtoList = [];
 
+            for (let i = 0; i < headCounts.length; i++) {
+                const headCountInput = headCounts[i];
+                const salePriceInput = salePrices[i];
+                const headCount = headCountInput.value
+                const salePrice = salePriceInput.value;
+
+                const dto = {headCount, salePrice};
+
+                dtoList.push(dto);
+            }
+
+            const data = dtoList;
+
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
+            const token = document.querySelector('meta[name="_csrf"]').content;
+
+            fetch(window.location.href, {
+                method: 'PUT',
+                headers: {
+                    [header]: token,
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            }).then((response) => {
+                return response.json();
+            }).then((responseData) => {
+                if (typeof responseData === 'number') {
+                    window.location.href = `/manage/product/${responseData}/detail`
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+
+        function deleteTableRow(event) {
+            const row = event.target.closest('tr');
+            if (row.rowIndex !== 0) {
+                row.remove();
+            }
+        }
+
+        function addDiscountRow() {
+            const detailTable = document.getElementById('detailTable');
+
+            const tableRow = document.createElement('tr');
+            tableRow.className = 'discountInfo';
+
+            const createInputCell = () => {
+                const cell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'text';
+                cell.appendChild(input);
+                return cell;
+            };
+
+            const headCountsTd = createInputCell();
+            headCountsTd.firstChild.name = 'headCount';
+
+            const salePricesTd = createInputCell();
+            salePricesTd.firstChild.name = 'salePrice';
+
+            const buttonTd = document.createElement('td');
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.addEventListener('click', deleteTableRow);
+            buttonTd.appendChild(deleteButton);
+
+            const firstColumnTd = detailTable.querySelector('.discountInfo td:first-child');
+            const currentRowSpan = parseInt(firstColumnTd.getAttribute('rowspan'));
+            firstColumnTd.rowSpan = currentRowSpan + 1;
+
+            tableRow.appendChild(headCountsTd);
+            tableRow.appendChild(salePricesTd);
+            tableRow.appendChild(buttonTd);
+
+            detailTable.querySelector('tbody').appendChild(tableRow);
+        }
+    </script>
+    <form onsubmit="submitForm(); return false;">
+        <table id="detailTable">
+            <tr>
+                <td></td>
+                <td>인원</td>
+                <td>할인가격</td>
+                <td>
+                    <button class="btn" type="button" onclick="addDiscountRow()">+</button>
+                </td>
+            </tr>
+            <tr class="discountInfo" th:if="${product.productDiscounts.size() == 0}">
+                <td rowspan="2">공동구매 할인</td>
+                <td><input name="headCount" type="text"></td>
+                <td><input name="salePrice" type="text"></td>
+            </tr>
+            <tr class="discountInfo" th:each="discount, discountIdx : ${product.productDiscounts}">
+                <td th:if="${discountIdx.index == 0}" th:rowspan="${product.productDiscounts.size()}">
+                    공동구매 할인
+                </td>
+                <th:block th:if="${not discount.deleteStatus}">
+                    <td><input name="headCount" type="text" th:value="${discount.getHeadCount()}"></td>
+                    <td><input name="salePrice" type="text" th:value="${discount.getSalePrice()}"></td>
+                    <td th:if="${discountIdx.index != 0}">
+                        <button type="button" onclick="deleteTableRow.call(this, event)">X</button>
+                    </td>
+                </th:block>
+            </tr>
+        </table>
+        <button class="btn">저장</button>
+        <button type="reset" class="btn">취소</button>
+    </form>
+</main>
 </body>
 </html>
