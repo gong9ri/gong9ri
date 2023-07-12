@@ -155,7 +155,7 @@ public class OrderController {
 		model.addAttribute("orderDetail", orderInfo);
 		model.addAttribute("productDetail", productService.getProductDetail(orderInfo.getProduct().getId()));
 
-		return "usr/order/orderProductOption";
+		return "usr/order/recipientForm";
 	}
 
 	@PutMapping("/confirm/{orderId}")
@@ -170,7 +170,7 @@ public class OrderController {
 			orderRecipientDTO
 		);
 
-		return rq.redirectWithMsg("/detail/" + rsConfirmOrder.getData().getId(), rsConfirmOrder);
+		return rq.redirectWithMsg("/order/detail/" + rsConfirmOrder.getData().getId(), rsConfirmOrder);
 	}
 
 	@PostMapping("/create/payment/{orderId}")
