@@ -25,14 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
-	private Expression<Integer> getMemberCount() {
-		return JPAExpressions
-			.select(groupBuyMember.count().intValue())
-			.from(groupBuyMember)
-			.where(groupBuyMember.groupBuy.id.eq(groupBuy.id)
-				.and(groupBuyMember.role.ne(GroupBuyMemberRole.STORE)));
-	}
-
 	private Expression<Boolean> isParticipate(final Long memberId) {
 		return memberId == null ? Expressions.FALSE : JPAExpressions
 			.select(groupBuyMember.id)
@@ -61,7 +53,10 @@ public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 				groupBuy.startDate,
 				groupBuy.endDate,
 				groupBuy.status,
-				getMemberCount(),
+				groupBuy.groupBuyMembers.size(),
+				groupBuy.nextHeadCount,
+				groupBuy.currentSalePrice,
+				groupBuy.nextSalePrice,
 				isParticipate(memberId)
 			))
 			.from(groupBuyMember)
@@ -85,7 +80,10 @@ public class GroupBuyRepositoryImpl implements GroupBuyRepositoryCustom {
 				groupBuy.startDate,
 				groupBuy.endDate,
 				groupBuy.status,
-				getMemberCount(),
+				groupBuy.groupBuyMembers.size(),
+				groupBuy.nextHeadCount,
+				groupBuy.currentSalePrice,
+				groupBuy.nextSalePrice,
 				isParticipate(memberId)
 			))
 			.from(groupBuy)

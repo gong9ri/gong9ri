@@ -21,8 +21,7 @@ public class ProductOption extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Product product;
-	private String optionOneName;
-	private String optionTwoName;
+	private String optionDetail;
 	@Builder.Default
 	private Boolean deleteStatus = false;
 }

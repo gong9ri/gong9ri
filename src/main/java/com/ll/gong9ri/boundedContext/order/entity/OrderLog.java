@@ -33,7 +33,7 @@ public class OrderLog {
 	private Integer price;
 	private Integer salePrice;
 	@Builder.Default
-	private OrderStatus orderStatus = OrderStatus.PRE_CREATED;
+	private OrderStatus orderStatus = OrderStatus.PRE_CREATE;
 	private String recipient;
 	private String mainAddress;
 	private String subAddress;

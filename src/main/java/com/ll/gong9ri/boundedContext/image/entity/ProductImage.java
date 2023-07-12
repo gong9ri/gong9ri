@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.image.entity;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
+import com.ll.gong9ri.base.baseEntity.ImageBase;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import jakarta.persistence.ConstraintMode;
@@ -22,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString(callSuper = true)
 @EntityListeners(AuditingEntityListener.class)
-public class ProductImage extends BaseEntity {
+public class ProductImage extends ImageBase {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Product product;

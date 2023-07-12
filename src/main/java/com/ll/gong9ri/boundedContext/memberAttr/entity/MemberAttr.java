@@ -31,6 +31,8 @@ public class MemberAttr extends BaseEntity {
 	private LocalDateTime lastVisitTime;
 	@Builder.Default
 	private Integer point = 0;
+	@Builder.Default
+	private Boolean nicknameChangeable = Boolean.TRUE;
 
 	public String formattedLastVisitTime() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E)");

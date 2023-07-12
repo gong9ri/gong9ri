@@ -8,10 +8,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum OrderStatus {
-	PRE_CREATED("주문생성준비"),
+	PRE_CREATE("주문생성준비"),
 	GROUP_BUY_CREATED("공동구매주문생성됨"),
 	CREATED("주문생성됨"),
-	OPTION_SELECTED("옵션선택됨"),
+	RECIPIENT_DONE("배송정보입력됨"),
 	PURCHASE_REQUESTED("결제요청됨"),
 	PURCHASE_SUCCESS("결제성공"),
 	PURCHASE_CANCEL("결제취소"),
@@ -27,6 +27,6 @@ public enum OrderStatus {
 	public static OrderStatus statusOf(final String rawStatus) {
 		return Arrays.stream(values()).filter(e -> e.getStatus().equals(rawStatus))
 			.findFirst()
-			.orElse(PRE_CREATED);
+			.orElse(PRE_CREATE);
 	}
 }

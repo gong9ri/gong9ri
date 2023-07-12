@@ -39,15 +39,6 @@ public class ImageController {
 			.body(imageService.uploadImagesSample(multipartFiles));
 	}
 
-	@PostMapping("/member")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<Object> uploadImageMember(
-		@RequestPart(value = "files") List<MultipartFile> multipartFiles) {
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.body(imageService.uploadImageMember(rq.getMember(), multipartFiles));
-	}
-
 	@PostMapping("/chats/{chatRoomId}")
 	public ResponseEntity<Object> uploadChatImages(
 		@RequestPart(value = "files") List<MultipartFile> multipartFiles, @PathVariable String chatRoomId) {

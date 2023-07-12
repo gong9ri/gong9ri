@@ -1,10 +1,16 @@
 package com.ll.gong9ri.boundedContext.groupBuy.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -15,6 +21,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,4 +48,12 @@ public class GroupBuy extends BaseEntity {
 	private LocalDateTime startDate = LocalDateTime.now();
 	@Column(name = "end_date", nullable = false)
 	private LocalDateTime endDate;
+	@OneToMany(mappedBy = "groupBuy", cascade = {CascadeType.ALL})
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@Builder.Default
+	private List<GroupBuyMember> groupBuyMembers = new ArrayList<>();
+	private Integer currentHeadCount;
+	private Integer currentSalePrice;
+	private Integer nextHeadCount;
+	private Integer nextSalePrice;
 }
