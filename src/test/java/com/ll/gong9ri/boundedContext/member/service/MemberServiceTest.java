@@ -27,7 +27,7 @@ class MemberServiceTest {
 	@Test
 	@DisplayName("default member join test")
 	void memberJoinTest() {
-		final String username = "dasdasdasd";
+		final String username = "d###a645645sdasdasd";
 		RsData<Member> rsMember = memberService.join(username, username + username);
 
 		assertThat(rsMember.isSuccess()).isTrue();

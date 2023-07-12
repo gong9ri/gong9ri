@@ -19,12 +19,15 @@ import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentResult;
 import com.ll.gong9ri.base.tosspayments.service.PaymentService;
+import com.ll.gong9ri.boundedContext.order.dto.OrderInfoListDTO;
 import com.ll.gong9ri.boundedContext.order.dto.OrderRecipientDTO;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
 import com.ll.gong9ri.boundedContext.order.entity.OrderLog;
+import com.ll.gong9ri.boundedContext.order.entity.OrderStatus;
 import com.ll.gong9ri.boundedContext.order.entity.ProductOptionQuantity;
 import com.ll.gong9ri.boundedContext.order.service.OrderInfoService;
 import com.ll.gong9ri.boundedContext.order.service.OrderLogService;
+import com.ll.gong9ri.boundedContext.product.dto.ProductGroupBuyDetailDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 
@@ -45,19 +48,86 @@ public class OrderController {
 
 	private RsData<OrderInfo> orderValidate(final Long orderId) {
 		final Optional<OrderInfo> oOrderInfo = orderInfoService.findById(orderId);
-		if (oOrderInfo.isEmpty() || oOrderInfo.get().getMember().getId().equals(rq.getMember().getId())) {
+		if (oOrderInfo.isEmpty() || !oOrderInfo.get().getMember().getId().equals(rq.getMember().getId())) {
 			return RsData.of("F-1", FORBIDDEN_MESSAGE, null);
 		}
 
 		return RsData.successOf(oOrderInfo.get());
 	}
 
+	@GetMapping("/list")
+	public String list(Model model) {
+		final List<OrderInfoListDTO> orderInfos = orderInfoService.findByMemberId(rq.getMember().getId())
+			.stream()
+			.map(OrderInfoListDTO::of)
+			.toList();
+
+		model.addAttribute("orders", orderInfos);
+
+		return "usr/order/list";
+	}
+
 	@GetMapping("/detail/{orderId}")
 	public String getDetail(@PathVariable Long orderId, Model model) {
-		RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail()) {
+			return rq.historyBack(rsOrder);
+		}
 
-		model.addAttribute("orderInfo", rsOrder.getData()); // DTO 변환 필요함
+		final OrderStatus currentStatus = rsOrder.getData().getOrderStatus();
+		model.addAttribute("orderId", orderId);
+		model.addAttribute("currentStatus", currentStatus);
+
+		// TODO: 이 로직을 html에서 처리하는 대신, spring 에서 처리, 동작하지 않는다면 html에 이부분 추가
+		if (currentStatus == OrderStatus.GROUP_BUY_CREATED) {
+			model.addAttribute("confirmOrder", "/order/confirm/" + orderId);
+		}
+
+		if (currentStatus == OrderStatus.CREATED) {
+			model.addAttribute("createPayment", "/order/confirm/" + orderId);
+		}
+
+		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrder.getData().getRecentOrderLogId());
+		oOrderLog.ifPresent(orderLog -> model.addAttribute("order", orderLog));
+
 		return "usr/order/detail";
+	}
+
+	@GetMapping("/choose/{orderId}")
+	public String chooseForm(Model model, @PathVariable Long orderId) {
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail() || rsOrder.getData().getOrderStatus() != OrderStatus.GROUP_BUY_CREATED) {
+			return rq.historyBack(rsOrder);
+		}
+
+		final ProductGroupBuyDetailDTO dto = ProductGroupBuyDetailDTO.of(rsOrder.getData());
+		model.addAttribute("product", dto);
+		model.addAttribute("orderId", orderId);
+
+		return "usr/order/choose";
+	}
+
+	@PutMapping("/choose/{orderId}")
+	@ResponseBody
+	public RsData<Long> chooseOptionOrder(
+		@PathVariable Long orderId,
+		@RequestBody Map<String, List<ProductOptionQuantity>> choices
+	) {
+		final RsData<OrderInfo> rsOrder = orderValidate(orderId);
+		if (rsOrder.isFail()) {
+			return RsData.of("F-1", FORBIDDEN_MESSAGE, null);
+		}
+
+		final RsData<OrderInfo> rsCreateOrderInfo = orderInfoService.groupBuyConfirm(
+			rsOrder.getData(),
+			choices.get("choices")
+		);
+
+		if (rsCreateOrderInfo.isFail()) {
+			return RsData.of("F-2", FORBIDDEN_MESSAGE, null);
+		}
+
+		return RsData.successOf(rsCreateOrderInfo.getData().getId());
 	}
 
 	@PostMapping("/create/{productId}")
@@ -81,7 +151,6 @@ public class OrderController {
 			return RsData.of("F-2", FORBIDDEN_MESSAGE, null);
 		}
 
-		System.out.println("am i success?");
 		return RsData.successOf(rsCreateOrderInfo.getData().getId());
 	}
 
@@ -114,7 +183,7 @@ public class OrderController {
 		return rq.redirectWithMsg("/detail/" + rsConfirmOrder.getData().getId(), rsConfirmOrder);
 	}
 
-	@PostMapping("/create/Payment/{orderId}")
+	@PostMapping("/create/payment/{orderId}")
 	public String createPayment(@PathVariable Long orderId, Model model) {
 		final RsData<OrderInfo> rsOrderInfo = orderValidate(orderId);
 		if (rsOrderInfo.isFail()) {

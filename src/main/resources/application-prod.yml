@@ -1,0 +1,16 @@
+spring:
+  data:
+    redis:
+      host: 172.17.0.1
+  jpa:
+    hibernate:
+      ddl-auto: update
+logging:
+  level:
+    root: INFO
+    com.ll.gong9ri: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
+custom:
+  site:
+    baseUrl: https://gong9ri.kkbk.me
