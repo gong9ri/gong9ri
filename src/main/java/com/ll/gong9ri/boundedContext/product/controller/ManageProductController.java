@@ -1,6 +1,7 @@
 package com.ll.gong9ri.boundedContext.product.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -154,9 +155,19 @@ public class ManageProductController {
 
 	@PutMapping("/{productId}/option")
 	@ResponseBody
-	public ResponseEntity<Long> addProductOptions(@PathVariable Long productId, @RequestBody @Valid ProductOptionDTO dto) {
-		RsData<Product> productRs = productService.addOptions(productId, dto);
+	public ResponseEntity<Long> addProductOptions(@PathVariable Long productId,
+		@RequestBody Map<String, List<String>> options) {
+		ProductOptionDTO dto = ProductOptionDTO.builder()
+			.optionDetails(
+				options.get("optionDetails")
+					.stream()
+					.map(e -> ProductOptionDetailDTO.builder()
+						.optionDetail(e)
+						.build())
+					.toList())
+			.build();
 
+		RsData<Product> productRs = productService.addOptions(productId, dto);
 		if (productRs.isFail()) {
 			return ResponseEntity.badRequest().build();
 		}

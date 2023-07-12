@@ -123,7 +123,6 @@ class ProductServiceTest {
 				.build();
 
 		ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
-			.optionName("색상 사이즈")
 			.optionDetails(optionNameDTOList)
 			.build();
 
@@ -165,7 +164,6 @@ class ProductServiceTest {
 			.build();
 
 		ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
-			.optionName("색상")
 			.optionDetails(optionNameDTOList)
 			.build();
 
@@ -206,7 +204,6 @@ class ProductServiceTest {
 			.build();
 
 		ProductOptionDTO productOptionDTO = ProductOptionDTO.builder()
-			.optionName("색상")
 			.optionDetails(optionNameDTOList)
 			.build();
 

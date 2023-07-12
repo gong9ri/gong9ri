@@ -9,31 +9,17 @@
     <script>
         function submitOptionForm() {
             if (confirm('상품 상세 옵션을 저장 하시겠습니까?')) {
-                const optionOneValue = document.getElementById('optionOne').value;
-                const optionTwoValue = document.getElementById('optionTwo').value;
-                const optionNames = [];
-
-                const optionOneInputs = document.querySelectorAll('.optionOneName');
-                const optionTwoInputs = document.querySelectorAll('.optionTwoName');
-
-                for (let i = 0; i < optionOneInputs.length; i++) {
-                    const optionOneName = optionOneInputs[i].querySelector('[id^=optionOneName_]').value;
-                    const optionTwoName = optionTwoInputs[i].querySelector('[id^=optionTwoName_]').value;
-
-                    const optionName = {optionOneName, optionTwoName};
-                    optionNames.push(optionName);
-                }
+                const optionDetails = Array.from(document.querySelectorAll('.optionNames [name^=optionName]'))
+                    .map(e => e.value);
 
                 const data = {
-                    optionOne: optionOneValue,
-                    optionTwo: optionTwoValue,
-                    optionNames: optionNames,
+                    optionDetails: optionDetails
                 };
 
                 const header = document.querySelector('meta[name="_csrf_header"]').content;
                 const token = document.querySelector('meta[name="_csrf"]').content;
 
-                fetch(location.href, {
+                fetch(window.location.href, {
                     method: 'PUT',
                     headers: {
                         [header]: token,
@@ -43,85 +29,42 @@
                 }).then((response) => {
                     return response.json();
                 }).then((responseData) => {
-                    location.href = `/manage/product/${responseData}/detail`
+                    if (typeof responseData === 'number') {
+                        window.location.href = `/manage/product/${responseData}/detail`
+                    }
                 }).catch((error) => {
                     console.error(error);
                 });
             }
         }
 
-        function showOptions() {
-            const optionOneValues = Array.from(document.querySelectorAll('input[id^="optionOneName_"]'));
-            const optionTwoValues = Array.from(document.querySelectorAll('input[id^="optionTwoName_"]'));
-
-            let message = '상품 옵션 미리보기\n\n';
-
-            if (optionTwoValues.at(0).value === '') {
-                optionOneValues.forEach(optionOne => {
-                    message += optionOne.value + '\n\n';
-                });
-            } else {
-                optionOneValues.forEach(optionOne => {
-                    optionTwoValues.forEach(optionTwo => {
-                        const combination = optionOne.value + ' | ' + optionTwo.value;
-                        message += combination + '\n\n';
-                    });
-                });
-            }
-
-            alert(message);
-        }
-
-        function addDetailOptionRow(prefix) {
-            const details = document.getElementById(prefix);
-            let optOneCnt = details.childElementCount;
-            let optTwoCnt = details.childElementCount;
-            let optCnt;
+        function addDetailOptionRow() {
+            const details = document.querySelector('.options');
+            let optCnt = document.querySelectorAll('.optionNames');
 
             if (confirm('상세 옵션을 추가하시겠습니까?')) {
-                if (prefix === 'optionOneName') {
-                    optCnt = optOneCnt++;
-                } else {
-                    optCnt = optTwoCnt++;
-                }
+                const div = document.createElement('div');
+                div.className = 'optionNames';
                 const input = document.createElement('input');
-                input.name = `optionName[${optCnt}].${prefix}`;
-                input.id = `${prefix}_${optCnt}`;
+                input.name = `optionName[${optCnt}]`;
+                input.id = `optionName[${optCnt}]`;
                 input.type = 'text';
-                details.appendChild(input);
+                div.appendChild(input);
+                details.appendChild(div);
+                optCnt++;
             }
         }
-
     </script>
     <form onsubmit="submitOptionForm(); return false;">
-        <div>
-            <label for="optionOne">상품 옵션1 이름</label>
-            <input name="optionOne" id="optionOne" type="text" th:value="${optionOne}">
-            <button class="btn" type="button" onclick="addDetailOptionRow('optionOneName')" value="+"></button>
-        </div>
-        <div class="optionOneName">
-            <label>옵션1의 상세 옵션명</label>
-            <span id="optionOneName" th:each="option, index : ${options}">
-                <input th:if="${options == null}" type="text" name="optionName[0]" id="optionOneName_0">
-                <input th:name="|optionName[${index.index}]|" th:id="|optionOneName_${index.index}|" type="text"
-                       th:value="${option.optionOneName}">
-            </span>
-        </div>
-        <div>
-            <label for="optionTwo">상품 옵션2 이름</label>
-            <input name="optionTwo" id="optionTwo" type="text" th:value="${optionTwo}">
-            <button class="btn" type="button" onclick="addDetailOptionRow('optionTwoName')" value="+"></button>
-        </div>
-        <div class="optionTwoName">
-            <label>옵션2의 상세 옵션명</label>
-            <span id="optionTwoName" th:each="option, index : ${options}">
-                <input th:if="${options == null}" type="text" name="optionName[0]" id="optionTwoName_0">
-                <input th:name="|optionName[${index.index}]|" th:id="|optionTwoName_${index.index}|" type="text"
-                       th:value="${option.optionTwoName}">
-            </span>
+        <div class="options">
+            <label>상세 옵션명</label>
+            <button class="btn p-1" type="button" onclick="addDetailOptionRow()" value="+"></button>
+            <div class="optionNames" th:each="option, optionIdx : ${options}">
+                <input th:if="${options == null}" type="text" name="optionName[0]">
+                <input th:name="'optionName[' + ${optionIdx.index} + ']'" type="text" th:value="${option.optionDetail}">
+            </div>
         </div>
         <button class="btn">저장</button>
-        <a class="btn" onclick="showOptions()">옵션 미리보기</a>
         <a class="btn" href="/product/list">상품 목록</a>
     </form>
 </main>

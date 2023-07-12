@@ -43,7 +43,7 @@ public class ProductOptionService {
 		final ProductOption productOption = ProductOption.builder()
 			.product(product)
 			.optionDetail(NO_OPTION_DEFAULT)
-				.build();
+			.build();
 
 		repository.save(productOption);
 
@@ -92,12 +92,23 @@ public class ProductOptionService {
 
 	@Transactional
 	public List<ProductOption> writeOptions(final Product product, final ProductOptionDTO dto) {
+		getUnUsedOptions(product, dto.getOptionDetails())
+			.forEach(productOption -> delete(productOption.getId()));
+
 		return dto.getOptionDetails().stream()
-			.map(optionName -> (optionName.getId() == null) // TODO: update checker
+			.map(optionName -> (optionName.getId() == null)
 				? create(product, optionName)
 				: delete(optionName.getId()))
 			.map(RsData::getData)
 			.filter(Objects::nonNull)
+			.toList();
+	}
+
+	private List<ProductOptionDetailDTO> getUnUsedOptions(Product product, List<ProductOptionDetailDTO> dtos) {
+		List<ProductOptionDetailDTO> productOptionDetails = getProductOptions(product.getId());
+		return productOptionDetails.stream()
+			.filter(productOptionDetail -> dtos.stream()
+				.noneMatch(dto -> dto.getId() != null && dto.getId().equals(productOptionDetail.getId())))
 			.toList();
 	}
 }
