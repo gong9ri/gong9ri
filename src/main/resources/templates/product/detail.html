@@ -18,34 +18,15 @@
             </tr>
             <tr>
                 <th>옵션</th>
-                <td><a class="btn btn-primary" th:href="@{|/manage/product/${product.id}/option|}">옵션 관리</a></td>
+                <td><a class="btn btn-primary" th:href="@{|/manage/product/${productId}/option|}">옵션 관리</a></td>
             </tr>
             <tr>
-                <th rowspan="2">공동구매 할인</th>
-                <td>인원</td>
-                <td>할인가격</td>
-            </tr>
-            <tr th:if="${product.getProductDiscountList()} == null">
-                <td>등록된 할인 정보 없음</td>
-                <td>
-                    <form th:action="/product/option"></form>
-                    <a href="">할인율 관리</a></td>
-            </tr>
-            <tr th:each="discount : ${product.getProductDiscountList()}">
-                <td><input name="headCounts" type="text" th:value="${discount.getHeadCount()}"></td>
-                <td><input name="salePrices" type="text" th:value="${discount.getSalePrice()}"></td>
+                <th>공동구매 할인</th>
+                <td><a class="btn btn-primary" th:href="@{|/manage/product/${productId}/discount|}">할인 관리</a></td>
             </tr>
         </table>
         <button class="btn">저장</button>
         <button type="reset" class="btn">취소</button>
-    </form>
-
-    <!--    공동구매 버튼-->
-    <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
-        <button type="submit" class="btn btn-light border" href="/list"
-                onclick="return confirm('공동구매를 생성하시겠습니까?')">
-            총대되기
-        </button>
     </form>
 </main>
 </body>

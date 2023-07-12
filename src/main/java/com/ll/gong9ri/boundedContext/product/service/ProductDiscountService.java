@@ -55,7 +55,7 @@ public class ProductDiscountService {
 		}
 
 		ProductDiscount productDiscount = oProductDiscount.get().toBuilder()
-			.deleteStatus(Boolean.FALSE)
+			.deleteStatus(Boolean.TRUE)
 			.build();
 
 		repository.save(productDiscount);
@@ -88,6 +88,8 @@ public class ProductDiscountService {
 	@Transactional
 	public List<ProductDiscount> writeDiscounts(final Product product, final List<ProductDiscountDTO> dtos) {
 		final List<ProductDiscount> discounts = product.getProductDiscounts();
+		getUnUsedDiscounts(discounts, dtos).forEach(productDiscount -> delete(productDiscount.getId()));
+
 		return dtos.stream()
 			.map(e -> {
 				final Long id = e.getId();
@@ -96,6 +98,13 @@ public class ProductDiscountService {
 				}
 				return create(product, e).getData();
 			})
+			.toList();
+	}
+
+	private List<ProductDiscount> getUnUsedDiscounts(List<ProductDiscount> discounts, List<ProductDiscountDTO> dtos) {
+		return discounts.stream()
+			.filter(discount -> dtos.stream()
+				.noneMatch(dto -> dto.getId() != null && dto.getId().equals(discount.getId())))
 			.toList();
 	}
 }
