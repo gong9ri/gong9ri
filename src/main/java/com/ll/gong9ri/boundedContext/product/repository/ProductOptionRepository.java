@@ -11,6 +11,4 @@ public interface ProductOptionRepository extends JpaRepository<ProductOption, Lo
 	Optional<ProductOption> findByIdAndDeleteStatusFalse(final Long id);
 
 	List<ProductOption> findAllByProductIdAndDeleteStatusFalse(final Long productId);
-
-	Optional<ProductOption> findByOptionOneNameAndOptionTwoName(String optionOneName, String optionTwoName);
 }
