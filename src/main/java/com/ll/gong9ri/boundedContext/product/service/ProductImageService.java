@@ -74,7 +74,7 @@ public class ProductImageService {
 
 			newProductImages.add(productImage);
 		}
-		productImages.addAll(productImageRepository.saveAll(productImages));
+		productImages.addAll(productImageRepository.saveAll(newProductImages));
 		return productImages;
 	}
 }

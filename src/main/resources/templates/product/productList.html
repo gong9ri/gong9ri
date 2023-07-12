@@ -18,9 +18,12 @@
             </tr>
             <tr th:each="product : ${products}">
                 <td>
-                    <div>
+                    <div th:if="${product.images.size() eq 0}">
+                        <img alt="이미지가 없습니다.">
+                    </div>
+                    <div th:if="${product.images.size() ne 0}">
                         <!-- TODO: 상품 이미지 불러오기 -->
-                        <img alt="상품 이미지">
+                        <img th:src="${product.images.get(0).getURL()}">
                     </div>
                 </td>
                 <td>
