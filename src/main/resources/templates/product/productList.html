@@ -4,19 +4,21 @@
     <title>상품 목록</title>
 </head>
 <body class="bg-gray-100">
-<main layout:fragment="main">
+<main class="container max-w-2xl mx-auto" layout:fragment="main">
     <div class="p-4">
         <a class="btn btn-primary mb-4" href="/manage/product/registration">상품 등록</a>
     </div>
     <div class="p-4 grid grid-cols-1 gap-4">
         // TODO: 상품 가격, 등등
         <div th:each="product : ${products}">
-            <a th:href="@{|detail/${product.id}|}">
-                <div class="card shadow-lg flex flex-col">
-                    <div class="relative pb-3/2 h-0 overflow-hidden">
-                        <img class="absolute h-full w-full object-cover" th:if="${product.images.size() eq 0}" src="https://via.placeholder.com/150" alt="이미지가 없습니다." />
-                        <img class="absolute h-full w-full object-cover" th:if="${product.images.size() ne 0}" th:src="${product.images.get(0).getURL()}" alt="상품 이미지" />
-                    </div>
+            <a class="flex flex-col" th:href="@{|detail/${product.id}|}">
+                <div class="card card-side  bg-base-100 shadow-lg">
+                    <figure class="flex flex-row w-36 h-36">
+                        <img alt="이미지가 없습니다." class="h-full w-full object-cover"
+                             src="https://via.placeholder.com/150" th:if="${product.images.size() eq 0}"/>
+                        <img alt="상품 이미지" class="h-full w-full object-cover"
+                             th:if="${product.images.size() ne 0}" th:src="${product.images.get(0).getURL()}"/>
+                    </figure>
                     <div class="card-body">
                         <p class="text-black text-lg font-semibold" th:text="${product.name}"></p>
                     </div>
