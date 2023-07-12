@@ -185,4 +185,8 @@ public class GroupBuyService {
 
 		return RsData.successOf(groupBuyRepository.save(groupBuy));
 	}
+
+	public void participateChatRoom(GroupBuy groupBuy) {
+		publisher.publishEvent(new EventAfterGroupBuyCreated(groupBuy));
+	}
 }
