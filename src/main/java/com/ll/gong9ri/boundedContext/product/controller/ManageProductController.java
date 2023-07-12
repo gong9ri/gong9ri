@@ -90,7 +90,6 @@ public class ManageProductController {
 	@GetMapping("/registration")
 	public String showProductRegistration(Model model) {
 		model.addAttribute("productRegisterDTO", new ProductRegisterDTO());
-		log.info("인포 찍어보기!!!" + new ProductRegisterDTO().toString());
 		return "product/productRegistration";
 	}
 
@@ -104,11 +103,10 @@ public class ManageProductController {
 		if (oStore.isEmpty()) {
 			return rq.historyBack("잘못된 접근입니다.");
 		}
-	/*	if (bindingResult.hasErrors()) {
-			log.info("유효성 검사 걸림!!!!!!");
+		if (bindingResult.hasErrors()) {
 			model.addAttribute(bindingResult);
 			return "product/productRegistration";
-		}*/
+		}
 
 		RsData<Product> productRs = productService.registerProduct(oStore.get(), productRegisterDTO);
 

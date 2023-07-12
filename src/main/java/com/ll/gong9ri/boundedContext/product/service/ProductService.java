@@ -69,8 +69,6 @@ public class ProductService {
 
 	@Transactional
 	public RsData<Product> registerProduct(final Store store, @Valid ProductRegisterDTO productRegisterDTO) {
-		log.info(productRegisterDTO.toString());
-
 		Product product = Product.builder()
 			.name(productRegisterDTO.getName())
 			.price(productRegisterDTO.getPrice())
