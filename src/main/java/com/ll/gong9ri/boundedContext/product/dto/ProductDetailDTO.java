@@ -33,7 +33,7 @@ public class ProductDetailDTO {
 			.name(product.getName())
 			.images(product.getImages()
 				.stream()
-				.map(e -> String.valueOf(e.getId())) // TODO: image url
+				.map(e -> String.valueOf(e.getURL()))
 				.toList())
 			.createDate(product.getCreateDate())
 			.optionName(product.getOptionName())

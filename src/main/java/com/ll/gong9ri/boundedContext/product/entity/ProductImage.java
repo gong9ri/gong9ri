@@ -1,10 +1,8 @@
-package com.ll.gong9ri.boundedContext.image.entity;
+package com.ll.gong9ri.boundedContext.product.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.ll.gong9ri.base.baseEntity.BaseEntity;
 import com.ll.gong9ri.base.baseEntity.ImageBase;
-import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;

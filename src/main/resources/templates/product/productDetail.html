@@ -5,7 +5,7 @@
     <title>상품 상세 옵션 주문</title>
     <script th:inline="javascript">
         const token = /*[[${_csrf.token}]]*/ '';
-        const productId = /*[[${product.id}]]*/;
+        const productId = /*[[${product.id}]]*/'';
     </script>
 </head>
 <body>
@@ -13,54 +13,23 @@
     <div class="container max-w-2xl mx-auto">
         <div class="form-container form-control border-0">
             <!-- 이미지 슬라이드 -->
-
-            <!-- 샘플 이미지 슬라이드 -->
-            <div class="carousel carousel-center max-w-md p-4 space-x-4 rounded-box">
-                <div class="carousel-item">
-                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
-                         class="rounded-box carousel-image"/>
-                </div>
-                <div class="carousel-item">
-                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
-                         class="rounded-box carousel-image"/>
-                </div>
-                <div class="carousel-item">
-                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
-                         class="rounded-box carousel-image"/>
-                </div>
-                <div class="carousel-item">
-                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
-                         class="rounded-box carousel-image"/>
+            <div class="carousel w-full max-w-md mx-auto">
+                <div class="carousel-item w-full flex justify-center" th:each="image, idx : *{product.images}"
+                     th:id="${'slide' + idx}">
+                    <img class="w-full" th:src="${image}"/>
                 </div>
             </div>
 
-            <!-- 실제 이미지 슬라이드 -->
-            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" th:each="image, idx : *{product.images}"
-                        th:data-slide-to="${idx.index}" th:class="${idx.index == 0} ? 'active' : ''"></li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="carousel-item" th:each="image, idx : *{product.images}"
-                         th:class="${idx.index == 0} ? 'active' : ''">
-                        <img th:src="${image}" class="d-block w-100 rounded-box" alt="Slide Image">
-                    </div>
+            <!--   번호 -->
+            <div class="flex w-full gap-2 justify-center items-center">
+                <div class="flex-col" th:each="image, i : *{product.images}">
+                    <a class="btn btn-xs btn-primary a__move" th:href="${'#slide' + i}" th:text="${i.count}">index</a>
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
-                   data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only"> < </span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
-                   data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only"> > </span>
-                </a>
             </div>
             <!-- 이미지 슬라이드 끝 -->
 
             <!-- 상품 정보 -->
-            <div class="product">
+            <div class="product flex flex-col">
                 <span class="product-name" th:text="*{product.name}"></span>
                 <div class="discounts">
                     <ul>
@@ -78,32 +47,37 @@
 
             <!-- 옵션 선택 (Options) -->
             <table class="options">
-                <tr th:each="option, optionIdx : ${product.options}">
+                <p class="text-2xl font-bold rounded py-2">✅ 옵션 선택</p>
+                <tr class="flex flex-col justify-center items-center" th:each="option, optionIdx : ${product.options}">
                     <!-- 옵션1 표시(ex. 사이즈) -->
                     <button onclick="addToCartForm(this)"
                             th:option-id="${option.id}"
                             th:option-name="${option.optionDetail == null ? '기본' : option.optionDetail}"
+                            class="btn btn-primary my-1 mx-auto justify-center justify-items-center"
                             th:text="|${option.optionDetail == null ? '기본' : option.optionDetail}|"/>
                 </tr>
             </table>
 
             <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
-            <div>
-                <p>내 선택</p>
-                <ul class="my-choice" id="myChoice">
+            <div class="rounded border border-primary">
+                <p class="text-xl font-bold rounded mx-2 my-2">🛒 선택된 옵션</p>
+                <ul class="my-choice mx-2 my-1" id="myChoice">
 
                 </ul>
             </div>
 
-            <button onclick="addToCart()">상품 주문하기</button>
+            <button class="btn btn-primary my-2" onclick="addToCart()">상품 주문하기</button>
 
             <!-- 공동구매 버튼 -->
-            <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
-                <button type="submit" class="btn btn-light border" href="/list"
-                        onclick="return confirm('공동구매를 생성하시겠습니까?')">
-                    총대되기
-                </button>
-            </form>
+            <div class="flex justify-center">
+                <form method="post" th:action="@{|/groupBuy/make/${product.id}|}">
+                    <button class="btn btn-secondary btn-light border my-2" href="/list" onclick="return confirm('공동구매를 생성하시겠습니까?')"
+                            type="submit">
+                        총대되기
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 

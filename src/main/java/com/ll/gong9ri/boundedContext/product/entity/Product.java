@@ -7,7 +7,6 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-import com.ll.gong9ri.boundedContext.image.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 
 import jakarta.persistence.CascadeType;

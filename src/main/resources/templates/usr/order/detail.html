@@ -5,8 +5,8 @@
     <title>주문 상세</title>
 </head>
 <body>
-<main layout:fragment="main">
-    <table>
+<main class="flex flex-col max-w-2xl mx-auto justify-center" layout:fragment="main">
+    <table class="table text-center">
         <tr>
             <th>주문번호</th>
             <td>
@@ -23,48 +23,69 @@
             <th>주문 정보</th>
             <td>주문 정보가 존재하지 않습니다.</td>
         </tr>
+    </table>
+    <table class="table text-center">
         <tr th:if="${order!=null}">
             <th>주문명</th>
             <td>
                 <span th:text="${order.name}"></span>
             </td>
+        </tr>
+        <tr>
             <th>스토어명</th>
             <td>
                 <a th:href="@{|/product/detail/${order.storeId}|}">
                     <span th:text="${order.storeName}"></span>
                 </a>
             </td>
+        </tr>
+        <tr>
             <th>상품명</th>
             <td>
                 <a th:href="@{|/product/detail/${order.productId}|}">
                     <span th:text="${order.productName}"></span>
                 </a>
             </td>
+        </tr>
+        <tr>
             <th>가격</th>
             <td>
                 <div th:text="${order.price}"></div>
             </td>
+        </tr>
+        <tr>
             <th>적용된 할인 가격</th>
             <td>
                 <div th:text="${order.salePrice}"></div>
             </td>
+        </tr>
+        <tr>
             <th>배송자명</th>
             <td th:text="${order.recipient}"></td>
+        </tr>
+        <tr>
             <th>주소</th>
             <td th:text="${order.mainAddress}"></td>
+        </tr>
+        <tr>
             <th>상세주소</th>
             <td th:text="${order.subAddress}"></td>
+        </tr>
+        <tr>
             <th>결제금액</th>
             <td th:text="${order.totalPrice}"></td>
         </tr>
     </table>
-    <a th:href="@{|/order/list|}" th:text="목록으로"></a>
+    <div class="flex justify-center items-center">
+          <a th:href="@{|/order/list|}">
+              <button class="btn btn-primary mx-2">목록으로</button>
+          </a>
+      <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}">옵션 선택</a>
 
-    <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}">옵션 선택</a>
+      <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}">배송지 입력</a>
 
-    <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}">배송지 입력</a>
-
-    <a th:href="@{|/order/payment/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).RECIPIENT_DONE}">결제</a>
+      <a th:href="@{|/order/payment/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).RECIPIENT_DONE}">결제</a>
+    </div>
 </main>
 </body>
 </html>

@@ -130,4 +130,9 @@ public class ImageService {
 		}
 		return images.get(0);
 	}
+
+	public List<ImageDTO> uploadProductImages(List<MultipartFile> images, Long productId) {
+
+		return uploadImages(images, "product/" + productId);
+	}
 }

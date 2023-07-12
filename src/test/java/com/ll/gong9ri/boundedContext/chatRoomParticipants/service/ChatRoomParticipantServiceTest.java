@@ -56,7 +56,7 @@ class ChatRoomParticipantServiceTest {
 		RsData<Member> rsMember = memberService.join(username, username + username);
 		RsData<Store> testStoreUC1 = storeService.create(rsMember.getData(), "testStoreUC1");
 		RsData<Product> productRsData1 = productService.registerProduct(testStoreUC1.getData(),
-			new ProductRegisterDTO("sampleProduct1", 10000, "sampleProduct1Description1", 30));
+			ProductRegisterDTO.builder().name("nameUC1").price(10000).description("desc1").maxPurchaseNum(10).build());
 		RsData<GroupBuy> groupBuyRsData = groupBuyService.create(productRsData1.getData());
 		GroupBuyChatRoom groupBuyChatRoom = groupBuyChatRoomService.createChatRoom(groupBuyRsData.getData());
 		fcmService.saveToken(new TokenDTO("newTestToken2"), rsMember.getData());
