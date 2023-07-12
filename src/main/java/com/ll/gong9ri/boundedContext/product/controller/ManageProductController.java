@@ -79,7 +79,7 @@ public class ManageProductController {
 			return rq.historyBack(rsProduct);
 		}
 
-		if (Boolean.FALSE.equals(storeValidation(productId))) {
+		if (!storeValidation(productId)) {
 			return rq.historyBack("접근 권한이 없습니다.");
 		}
 
@@ -96,7 +96,7 @@ public class ManageProductController {
 			return rq.historyBack(rsProduct);
 		}
 
-		if (Boolean.FALSE.equals(storeValidation(productId))) {
+		if (!storeValidation(productId)) {
 			return rq.historyBack("접근 권한이 없습니다.");
 		}
 
@@ -130,7 +130,7 @@ public class ManageProductController {
 		Optional<Product> oProduct = productService.getProduct(productId);
 		List<ProductOptionDetailDTO> options = optionService.getProductOptions(productId);
 
-		if (oProduct.isEmpty() || Boolean.FALSE.equals(storeValidation(productId))) {
+		if (oProduct.isEmpty() || !storeValidation(productId)) {
 			return rq.historyBack("잘못된 접근입니다.");
 		}
 
@@ -174,7 +174,7 @@ public class ManageProductController {
 	public String showProductDiscountForm(@PathVariable Long productId, Model model) {
 		List<ProductDiscountDTO> discounts = discountService.getProductDiscounts(productId);
 		Optional<Product> product = productService.getProduct(productId);
-		if (product.isEmpty() || Boolean.FALSE.equals(storeValidation(productId))) {
+		if (product.isEmpty() || !storeValidation(productId)) {
 			return rq.historyBack("존재하지 않거나 권한이 없는 상품에 대한 할인 정보 등록입니다.");
 		}
 
