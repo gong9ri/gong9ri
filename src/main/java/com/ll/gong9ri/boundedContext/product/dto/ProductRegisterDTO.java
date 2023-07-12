@@ -9,7 +9,6 @@ import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class ProductRegisterDTO {
-	@NotEmpty(message = "제목을 입력해 주세요.")
+	@NotBlank(message = "제목을 입력해 주세요.")
 	private String name;
 	@NotNull(message="가격은 필수항목 입니다.")
 	@Min(value = 0, message = "가격은 0보다 크거나 같아야 합니다.")
