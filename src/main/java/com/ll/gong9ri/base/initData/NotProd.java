@@ -70,6 +70,46 @@ public class NotProd {
 						.salePrice(products[0].getPrice() - (i * 1000))
 						.build())
 				);
+
+			productService.addOptions(products[1].getId(), ProductOptionDTO.builder()
+				.optionName("")
+				.optionDetails(
+					LongStream.range(1L, 3L)
+						.mapToObj(i -> ProductOptionDetailDTO.builder()
+							.id(i == 0 ? defaultOption.getId() : null) // TODO: update service
+							.optionDetail("GREEN + " + (i * 100) + "GB")
+							.build())
+						.toList())
+				.build());
+
+			IntStream.range(1, 3)
+				.forEach(i -> productDiscountService.create(
+					products[1],
+					ProductDiscountDTO.builder()
+						.headCount(10 * i)
+						.salePrice(products[1].getPrice() - (i * 1000))
+						.build())
+				);
+
+			productService.addOptions(products[2].getId(), ProductOptionDTO.builder()
+				.optionName("")
+				.optionDetails(
+					LongStream.range(1L, 3L)
+						.mapToObj(i -> ProductOptionDetailDTO.builder()
+							.id(i == 0 ? defaultOption.getId() : null) // TODO: update service
+							.optionDetail("BLUE + " + (i * 100) + "GB")
+							.build())
+						.toList())
+				.build());
+
+			IntStream.range(1, 3)
+				.forEach(i -> productDiscountService.create(
+					products[2],
+					ProductDiscountDTO.builder()
+						.headCount(10 * i)
+						.salePrice(products[2].getPrice() - (i * 1000))
+						.build())
+				);
 		};
 	}
 }

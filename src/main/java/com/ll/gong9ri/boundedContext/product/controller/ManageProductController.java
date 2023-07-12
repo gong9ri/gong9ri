@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,9 @@ import com.ll.gong9ri.boundedContext.store.service.StoreService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
 @RequestMapping("/manage/product")
@@ -106,18 +109,28 @@ public class ManageProductController {
 	}
 
 	@GetMapping("/registration")
-	public String showProductRegistration() {
+	public String showProductRegistration(Model model) {
+		model.addAttribute("productRegisterDTO", new ProductRegisterDTO());
 		return "product/productRegistration";
 	}
 
 	@PostMapping("/registration")
-	public String registerProduct(@Valid ProductRegisterDTO productRegisterDTO) {
+	public String registerProduct(
+		@Valid ProductRegisterDTO productRegisterDTO,
+		BindingResult bindingResult,
+		Model model
+	) {
 		final Optional<Store> oStore = storeService.findByMemberId(rq.getMember().getId());
 		if (oStore.isEmpty()) {
 			return rq.historyBack("잘못된 접근입니다.");
 		}
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(bindingResult);
+			return "product/productRegistration";
+		}
 
 		RsData<Product> productRs = productService.registerProduct(oStore.get(), productRegisterDTO);
+
 		if (productRs.isFail()) {
 			return rq.historyBack(productRs);
 		}
@@ -151,7 +164,7 @@ public class ManageProductController {
 		return ResponseEntity.ok().body(productRs.getData().getId());
 	}
 
-	@GetMapping("/{productId}/image")
+/*	@GetMapping("/{productId}/image")
 	public String showProductImageForm(@PathVariable Long productId, Model model) {
 		List<ProductImageDTO> images = imageService.getProductImages(productId);
 
@@ -168,7 +181,7 @@ public class ManageProductController {
 		}
 
 		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
-	}
+	}*/
 
 	@GetMapping("/{productId}/discount")
 	public String showProductDiscountForm(@PathVariable Long productId, Model model) {

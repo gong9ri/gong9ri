@@ -41,8 +41,8 @@ class MemberServiceTest {
 		RsData<Member> rsMember = memberService.storeJoin(username, username + username);
 
 		assertThat(rsMember.isSuccess()).isTrue();
-		assertThat(rsMember.getData().getUsername()).isNotEqualTo(username);
-		assertThat(rsMember.getData().getUsername()).contains("GONG9");
+		assertThat(rsMember.getData().getNickname()).isNotEqualTo(username);
+		assertThat(rsMember.getData().getNickname()).contains("GONG9");
 		assertThat(rsMember.getData().getGrantedAuthorities())
 			.contains(new SimpleGrantedAuthority(AuthLevel.STORE.getValue()));
 		assertThat(rsMember.getData().getGrantedAuthorities())

@@ -73,7 +73,12 @@ class GroupBuyChatRoomServiceTest {
 		RsData<Member> testUserCAGC = memberService.join("testUserCAGC", "1234");
 		RsData<Store> testStoreA = storeService.create(testUserCAGC.getData(), "testStoreA");
 		RsData<Product> productRsData = productService.registerProduct(testStoreA.getData(),
-			new ProductRegisterDTO("sampleProduct1", 10000, "sampleProduct1Description", 30));
+			ProductRegisterDTO.builder()
+				.name("nameCC1")
+				.price(10000)
+				.description("descCC1")
+				.maxPurchaseNum(10)
+				.build());
 
 		// when
 		RsData<GroupBuy> groupBuyRsData = groupBuyService.create(productRsData.getData());
@@ -90,13 +95,13 @@ class GroupBuyChatRoomServiceTest {
 		RsData<Member> testUserFACBM1 = memberService.join("testUserFACBM1", "1234");
 		RsData<Store> testStoreFACBM1 = storeService.create(testUserFACBM1.getData(), "testStoreFACBM1");
 		RsData<Product> productRsData1 = productService.registerProduct(testStoreFACBM1.getData(),
-			new ProductRegisterDTO("sampleProduct1", 10000, "sampleProduct1Description1", 30));
+			ProductRegisterDTO.builder().name("nameF1").price(10000).description("desc1").maxPurchaseNum(10).build());
 		RsData<Product> productRsData2 = productService.registerProduct(testStoreFACBM1.getData(),
-			new ProductRegisterDTO("sampleProduct2", 20000, "sampleProduct1Description2", 30));
+			ProductRegisterDTO.builder().name("nameF2").price(10000).description("desc1").maxPurchaseNum(10).build());
 		RsData<Product> productRsData3 = productService.registerProduct(testStoreFACBM1.getData(),
-			new ProductRegisterDTO("sampleProduct3", 30000, "sampleProduct1Description3", 30));
+			ProductRegisterDTO.builder().name("nameF3").price(10000).description("desc1").maxPurchaseNum(10).build());
 		RsData<Product> productRsData4 = productService.registerProduct(testStoreFACBM1.getData(),
-			new ProductRegisterDTO("sampleProduct3", 40000, "sampleProduct1Description4", 30));
+			ProductRegisterDTO.builder().name("nameF4").price(10000).description("desc1").maxPurchaseNum(10).build());
 
 		GroupBuy groupBuy1 = groupBuyService.create(productRsData1.getData()).getData();
 		GroupBuy groupBuy2 = groupBuyService.create(productRsData2.getData()).getData();
