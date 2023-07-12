@@ -20,8 +20,11 @@ import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -65,9 +68,14 @@ public class ProductService {
 	}
 
 	@Transactional
-	public RsData<Product> registerProduct(final Store store, final ProductRegisterDTO productRegisterDTO) {
-		Product product = productRegisterDTO.toEntity()
-			.toBuilder()
+	public RsData<Product> registerProduct(final Store store, @Valid ProductRegisterDTO productRegisterDTO) {
+		log.info(productRegisterDTO.toString());
+
+		Product product = Product.builder()
+			.name(productRegisterDTO.getName())
+			.price(productRegisterDTO.getPrice())
+			.description(productRegisterDTO.getDescription())
+			.maxPurchaseNum(productRegisterDTO.getMaxPurchaseNum())
 			.store(store)
 			.build();
 
@@ -78,6 +86,21 @@ public class ProductService {
 		optionService.defaultCreate(product);
 
 		return RsData.of("S-1", "상품이 성공적으로 등록되었습니다.", product);
+	}
+	@Transactional
+	public RsData<Product> addImages(final Long id, final List<MultipartFile> images) {
+		Optional<Product> unModifiedProduct = repository.findById(id);
+		if (unModifiedProduct.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		List<ProductImage> productImages = productImageService.uploadProductImages(unModifiedProduct.get(), images);
+
+		Product product = unModifiedProduct.get().toBuilder()
+			.images(productImages)
+			.build();
+
+		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", repository.save(product));
 	}
 
 	@Transactional
@@ -115,21 +138,5 @@ public class ProductService {
 		repository.save(product);
 
 		return RsData.of("S-1", "인원 별 할인이 성공적으로 등록되었습니다.", product);
-	}
-
-	@Transactional
-	public RsData<Product> addImages(final Long id, final List<MultipartFile> images) {
-		Optional<Product> unModifiedProduct = repository.findById(id);
-		if (unModifiedProduct.isEmpty()) {
-			return RsData.failOf(null);
-		}
-
-		List<ProductImage> productImages = productImageService.uploadProductImages(unModifiedProduct.get(), images);
-
-		Product product = unModifiedProduct.get().toBuilder()
-			.images(productImages)
-			.build();
-
-		return RsData.of("S-1", "상품 이미지가 성공적으로 등록되었습니다.", repository.save(product));
 	}
 }
