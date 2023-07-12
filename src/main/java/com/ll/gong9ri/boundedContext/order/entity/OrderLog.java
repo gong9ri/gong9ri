@@ -43,15 +43,21 @@ public class OrderLog {
 
 	public OrderLog newLogOf() {
 		return OrderLog.builder()
-			.orderId(orderId)
-			.memberId(memberId)
-			.username(username)
-			.storeId(storeId)
-			.storeName(storeName)
-			.productId(productId)
-			.productName(productName)
-			.price(price)
-			.salePrice(salePrice)
-			.build();
+				.orderId(orderId)
+				.memberId(memberId)
+				.username(username)
+				.storeId(storeId)
+				.storeName(storeName)
+				.productId(productId)
+				.productName(productName)
+				.price(price)
+				.salePrice(salePrice)
+				.orderStatus(orderStatus)
+				.recipient(recipient)
+				.mainAddress(mainAddress)
+				.subAddress(subAddress)
+				.totalPrice(totalPrice)
+				.productOptionQuantities(productOptionQuantities)
+				.build();
 	}
 }
