@@ -76,6 +76,15 @@ public class GroupBuyController {
 		return "groupBuy/list";
 	}
 
+	@GetMapping("/mylist")
+	public String groupBuyList(Model model) {
+		final List<GroupBuyListDTO> dtos = groupBuyService.getAllGroupBuyListDTO(null, rq.getMember().getId());
+		model.addAttribute("groupBuyStatus", GroupBuyStatus.values());
+		model.addAttribute("groupBuyList", dtos);
+
+		return "groupBuy/mylist";
+	}
+
 	@PostMapping("/{groupBuyId}/participate")
 	@PreAuthorize("isAuthenticated()")
 	public String participateGroupBuy(@PathVariable("groupBuyId") Long groupBuyId) {
