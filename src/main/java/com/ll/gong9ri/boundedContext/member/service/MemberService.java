@@ -12,15 +12,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ll.gong9ri.base.appConfig.AppConfig;
 import com.ll.gong9ri.base.event.EventAfterMemberJoinAttr;
 import com.ll.gong9ri.base.event.EventAfterStoreJoinAccept;
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.image.dto.ImageDTO;
+import com.ll.gong9ri.boundedContext.image.service.ImageService;
 import com.ll.gong9ri.boundedContext.member.entity.AuthLevel;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
+import com.ll.gong9ri.boundedContext.member.entity.MemberImage;
 import com.ll.gong9ri.boundedContext.member.entity.ProviderTypeCode;
+import com.ll.gong9ri.boundedContext.member.repository.MemberImageRepository;
 import com.ll.gong9ri.boundedContext.member.repository.MemberRepository;
+import com.ll.gong9ri.boundedContext.member.util.MemberNicknameUt;
 import com.ll.gong9ri.boundedContext.member.util.MemberUt;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +40,8 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final MemberRepository memberRepository;
 	private final ApplicationEventPublisher publisher;
+	private final MemberImageRepository memberImageRepository;
+	private final ImageService imageService;
 
 	@Value("${custom.store.storeNamePrefix}")
 	private String storeNamePrefix;
@@ -54,6 +62,7 @@ public class MemberService {
 			.builder()
 			.providerTypeCode(providerTypeCode)
 			.username(username)
+			.nickname(new MemberNicknameUt().getNickname(username.hashCode()))
 			.password(password)
 			.authLevel(AuthLevel.MEMBER)
 			.build();
@@ -93,6 +102,7 @@ public class MemberService {
 			.builder()
 			.providerTypeCode(ProviderTypeCode.GONG9RI)
 			.username(storeDBName)
+			.nickname(storeName)
 			.password(password)
 			.authLevel(AuthLevel.STORE)
 			.build();
@@ -137,5 +147,41 @@ public class MemberService {
 		final Map<String, Object> memberMap = thisObj.getMemberMapByUsername__cached(username);
 
 		return MemberUt.fromMap(memberMap);
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<MemberImage> findMemberImage(Long memberId){
+		return memberImageRepository.findByMemberId(memberId);
+	}
+
+	@Transactional
+	public ImageDTO uploadMemberImage(Member member, MultipartFile multipartFile){
+		Optional<MemberImage> originMemberImage = memberImageRepository.findByMemberId(member.getId());
+
+		ImageDTO dto = imageService.uploadMemberImage(multipartFile, "member");
+
+		if(dto == null){
+			return null;
+		}
+
+		if(originMemberImage.isPresent()){
+			deleteMemberImage(originMemberImage.get());
+		}
+
+		MemberImage memberImage = MemberImage.builder()
+			.fileName(dto.getUploadFileName())
+			.filePath(dto.getUploadFilePath())
+			.member(member)
+			.build();
+
+		memberImageRepository.save(memberImage);
+
+		return dto;
+	}
+
+	@Transactional
+	public void deleteMemberImage(final MemberImage memberImage){
+		memberImageRepository.delete(memberImage);
+		memberImageRepository.flush();
 	}
 }
