@@ -1,10 +1,8 @@
 package com.ll.gong9ri.boundedContext.order.entity;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.util.UUID;
 
 import com.ll.gong9ri.base.baseEntity.BaseEntity;
-import com.ll.gong9ri.base.tosspayments.tossConfig.TossConfig;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
@@ -29,6 +27,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class OrderInfo extends BaseEntity {
+	@Builder.Default
+	private UUID orderId = UUID.randomUUID();
 	private String name;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -44,12 +44,4 @@ public class OrderInfo extends BaseEntity {
 	private OrderStatus orderStatus = OrderStatus.PRE_CREATE;
 	private Integer price;
 	private String recentOrderLogId;
-
-	/**
-	 * @return add ORDER_ID_PREFIX, base64 encoded string
-	 */
-	public String getEncodedOrderId() {
-		return Base64.getEncoder()
-			.encodeToString((TossConfig.getORDER_ID_PREFIX() + getId()).getBytes(StandardCharsets.UTF_8));
-	}
 }

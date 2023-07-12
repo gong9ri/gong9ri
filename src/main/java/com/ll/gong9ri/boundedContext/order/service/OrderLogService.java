@@ -34,7 +34,7 @@ public class OrderLogService {
 
 	public RsData<OrderLog> create(final OrderInfo orderInfo, final List<ProductOptionQuantity> quantities) {
 		OrderLog orderLog = OrderLog.builder()
-			.orderId(orderInfo.getEncodedOrderId())
+			.orderId(String.valueOf(orderInfo.getOrderId()))
 			.name(orderInfo.getName())
 			.memberId(orderInfo.getMember().getId())
 			.username(orderInfo.getMember().getUsername())
@@ -52,6 +52,24 @@ public class OrderLogService {
 			.build();
 
 		return RsData.of("S-1", "주문이 생성되었습니다.", orderLogRepository.save(orderLog));
+	}
+
+	public RsData<OrderLog> groupBuyCreate(final OrderInfo orderInfo) {
+		OrderLog orderLog = OrderLog.builder()
+			.orderId(String.valueOf(orderInfo.getOrderId()))
+			.name(orderInfo.getName())
+			.memberId(orderInfo.getMember().getId())
+			.username(orderInfo.getMember().getUsername())
+			.storeId(orderInfo.getStore().getId())
+			.storeName(orderInfo.getStore().getName())
+			.productId(orderInfo.getProduct().getId())
+			.productName(orderInfo.getProduct().getName())
+			.price(orderInfo.getProduct().getPrice())
+			.salePrice(orderInfo.getPrice())
+			.orderStatus(OrderStatus.GROUP_BUY_CREATED)
+			.build();
+
+		return RsData.of("S-1", "공동구매 주문 생성이 완료되었습니다.", orderLogRepository.save(orderLog));
 	}
 
 	public RsData<OrderLog> groupBuyConfirm(
@@ -98,9 +116,9 @@ public class OrderLogService {
 		}
 
 		OrderLog orderLog = confirmedOrderLog.newLogOf().toBuilder()
-				.orderStatus(OrderStatus.PURCHASE_REQUESTED)
-				.paymentKey(paymentKey)
-				.build();
+			.orderStatus(OrderStatus.PURCHASE_REQUESTED)
+			.paymentKey(paymentKey)
+			.build();
 
 		return RsData.of("S-1", "결제를 생성했습니다.", orderLogRepository.save(orderLog));
 	}
@@ -111,8 +129,8 @@ public class OrderLogService {
 		}
 
 		OrderLog orderLog = paymentOrderLog.newLogOf().toBuilder()
-				.orderStatus(OrderStatus.PURCHASE_SUCCESS)
-				.build();
+			.orderStatus(OrderStatus.PURCHASE_SUCCESS)
+			.build();
 
 		return RsData.of("S-1", "결제를 성공했습니다.", orderLogRepository.save(orderLog));
 	}

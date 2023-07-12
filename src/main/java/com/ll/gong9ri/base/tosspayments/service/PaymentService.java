@@ -1,17 +1,17 @@
 package com.ll.gong9ri.base.tosspayments.service;
 
-import com.ll.gong9ri.base.tosspayments.entity.PaymentConfirmBody;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.base.tosspayments.entity.PaymentConfirmBody;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentCreateBody;
 import com.ll.gong9ri.base.tosspayments.entity.PaymentWebClient;
 import com.ll.gong9ri.boundedContext.order.entity.OrderLog;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
 
 @Service
 @Transactional
@@ -23,7 +23,7 @@ public class PaymentService {
 		final PaymentCreateBody paymentCreateBody = PaymentCreateBody.builder()
 			.method("카드")
 			.amount(orderLog.getTotalPrice())
-			.orderId(orderLog.getOrderId())
+			.orderId(String.valueOf(orderLog.getOrderId()))
 			.orderName(orderLog.getName())
 			.build();
 
@@ -37,9 +37,9 @@ public class PaymentService {
 
 	public RsData<Boolean> confirmPayment(final OrderLog orderLog) {
 		final PaymentConfirmBody paymentConfirmBody = PaymentConfirmBody.builder()
-				.paymentKey(orderLog.getPaymentKey())
-				.amount(orderLog.getTotalPrice())
-				.orderId(orderLog.getOrderId())
+			.paymentKey(orderLog.getPaymentKey())
+			.amount(orderLog.getTotalPrice())
+			.orderId(String.valueOf(orderLog.getOrderId()))
 				.build();
 
 		Map paymentResult = paymentWebClient.paymentConfirm(paymentConfirmBody);

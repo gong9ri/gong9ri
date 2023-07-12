@@ -56,7 +56,11 @@ public class OrderInfoService {
 			.orderStatus(OrderStatus.GROUP_BUY_CREATED)
 			.build();
 
-		return RsData.successOf(repository.save(orderInfo));
+		orderInfo = repository.save(orderInfo);
+
+		orderLogService.groupBuyCreate(orderInfo);
+
+		return RsData.successOf(orderInfo);
 	}
 
 	/**
@@ -109,7 +113,7 @@ public class OrderInfoService {
 		final List<ProductOptionQuantity> quantities
 	) {
 		final Optional<OrderLog> groupBuyCreatedOrderLog = orderLogService.findById(
-				groupBuyOrderInfo.getRecentOrderLogId()
+			groupBuyOrderInfo.getRecentOrderLogId()
 		);
 		if (groupBuyCreatedOrderLog.isEmpty()) {
 			return RsData.failOf(null);
@@ -158,8 +162,8 @@ public class OrderInfoService {
 	}
 
 	public RsData<OrderInfo> payment(
-			final OrderInfo confirmedOrderInfo,
-			final String paymentKey
+		final OrderInfo confirmedOrderInfo,
+		final String paymentKey
 	) {
 		final Optional<OrderLog> confirmedOrderLog = orderLogService.findById(confirmedOrderInfo.getRecentOrderLogId());
 		if (confirmedOrderLog.isEmpty()) {
@@ -172,9 +176,9 @@ public class OrderInfoService {
 		}
 
 		final OrderInfo orderInfo = confirmedOrderInfo.toBuilder()
-				.recentOrderLogId(rsOrderLog.getData().getId())
-				.orderStatus(OrderStatus.PURCHASE_REQUESTED)
-				.build();
+			.recentOrderLogId(rsOrderLog.getData().getId())
+			.orderStatus(OrderStatus.PURCHASE_REQUESTED)
+			.build();
 
 		return RsData.of("S-1", "결제 요청되었습니다.", repository.save(orderInfo));
 	}
@@ -191,9 +195,9 @@ public class OrderInfoService {
 		}
 
 		final OrderInfo orderInfo = paymentOrderInfo.toBuilder()
-				.recentOrderLogId(rsOrderLog.getData().getId())
-				.orderStatus(OrderStatus.PURCHASE_SUCCESS)
-				.build();
+			.recentOrderLogId(rsOrderLog.getData().getId())
+			.orderStatus(OrderStatus.PURCHASE_SUCCESS)
+			.build();
 
 		return RsData.of("S-1", "결제 완료되었습니다.", repository.save(orderInfo));
 	}
