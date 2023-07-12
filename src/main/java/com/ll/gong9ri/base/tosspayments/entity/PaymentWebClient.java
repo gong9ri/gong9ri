@@ -1,6 +1,7 @@
 package com.ll.gong9ri.base.tosspayments.entity;
 
 import java.util.Base64;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ll.gong9ri.base.appConfig.AppConfig;
-import com.ll.gong9ri.base.tosspayments.dto.PaymentResultDTO;
 import com.ll.gong9ri.base.tosspayments.tossConfig.TossConfig;
 
 @Component
@@ -35,7 +35,7 @@ public class PaymentWebClient {
 	 * @param paymentCreateBody
 	 * @return 결제 생성 결과 입니다.
 	 */
-	public PaymentResultDTO paymentCreate(PaymentCreateBody paymentCreateBody) {
+	public Map paymentCreate(PaymentCreateBody paymentCreateBody) {
 		paymentCreateBody = paymentCreateBody.toBuilder()
 			.successUrl(BASE_SUCCESS_URL)
 			.failUrl(BASE_FAIL_URL)
@@ -46,17 +46,17 @@ public class PaymentWebClient {
 			.uri(BASE_URL + BASE_PAYMENT)
 			.bodyValue(paymentCreateBody)
 			.retrieve()
-			.bodyToMono(PaymentResultDTO.class)
+			.bodyToMono(Map.class)
 			.block();
 	}
 
-	public PaymentResultDTO paymentConfirm(PaymentConfirmBody paymentConfirmBody) {
+	public Map paymentConfirm(PaymentConfirmBody paymentConfirmBody) {
 		return createWebClient()
 			.method(HttpMethod.POST)
 			.uri(BASE_URL + BASE_PAYMENT + "/confirm")
 			.bodyValue(paymentConfirmBody)
 			.retrieve()
-			.bodyToMono(PaymentResultDTO.class)
+			.bodyToMono(Map.class)
 			.block();
 	}
 }

@@ -35,23 +35,15 @@ public class OrderLog {
 	@Builder.Default
 	private OrderStatus orderStatus = OrderStatus.PRE_CREATE;
 	private String recipient;
+	private String phoneNumber;
 	private String mainAddress;
 	private String subAddress;
 	private Integer totalPrice;
 	@Builder.Default
 	private List<ProductOptionQuantity> productOptionQuantities = new ArrayList<>();
+	private String paymentKey;
 
 	public OrderLog newLogOf() {
-		return OrderLog.builder()
-			.orderId(orderId)
-			.memberId(memberId)
-			.username(username)
-			.storeId(storeId)
-			.storeName(storeName)
-			.productId(productId)
-			.productName(productName)
-			.price(price)
-			.salePrice(salePrice)
-			.build();
+		return this.toBuilder().id(null).build();
 	}
 }
