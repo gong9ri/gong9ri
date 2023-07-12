@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ll.gong9ri.base.event.NoticeUpdatedEvent;
+import com.ll.gong9ri.base.event.EventAfterNoticeUpdated;
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.service.ChatRoomParticipantService;
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.dto.GroupBuyChatRoomDto;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.dto.NoticeDto;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
@@ -32,13 +33,7 @@ public class GroupBuyChatRoomController {
 	private final Rq rq;
 	private final ApplicationEventPublisher publisher;
 
-	@GetMapping("/makechat")
-	public String create() {
-		groupBuyChatRoomService.createChatRoom();
-
-		return rq.redirectWithMsg("1", "");
-	}
-
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{chatRoomId}")
 	public String showChatRoom(@PathVariable Long chatRoomId, Model model) {
 
@@ -54,13 +49,13 @@ public class GroupBuyChatRoomController {
 		return "groupBuy/roomDetail";
 	}
 
-	@PreAuthorize("isAuthenticated")
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{chatRoomId}/notice")
 	public String getNoticeForm(@PathVariable Long chatRoomId) {
 		return "groupBuy/noticeForm";
 	}
 
-	@PreAuthorize("isAuthenticated")
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/{chatRoomId}/notice")
 	public String createNotice(@PathVariable Long chatRoomId, @Valid NoticeDto dto) {
 		GroupBuyChatRoom chatRoom = groupBuyChatRoomService.findById(chatRoomId);
@@ -70,8 +65,21 @@ public class GroupBuyChatRoomController {
 		List<String> tokensByChatRoomId = chatRoomParticipantService.getTokensByChatRoomId(chatRoomId);
 
 		publisher.publishEvent(
-			new NoticeUpdatedEvent(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
+			new EventAfterNoticeUpdated(tokensByChatRoomId, chatRoom.getName(), result.getData().getNotice()));
 
 		return rq.redirectWithMsg("/groupbuy/{chatRoomId}", result);
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mychatrooms")
+	public String showChatRooms(Model model) {
+
+		Long memberId = rq.getMember().getId();
+		List<GroupBuyChatRoomDto> allByMemberId = groupBuyChatRoomService.findAllByMemberId(memberId);
+
+		model.addAttribute("chatRooms", allByMemberId);
+		model.addAttribute("memberId", memberId);
+
+		return "groupBuy/chatRooms";
 	}
 }

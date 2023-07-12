@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class NoticeUpdatedEvent {
+public class EventAfterNoticeUpdated {
 	private List<String> tokens;
 	private String messageHead;
 	private String messageContent;

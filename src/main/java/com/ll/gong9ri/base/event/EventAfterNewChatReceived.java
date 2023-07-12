@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class NewChatReceivedEvent {
+public class EventAfterNewChatReceived {
 	private Long participantId;
 	private String offset;
 }
