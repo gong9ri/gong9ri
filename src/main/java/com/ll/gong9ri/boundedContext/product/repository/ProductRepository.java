@@ -12,4 +12,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	List<Product> findDistinctByNameLike(final String keyword);
 
 	List<Product> findByStoreId(final Long storeId);
+
+	Integer countByStoreId(final Long storeId);
 }
