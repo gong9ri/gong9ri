@@ -1,10 +1,7 @@
 package com.ll.gong9ri.boundedContext.member.controller;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +38,13 @@ public class MemberController {
 		return "usr/member/login";
 	}
 
-	@GetMapping("/storeForm")
+	@PreAuthorize("isAnonymous()")
+	@GetMapping("/store/login")
+	public String showStoreLogin() {
+		return "usr/member/storeLogin";
+	}
+
+	@GetMapping("/store/join")
 	public String storeJoinForm() {
 		return "usr/member/storeForm";
 	}

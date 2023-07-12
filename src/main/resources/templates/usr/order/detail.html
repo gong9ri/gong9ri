@@ -59,9 +59,12 @@
         </tr>
     </table>
     <a th:href="@{|/order/list|}" th:text="목록으로"></a>
-    <!-- 주문의 상태에 따라 이동할 수 있는 링크를 controller에서 평문으로 전달하여 action에 적용, 실제 적용되는지? -->
-    <button th:action="@{|${confirmOrder}|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
-    <button th:action="@{|${createPayment}|}" th:if="${createPayment != null}" th:method="POST" th:text="결제"></button>
+
+    <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}" th:text="옵션 선택">
+    </a>
+
+    <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}" th:text="결제">
+    </a>
 </main>
 </body>
 </html>
