@@ -104,4 +104,16 @@ public class OrderLogService {
 
 		return RsData.of("S-1", "결제를 생성했습니다.", orderLogRepository.save(orderLog));
 	}
+
+	public RsData<OrderLog> paymentAccept(final OrderLog paymentOrderLog) {
+		if (!paymentOrderLog.getOrderStatus().equals(OrderStatus.PURCHASE_REQUESTED)) {
+			return RsData.of("F-1", OrderStatus.PURCHASE_REQUESTED + " 상태의 주문이 아닙니다.", null);
+		}
+
+		OrderLog orderLog = paymentOrderLog.newLogOf().toBuilder()
+				.orderStatus(OrderStatus.PURCHASE_SUCCESS)
+				.build();
+
+		return RsData.of("S-1", "결제를 성공했습니다.", orderLogRepository.save(orderLog));
+	}
 }

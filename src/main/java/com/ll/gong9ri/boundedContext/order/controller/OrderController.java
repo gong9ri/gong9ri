@@ -224,7 +224,12 @@ public class OrderController {
 			return rq.historyBack(result);
 		}
 
-		return rq.redirectWithMsg("/order/detail/" + rsPayment.getData().getId(), rsPayment);
+		final RsData<OrderInfo> rsPaymentAccept = orderInfoService.paymentAccept(rsPayment.getData());
+		if (rsPaymentAccept.isFail()) {
+			return rq.historyBack(rsPaymentAccept);
+		}
+
+		return rq.redirectWithMsg("/order/detail/" + rsPaymentAccept.getData().getId(), rsPaymentAccept);
 	}
 
 	@GetMapping("/payment/{id}/fail")

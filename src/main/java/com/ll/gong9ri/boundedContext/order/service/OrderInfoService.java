@@ -176,6 +176,25 @@ public class OrderInfoService {
 				.orderStatus(OrderStatus.PURCHASE_REQUESTED)
 				.build();
 
-		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", repository.save(orderInfo));
+		return RsData.of("S-1", "결제 요청되었습니다.", repository.save(orderInfo));
+	}
+
+	public RsData<OrderInfo> paymentAccept(final OrderInfo paymentOrderInfo) {
+		final Optional<OrderLog> paymentOrderLog = orderLogService.findById(paymentOrderInfo.getRecentOrderLogId());
+		if (paymentOrderLog.isEmpty()) {
+			return RsData.failOf(null);
+		}
+
+		final RsData<OrderLog> rsOrderLog = orderLogService.paymentAccept(paymentOrderLog.get());
+		if (rsOrderLog.isFail()) {
+			return RsData.of(rsOrderLog.getResultCode(), rsOrderLog.getMsg(), null);
+		}
+
+		final OrderInfo orderInfo = paymentOrderInfo.toBuilder()
+				.recentOrderLogId(rsOrderLog.getData().getId())
+				.orderStatus(OrderStatus.PURCHASE_SUCCESS)
+				.build();
+
+		return RsData.of("S-1", "결제 완료되었습니다.", repository.save(orderInfo));
 	}
 }
