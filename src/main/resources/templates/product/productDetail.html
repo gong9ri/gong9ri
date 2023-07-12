@@ -159,7 +159,7 @@
             <!-- 이미지 슬라이드 끝 -->
 
             <!-- 상품 정보 -->
-            <div class="product">
+            <div class="product flex flex-col">
                 <span class="product-name" th:text="*{product.name}"></span>
                 <div class="discounts">
                     <ul>
@@ -177,24 +177,26 @@
 
             <!-- 옵션 선택 (Options) -->
             <table class="options">
-                <tr th:each="option, optionIdx : ${product.options}">
+                <p class="text-2xl font-bold rounded py-2">옵션 선택</p>
+                <tr class="flex flex-col justify-center items-center" th:each="option, optionIdx : ${product.options}">
                     <!-- 옵션1 표시(ex. 사이즈) -->
                     <button onclick="addToCartForm(this)"
                             th:option-id="${option.id}"
                             th:option-name="${option.optionDetail == null ? '기본' : option.optionDetail}"
+                            class="btn btn-primary my-1"
                             th:text="|${option.optionDetail == null ? '기본' : option.optionDetail}|"/>
                 </tr>
             </table>
 
             <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
             <div>
-                <p>내 선택</p>
+                <p class="text-2xl font-bold rounded py-2">내 선택</p>
                 <ul class="my-choice" id="myChoice">
 
                 </ul>
             </div>
 
-            <button onclick="addToCart()">상품 주문하기</button>
+            <button class="btn btn-primary" onclick="addToCart()">상품 주문하기</button>
 
             <!-- 공동구매 버튼 -->
             <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">

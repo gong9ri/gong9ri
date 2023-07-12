@@ -9,7 +9,6 @@
         <a class="btn btn-primary mb-4" href="/manage/product/registration">상품 등록</a>
     </div>
     <div class="p-4 grid grid-cols-1 gap-4">
-        // TODO: 상품 가격, 등등
         <div th:each="product : ${products}">
             <a class="flex flex-col" th:href="@{|detail/${product.id}|}">
                 <div class="card card-side  bg-base-100 shadow-lg">
