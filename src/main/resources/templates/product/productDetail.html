@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 상세 옵션 주문</title>
+    <script th:inline="javascript">
+        const token = /*[[${_csrf.token}]]*/ '';
+        const productId = /*[[${product.id}]]*/;
+    </script>
+</head>
+<body>
+<main layout:fragment="main">
+    <div class="container max-w-2xl mx-auto">
+        <div class="form-container form-control border-0">
+            <!-- 이미지 슬라이드 -->
+
+            <!-- 샘플 이미지 슬라이드 -->
+            <div class="carousel carousel-center max-w-md p-4 space-x-4 rounded-box">
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://tooit.s3.ap-northeast-2.amazonaws.com/voteImage/7cb6be73-514e-4202-b44d-59557bf86f37_most.png"
+                         class="rounded-box carousel-image"/>
+                </div>
+            </div>
+
+            <!-- 실제 이미지 슬라이드 -->
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleIndicators" th:each="image, idx : *{product.images}"
+                        th:data-slide-to="${idx.index}" th:class="${idx.index == 0} ? 'active' : ''"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item" th:each="image, idx : *{product.images}"
+                         th:class="${idx.index == 0} ? 'active' : ''">
+                        <img th:src="${image}" class="d-block w-100 rounded-box" alt="Slide Image">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
+                   data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only"> < </span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
+                   data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only"> > </span>
+                </a>
+            </div>
+            <!-- 이미지 슬라이드 끝 -->
+
+            <!-- 상품 정보 -->
+            <div class="product">
+                <span class="product-name" th:text="*{product.name}"></span>
+                <div class="discounts">
+                    <ul>
+                        <li th:each="discount : *{product.discounts}">
+                            <p><span th:text="*{discount.headCount}"></span>명 모일 시</p>
+                            <p><span th:text="*{discount.salePrice}"></span> 원 </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 나중에 리뷰 추가 -->
+
+            <!-- 제품 구매하는 페이지로 이동하는 버튼 추가 -->
+
+            <!-- 옵션 선택 (Options) -->
+            <table class="options">
+                <tr th:each="option, optionIdx : ${product.options}">
+                    <!-- 옵션1 표시(ex. 사이즈) -->
+                    <button onclick="addToCartForm(this)"
+                            th:option-id="${option.id}"
+                            th:option-name="${option.optionDetail == null ? '기본' : option.optionDetail}"
+                            th:text="|${option.optionDetail == null ? '기본' : option.optionDetail}|"/>
+                </tr>
+            </table>
+
+            <!-- 내 선택 리스트(장바구니 기능으로 위에서 선택한 옵션들이 뜨고 구매할 개수 입력) -->
+            <div>
+                <p>내 선택</p>
+                <ul class="my-choice" id="myChoice">
+
+                </ul>
+            </div>
+
+            <button onclick="addToCart()">상품 주문하기</button>
+
+            <!-- 공동구매 버튼 -->
+            <form th:action="@{|/groupBuy/make/${product.id}|}" method="post">
+                <button type="submit" class="btn btn-light border" href="/list"
+                        onclick="return confirm('공동구매를 생성하시겠습니까?')">
+                    총대되기
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const cartOptions = {};
+
+        function addToCartForm(el) {
+            const optionId = el.getAttribute('option-id');
+            const optionDetail = el.getAttribute('option-name');
+
+            if (cartOptions[optionId] === undefined) {
+                cartOptions[optionId] = {
+                    optionId: optionId,
+                    optionDetail: optionDetail,
+                    quantity: 1
+                };
+            } else {
+                cartOptions[optionId].quantity++;
+            }
+
+            drawCartForm();
+        }
+
+        function removeOption(optionId) {
+            delete cartOptions[optionId];
+
+            drawCartForm();
+        }
+
+        function drawCartForm() {
+            $('#myChoice').empty();
+
+            for (const key in cartOptions) {
+                const option = cartOptions[key];
+
+                $('#myChoice').append(`
+                    <li>
+                        <span>${option.optionDetail}</span>
+                        <span>${option.quantity}개</span>
+                        <button onclick="removeOption(${option.optionId})">X</button>
+                    </li>
+                `);
+            }
+        }
+
+        function addToCart() {
+            if (Object.keys(cartOptions).length === 0) {
+                alert('옵션을 선택해주세요.');
+                return;
+            }
+
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
+            const token = document.querySelector('meta[name="_csrf"]').content;
+
+            const carts = {choices: Object.values(cartOptions)};
+            console.log(JSON.stringify(carts));
+
+            fetch(`/order/create/${productId}`, {
+                method: 'POST',
+                headers: {
+                    [header]: token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(carts)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.msg) {
+                        alert(res.msg);
+                        location.href = `/order/detail/${res.data}`;
+                    } else {
+                        alert(res.msg);
+                    }
+                });
+        }
+    </script>
+</main>
+</body>
+</html>

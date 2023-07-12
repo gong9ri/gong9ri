@@ -22,6 +22,8 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyMember;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyMemberService;
 import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyService;
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.service.GroupBuyChatRoomService;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 
@@ -34,6 +36,7 @@ public class GroupBuyController {
 	private final GroupBuyService groupBuyService;
 	private final ProductService productService;
 	private final GroupBuyMemberService groupBuyMemberService;
+	private final GroupBuyChatRoomService groupBuyChatRoomService;
 	private final Rq rq;
 
 	private RsData<GroupBuy> validateGroupBuy(final Long groupBuyId) {
@@ -129,6 +132,13 @@ public class GroupBuyController {
 			groupBuyId,
 			rq.isLogin() ? rq.getMember().getId() : null
 		);
+
+		final Optional<GroupBuyChatRoom> groupBuyChatRoom = groupBuyChatRoomService.findByGroupBuyId(groupBuyId);
+		if (groupBuyChatRoom.isEmpty()) {
+			return rq.historyBack("잘못된 접근입니다.");
+		}
+		final Long chatRoomId = groupBuyChatRoom.get().getId();
+		model.addAttribute("chatRoomId", chatRoomId);
 
 		model.addAttribute("groupBuy", groupBuyDetailDTO);
 

@@ -41,7 +41,7 @@ public class OrderInfo extends BaseEntity {
 	private Product product;
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
-	private OrderStatus orderStatus = OrderStatus.PRE_CREATED;
+	private OrderStatus orderStatus = OrderStatus.PRE_CREATE;
 	private Integer price;
 	private String recentOrderLogId;
 

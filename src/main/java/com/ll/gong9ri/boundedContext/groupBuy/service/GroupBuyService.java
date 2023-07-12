@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ll.gong9ri.base.event.EventAfterGroupBuyCreated;
 import com.ll.gong9ri.base.event.EventGroupBuyProgress;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
@@ -88,7 +89,7 @@ public class GroupBuyService {
 			.min(Comparator.comparing(ProductDiscount::getHeadCount))
 			.orElse(null);
 
-		final GroupBuy groupBuy = GroupBuy.builder()
+		GroupBuy groupBuy = GroupBuy.builder()
 			.product(product)
 			.name(product.getName())
 			.startDate(LocalDateTime.now())
@@ -101,7 +102,12 @@ public class GroupBuyService {
 			.nextSalePrice(nextDiscount == null ? 0 : nextDiscount.getSalePrice())
 			.build();
 
-		return RsData.successOf(groupBuyRepository.save(groupBuy));
+		groupBuy = groupBuyRepository.save(groupBuy);
+
+		// 이벤트로 채팅방 생성
+		publisher.publishEvent(new EventAfterGroupBuyCreated(groupBuy));
+
+		return RsData.successOf(groupBuy);
 	}
 
 	@Transactional

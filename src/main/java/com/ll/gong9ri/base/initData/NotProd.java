@@ -13,7 +13,7 @@ import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.member.service.MemberService;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
-import com.ll.gong9ri.boundedContext.product.dto.ProductOptionNameDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDetailDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductDiscountService;
@@ -49,17 +49,15 @@ public class NotProd {
 				.map(RsData::getData)
 				.toArray(Product[]::new);
 
-			ProductOptionNameDTO defaultOption = productOptionService.getProductOptions(products[0].getId()).get(0);
+			ProductOptionDetailDTO defaultOption = productOptionService.getProductOptions(products[0].getId()).get(0);
 
 			productService.addOptions(products[0].getId(), ProductOptionDTO.builder()
-				.optionOne("색상")
-				.optionTwo("용량")
-				.optionNames(
-					LongStream.range(0L, 3L)
-						.mapToObj(i -> ProductOptionNameDTO.builder()
+				.optionName("")
+				.optionDetails(
+					LongStream.range(1L, 3L)
+						.mapToObj(i -> ProductOptionDetailDTO.builder()
 							.id(i == 0 ? defaultOption.getId() : null) // TODO: update service
-							.optionOneName("색상 " + i)
-							.optionTwoName((i * 100) + "GB")
+							.optionDetail("RED + " + (i * 100) + "GB")
 							.build())
 						.toList())
 				.build());

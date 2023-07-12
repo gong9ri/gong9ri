@@ -10,7 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ll.gong9ri.base.event.NewChatReceivedEvent;
+import com.ll.gong9ri.base.event.EventAfterNewChatReceived;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.entity.GroupBuyChatMessage;
 import com.ll.gong9ri.boundedContext.groupBuyChatMessage.repository.GroupBuyChatMessageRepository;
 
@@ -77,7 +77,7 @@ public class GroupBuyChatMessageService {
 
 		if (!chatMessages.isEmpty()) {
 			String newOffset = chatMessages.get(chatMessages.size() - 1).getId();
-			publisher.publishEvent(new NewChatReceivedEvent(participantId, newOffset));
+			publisher.publishEvent(new EventAfterNewChatReceived(participantId, newOffset));
 		}
 
 		return chatMessages;

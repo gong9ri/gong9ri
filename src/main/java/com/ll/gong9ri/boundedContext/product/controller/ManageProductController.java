@@ -1,8 +1,28 @@
 package com.ll.gong9ri.boundedContext.product.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.product.dto.*;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductImageDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDetailDTO;
+import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.service.ProductDiscountService;
 import com.ll.gong9ri.boundedContext.product.service.ProductImageService;
@@ -10,16 +30,9 @@ import com.ll.gong9ri.boundedContext.product.service.ProductOptionService;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.store.service.StoreService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @Controller
 @PreAuthorize("isAuthenticated() and hasAuthority('ROLE_STORE')")
@@ -61,14 +74,35 @@ public class ManageProductController {
 	@GetMapping("/{productId}/detail")
 	public String detail(@PathVariable Long productId, Model model) {
 		RsData<ProductDTO> rsProduct = productService.getProductDetail(productId);
-		// TODO: rq.getMember`s store_id == rsProduct.getStore_id fail
+
 		if (rsProduct.isFail()) {
 			return rq.historyBack(rsProduct);
+		}
+
+		if (!storeValidation(productId)) {
+			return rq.historyBack("접근 권한이 없습니다.");
 		}
 
 		model.addAttribute(PRODUCT, rsProduct.getData());
 
 		return "product/detail";
+	}
+
+	@PostMapping("/{productId}/detail")
+	public String saveDetail(@PathVariable Long productId, Model model) {
+		RsData<ProductDTO> rsProduct = productService.getProductDetail(productId);
+
+		if (rsProduct.isFail()) {
+			return rq.historyBack(rsProduct);
+		}
+
+		if (!storeValidation(productId)) {
+			return rq.historyBack("접근 권한이 없습니다.");
+		}
+
+		model.addAttribute(PRODUCT, rsProduct.getData());
+
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productId), "상품 상세 정보 저장에 성공했습니다.");
 	}
 
 	@GetMapping("/registration")
@@ -88,12 +122,17 @@ public class ManageProductController {
 			return rq.historyBack(productRs);
 		}
 
-		return rq.redirectWithMsg("/manage/product/" + productRs.getData().getId() + "/detail", productRs);
+		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
 	}
 
 	@GetMapping("/{productId}/option")
 	public String showProductOptionForm(@PathVariable Long productId, Model model) {
-		List<ProductOptionNameDTO> options = optionService.getProductOptions(productId);
+		Optional<Product> oProduct = productService.getProduct(productId);
+		List<ProductOptionDetailDTO> options = optionService.getProductOptions(productId);
+
+		if (oProduct.isEmpty() || !storeValidation(productId)) {
+			return rq.historyBack("잘못된 접근입니다.");
+		}
 
 		model.addAttribute("options", options);
 
@@ -134,19 +173,27 @@ public class ManageProductController {
 	@GetMapping("/{productId}/discount")
 	public String showProductDiscountForm(@PathVariable Long productId, Model model) {
 		List<ProductDiscountDTO> discounts = discountService.getProductDiscounts(productId);
+		Optional<Product> product = productService.getProduct(productId);
+		if (product.isEmpty() || !storeValidation(productId)) {
+			return rq.historyBack("존재하지 않거나 권한이 없는 상품에 대한 할인 정보 등록입니다.");
+		}
 
 		model.addAttribute("discounts", discounts);
+		model.addAttribute(PRODUCT, product.get());
 
 		return "product/discount";
 	}
 
 	@PutMapping("/{productId}/discount")
-	public String addProductDiscounts(@PathVariable Long productId, @Valid List<ProductDiscountDTO> dtos) {
-		RsData<Product> productRs = productService.addDiscounts(productId, dtos);
+	@ResponseBody
+	public ResponseEntity<Long> addProductDiscounts(@PathVariable Long productId,
+		@RequestBody @Valid List<ProductDiscountDTO> dtoList) {
+		RsData<Product> productRs = productService.addDiscounts(productId, dtoList);
+
 		if (productRs.isFail()) {
-			return rq.historyBack("상품 할인 등록에 실패했습니다.");
+			return ResponseEntity.badRequest().build();
 		}
 
-		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
+		return ResponseEntity.ok().body(productRs.getData().getId());
 	}
 }

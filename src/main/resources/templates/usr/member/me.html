@@ -1,0 +1,142 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+
+<head>
+    <title>마이 페이지</title>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<main layout:fragment="main" class="bg-gray-100">
+    <header class="bg-white py-4 px-6">
+        <div class="flex items-center justify-between">
+            <a class="text-xl font-bold">마이페이지</a>
+            <div class="ml-auto">
+                <a href="javascript:" class="text-gray-500" onclick="$(this).next().submit();">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>로그아웃
+                </a>
+                <form class="!hidden" method="POST" th:action="|/member/logout|"></form>
+            </div>
+        </div>
+    </header>
+    <div class="container mx-auto py-8">
+        <!-- 프로필 정보 -->
+        <div class="flex items-center mb-6">
+            <!--                프로필 이미지-->
+            <div class="w-16 h-16 rounded-full overflow-hidden">
+                <div th:if="${profileImage eq null}">
+                    <img src="/images/default-profile.jpg" alt="Default Profile Image">
+                </div>
+                <div th:if="${profileImage ne null}">
+                    <img th:src="${profileImage.getURL()}">
+                </div>
+            </div>
+            <!--                닉네임-->
+            <div class="ml-4">
+                <h2 class="text-2xl font-bold" th:utext="${@rq.member.nickname}"></h2>
+            </div>
+            <button id="edit-profile-btn"
+                    class="ml-auto bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">
+                프로필 변경
+            </button>
+        </div>
+
+        <!-- 프로필 수정 팝업창 -->
+        <div id="profile-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+            <div class="bg-purple-100 w-1/2 p-6 rounded shadow">
+                <h2 class="text-2xl font-bold mb-4">프로필 수정</h2>
+                <form id="profile-form" th:action="@{/member/update-profile}" method="POST"
+                      enctype="multipart/form-data">
+                    <div class="flex flex-col items-center mb-4">
+                        <div class="w-32 h-32 rounded-full overflow-hidden mb-2">
+                            <img id="profile-image-input" class="w-full h-full object-cover"
+                                 th:src="${profileImage != null ? profileImage.getURL() : '/images/default-profile.jpg'}"
+                                 alt="프로필 사진">
+                        </div>
+                        <input id="profile-image" type="file" name="files" class="hidden" accept="image/*">
+                        <label for="profile-image"
+                               class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded cursor-pointer">
+                            사진 변경
+                        </label>
+                    </div>
+                    <div class="mb-4">
+                        <label for="nickname-input" class="block font-bold mb-1">닉네임:</label>
+                        <input id="nickname-input" type="text" placeholder="닉네임" name="nickname"
+                               class="w-full border rounded py-2 px-3" required>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">
+                            저장
+                        </button>
+                        <button id="close-modal-btn"
+                                class="ml-2 bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">
+                            닫기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 내 주문 목록 -->
+        <a href="/myorders" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
+                <i class="fas fa-shopping-cart text-2xl"></i>
+            </div>
+            <span class="text-lg font-medium">나의 주문 목록</span>
+        </a>
+
+        <!-- 내 공동구매 -->
+        <a href="/mygroupbuy" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
+                <i class="fas fa-users text-2xl"></i>
+            </div>
+            <span class="text-lg font-medium">나의 공동구매</span>
+        </a>
+
+        <!-- 1:1 문의 -->
+        <a href="/inquiry" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
+                <i class="fas fa-comments text-2xl"></i>
+            </div>
+            <span class="text-lg font-medium">1:1 문의</span>
+        </a>
+
+        <!-- 채팅방 -->
+        <a href="/chatroom" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
+                <i class="fas fa-comments text-2xl"></i>
+            </div>
+            <span class="text-lg font-medium">공동구매 채팅 목록</span>
+        </a>
+    </div>
+    </div>
+    <script>
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const profileModal = document.getElementById('profile-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const profileImageInput = document.getElementById('profile-image');
+        const profileImagePreview = document.getElementById('profile-image-input');
+
+        editProfileBtn.addEventListener('click', function () {
+            profileModal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', function () {
+            profileModal.classList.add('hidden');
+        });
+
+        profileImageInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                profileImagePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</main>
+</body>
+</html>
