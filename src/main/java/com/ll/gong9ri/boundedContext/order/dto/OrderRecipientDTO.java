@@ -20,4 +20,7 @@ public class OrderRecipientDTO {
 	@NotBlank
 	private String mainAddress;
 	private String subAddress;
+	public String getPhoneNumber() {
+		return phoneNumber.replace("-","").replace(".", "");
+	}
 }

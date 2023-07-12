@@ -34,7 +34,7 @@ public class OrderLogService {
 
 	public RsData<OrderLog> create(final OrderInfo orderInfo, final List<ProductOptionQuantity> quantities) {
 		OrderLog orderLog = OrderLog.builder()
-			.orderId(orderInfo.getEncodedOrderId())
+			.orderId(String.valueOf(orderInfo.getOrderId()))
 			.name(orderInfo.getName())
 			.memberId(orderInfo.getMember().getId())
 			.username(orderInfo.getMember().getUsername())
@@ -51,9 +51,25 @@ public class OrderLogService {
 			.productOptionQuantities(quantities)
 			.build();
 
-		orderLogRepository.save(orderLog);
+		return RsData.of("S-1", "주문이 생성되었습니다.", orderLogRepository.save(orderLog));
+	}
 
-		return RsData.of("S-1", "주문이 생성되었습니다.", orderLog);
+	public RsData<OrderLog> groupBuyCreate(final OrderInfo orderInfo) {
+		OrderLog orderLog = OrderLog.builder()
+			.orderId(String.valueOf(orderInfo.getOrderId()))
+			.name(orderInfo.getName())
+			.memberId(orderInfo.getMember().getId())
+			.username(orderInfo.getMember().getUsername())
+			.storeId(orderInfo.getStore().getId())
+			.storeName(orderInfo.getStore().getName())
+			.productId(orderInfo.getProduct().getId())
+			.productName(orderInfo.getProduct().getName())
+			.price(orderInfo.getProduct().getPrice())
+			.salePrice(orderInfo.getPrice())
+			.orderStatus(OrderStatus.GROUP_BUY_CREATED)
+			.build();
+
+		return RsData.of("S-1", "공동구매 주문 생성이 완료되었습니다.", orderLogRepository.save(orderLog));
 	}
 
 	public RsData<OrderLog> groupBuyConfirm(
@@ -64,7 +80,7 @@ public class OrderLogService {
 			return RsData.of("F-1", OrderStatus.GROUP_BUY_CREATED + " 상태의 주문이 아닙니다.", null);
 		}
 
-		final OrderLog orderLog = groupBuyOrderLog.newLogOf().toBuilder()
+		OrderLog orderLog = groupBuyOrderLog.newLogOf().toBuilder()
 			.orderStatus(OrderStatus.CREATED)
 			.productOptionQuantities(quantities)
 			.totalPrice(quantities.stream()
@@ -72,9 +88,7 @@ public class OrderLogService {
 				.sum() * groupBuyOrderLog.getSalePrice())
 			.build();
 
-		orderLogRepository.save(orderLog);
-
-		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderLog);
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderLogRepository.save(orderLog));
 	}
 
 	public RsData<OrderLog> confirm(
@@ -85,24 +99,39 @@ public class OrderLogService {
 			return RsData.of("F-1", OrderStatus.CREATED + " 상태의 주문이 아닙니다.", null);
 		}
 
-		final OrderLog orderLog = createOrderLog.newLogOf().toBuilder()
-			.orderStatus(OrderStatus.CREATED)
+		OrderLog orderLog = createOrderLog.newLogOf().toBuilder()
+			.orderStatus(OrderStatus.RECIPIENT_DONE)
 			.recipient(orderRecipientDTO.getRecipient())
+			.phoneNumber(orderRecipientDTO.getPhoneNumber())
 			.mainAddress(orderRecipientDTO.getMainAddress())
 			.subAddress(orderRecipientDTO.getSubAddress())
 			.build();
 
-		orderLogRepository.save(orderLog);
-
-		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderLog);
+		return RsData.of("S-1", "옵션 선택이 완료되었습니다.", orderLogRepository.save(orderLog));
 	}
 
-	public RsData<OrderLog> paymentRequest(final OrderLog optionSelectedOrderLog) {
-		if (!optionSelectedOrderLog.getOrderStatus().equals(OrderStatus.CREATED)) {
-			return RsData.of("F-1", OrderStatus.CREATED + " 상태의 주문이 아닙니다.", null);
+	public RsData<OrderLog> payment(final OrderLog confirmedOrderLog, final String paymentKey) {
+		if (!confirmedOrderLog.getOrderStatus().equals(OrderStatus.RECIPIENT_DONE)) {
+			return RsData.of("F-1", OrderStatus.RECIPIENT_DONE + " 상태의 주문이 아닙니다.", null);
 		}
-		// TODO: pr save
 
-		return RsData.of("S-1", "결제 요청이 완료되었습니다.", null);
+		OrderLog orderLog = confirmedOrderLog.newLogOf().toBuilder()
+			.orderStatus(OrderStatus.PURCHASE_REQUESTED)
+			.paymentKey(paymentKey)
+			.build();
+
+		return RsData.of("S-1", "결제를 생성했습니다.", orderLogRepository.save(orderLog));
+	}
+
+	public RsData<OrderLog> paymentAccept(final OrderLog paymentOrderLog) {
+		if (!paymentOrderLog.getOrderStatus().equals(OrderStatus.PURCHASE_REQUESTED)) {
+			return RsData.of("F-1", OrderStatus.PURCHASE_REQUESTED + " 상태의 주문이 아닙니다.", null);
+		}
+
+		OrderLog orderLog = paymentOrderLog.newLogOf().toBuilder()
+			.orderStatus(OrderStatus.PURCHASE_SUCCESS)
+			.build();
+
+		return RsData.of("S-1", "결제를 성공했습니다.", orderLogRepository.save(orderLog));
 	}
 }

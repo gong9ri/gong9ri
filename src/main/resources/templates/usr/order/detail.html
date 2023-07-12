@@ -76,21 +76,15 @@
             <td th:text="${order.totalPrice}"></td>
         </tr>
     </table>
-
-
     <div class="flex justify-center items-center">
-        <a th:href="@{|/order/list|}">
-            <button class="btn btn-primary mx-2">목록으로</button>
-        </a>
-        <a th:href="@{|/order/choose/${orderId}|}"
-           th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}"
-           th:text="옵션 선택">
-        </a>
+          <a th:href="@{|/order/list|}">
+              <button class="btn btn-primary mx-2">목록으로</button>
+          </a>
+      <a th:href="@{|/order/choose/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}">옵션 선택</a>
 
-        <a th:href="@{|/order/confirm/${orderId}|}"
-           th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}">
-            <button class="btn btn-primary mx-2">결제</button>
-        </a>
+      <a th:href="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}">배송지 입력</a>
+
+      <a th:href="@{|/order/payment/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).RECIPIENT_DONE}">결제</a>
     </div>
 </main>
 </body>
