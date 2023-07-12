@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html layout:decorate="~{usr/layout/layout.html}">
+<head>
+    <title th:text="${@rq.member.nickname + '님의 주문 목록'}"></title>
+</head>
+<body class="bg-gray-100">
+<main class="container max-w-2xl mx-auto" layout:fragment="main">
+    <!-- 주문 목록 -->
+    <div class="p-4 grid grid-cols-1 gap-4">
+        <div th:if="${orders.isEmpty()}">
+            주문 내역이 없습니다.
+        </div>
+        <div th:each="order : ${orders}" th:if="${!orders.isEmpty()}">
+            <!-- card 시작 -->
+            <a class="flex flex-col" th:href="@{|/order/detail/${order.id}|}">
+                <div class="card card-side  bg-base-100 shadow-lg">
+
+                    <!--                    &lt;!&ndash; 이미지 &ndash;&gt;-->
+                    <!--                    <figure class="flex flex-row w-36">-->
+                    <!--                        <img alt="이미지가 없습니다." class="h-full w-full object-cover"-->
+                    <!--                             src="https://via.placeholder.com/150" th:if="${product.images.size() eq 0}"/>-->
+                    <!--                        <img alt="상품 이미지" class="h-full w-full object-cover"-->
+                    <!--                             th:if="${product.images.size() ne 0}" th:src="${product.images.get(0).getURL()}"/>-->
+                    <!--                    </figure>-->
+
+                    <!-- 상품 이름, 내용-->
+                    <div class="card-body">
+                        <p class="text-black text-lg font-semibold" th:text="${order.name}"></p>
+                        <p th:text="${'상태 ' + order.orderStatus}"></p>
+                        <p th:text="${'구매가 ' + order.price}"></p>
+                    </div>
+                </div>
+            </a>
+            <!-- card 종료 -->
+        </div>
+    </div>
+    <!-- 상품목록 끝-->
+</main>
+</body>
+</html>

@@ -13,7 +13,11 @@
     <div class="container max-w-2xl mx-auto">
         <div class="form-container form-control border-0">
             <!-- 이미지 슬라이드 -->
-            <div class="carousel w-full max-w-md mx-auto">
+            <div class="carousel w-full max-w-md mx-auto" th:if="${product.images.isEmpty()}">
+                <img alt="이미지가 없습니다." class="h-full w-full object-cover"
+                     src="https://via.placeholder.com/150"/>
+            </div>
+            <div class="carousel w-full max-w-md mx-auto" th:if="${!product.images.isEmpty()}">
                 <div class="carousel-item w-full flex justify-center" th:each="image, idx : *{product.images}"
                      th:id="${'slide' + idx}">
                     <img class="w-full" th:src="${image}"/>
@@ -42,6 +46,8 @@
                         </li>
                     </ul>
                 </div>
+                <a class="store-info" th:href="@{|/store/${product.storeId}|}"
+                   th:text="${'스토어 : '+product.storeName}"></a>
             </div>
 
             <!-- 나중에 리뷰 추가 -->

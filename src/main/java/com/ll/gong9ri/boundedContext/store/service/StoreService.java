@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
-import com.ll.gong9ri.boundedContext.store.dto.StoreHomeDTO;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
 import com.ll.gong9ri.boundedContext.store.repository.StoreRepository;
 
@@ -36,17 +35,6 @@ public class StoreService {
 	@Transactional(readOnly = true)
 	public Optional<Store> findByName(final String name) {
 		return storeRepository.findByName(name);
-	}
-
-	@Transactional(readOnly = true)
-	public RsData<StoreHomeDTO> getStoreHome(final Long id) {
-		// TODO: DTO needs products
-		return findById(id)
-			.map(o -> StoreHomeDTO.builder()
-				.storeName(o.getName())
-				.build())
-			.map(RsData::successOf)
-			.orElseGet(() -> RsData.of("F-1", NO_STORE_MESSAGE, null));
 	}
 
 	@Transactional(readOnly = true)

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ll.gong9ri.base.rsData.RsData;
-import com.ll.gong9ri.boundedContext.product.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDiscountDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductOptionDTO;
@@ -16,6 +15,7 @@ import com.ll.gong9ri.boundedContext.product.dto.ProductRegisterDTO;
 import com.ll.gong9ri.boundedContext.product.dto.SearchDTO;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
+import com.ll.gong9ri.boundedContext.product.entity.ProductImage;
 import com.ll.gong9ri.boundedContext.product.entity.ProductOption;
 import com.ll.gong9ri.boundedContext.product.repository.ProductRepository;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
@@ -136,5 +136,9 @@ public class ProductService {
 		repository.save(product);
 
 		return RsData.of("S-1", "인원 별 할인이 성공적으로 등록되었습니다.", product);
+	}
+
+	public Integer getCountByStore(final Long storeId) {
+		return repository.countByStoreId(storeId);
 	}
 }

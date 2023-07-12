@@ -16,7 +16,7 @@
         <tr>
             <th>주문상태</th>
             <td>
-                <div th:text="${currentStatus}"></div>
+                <div th:text="${currentStatus.status}"></div>
             </td>
         </tr>
         <tr th:if="${order == null}">

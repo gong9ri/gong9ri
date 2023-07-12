@@ -1,6 +1,5 @@
 package com.ll.gong9ri.boundedContext.store.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,10 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ll.gong9ri.base.rq.Rq;
-import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.order.entity.OrderInfo;
 import com.ll.gong9ri.boundedContext.order.service.OrderInfoService;
-import com.ll.gong9ri.boundedContext.product.entity.Product;
+import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import com.ll.gong9ri.boundedContext.store.dto.StoreHomeDTO;
 import com.ll.gong9ri.boundedContext.store.entity.Store;
@@ -40,11 +38,17 @@ public class ManageStoreController {
 			return rq.redirectWithErrorMsg(DEFAULT_ERROR_MESSAGE, "/");
 		}
 
-		final RsData<StoreHomeDTO> rsStore = storeService.getStoreHome(oStore.get().getId());
-		final List<Product> products = productService.getAllProductsByStore(oStore.get().getId());
+		final StoreHomeDTO storeHomeDTO = StoreHomeDTO.builder()
+			.storeId(oStore.get().getId())
+			.storeName(oStore.get().getName())
+			.products(productService.getProductsByStoreId(oStore.get().getId())
+				.getData()
+				.stream()
+				.map(ProductDTO::toDTO)
+				.toList())
+			.build();
 
-		model.addAttribute("store", rsStore.getData());
-		model.addAttribute("products", products); // TODO: dto
+		model.addAttribute("store", storeHomeDTO);
 
 		return "manage/store/index";
 	}

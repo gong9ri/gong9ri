@@ -1,15 +1,15 @@
 let stompClient = null;
 let ChatMessageUl = null;
-
+const header = document.querySelector('meta[name="_csrf_header"]').content;
 function connect() {
     var socket = new SockJS('/chats');
     stompClient = Stomp.over(socket);
     const headers = {
-        'X-CSRF-TOKEN': token,
+        [header]: token,
     };
 
-    stompClient.connect(headers, function (frame) {
-        console.log('Connected: ' + frame);
+    stompClient.connect(headers, function () {
+        console.log('Connected: ');
 
         onConnected();
     });

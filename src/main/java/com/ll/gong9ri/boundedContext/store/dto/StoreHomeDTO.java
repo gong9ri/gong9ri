@@ -3,6 +3,8 @@ package com.ll.gong9ri.boundedContext.store.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreHomeDTO {
+	private Long storeId;
 	@NotBlank
 	private String storeName;
-	// TODO: productThumbnailDTO
 	@Builder.Default
-	private List<?> products = new ArrayList<>();
+	private List<ProductDTO> products = new ArrayList<>();
 }

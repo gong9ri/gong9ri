@@ -20,6 +20,9 @@ public class ProductDetailDTO {
 	private String name;
 	@Builder.Default
 	private List<String> images = new ArrayList<>();
+	private String description;
+	private Long storeId;
+	private String storeName;
 	private LocalDateTime createDate;
 	private String optionName;
 	@Builder.Default
@@ -35,6 +38,9 @@ public class ProductDetailDTO {
 				.stream()
 				.map(e -> String.valueOf(e.getURL()))
 				.toList())
+			.description(product.getDescription())
+			.storeId(product.getStore().getId())
+			.storeName(product.getStore().getName())
 			.createDate(product.getCreateDate())
 			.optionName(product.getOptionName())
 			.options(product.getProductOptions()

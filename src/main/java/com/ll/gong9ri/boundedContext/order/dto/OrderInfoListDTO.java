@@ -19,6 +19,7 @@ public class OrderInfoListDTO {
 	private Long storeId;
 	private String storeName;
 	private Integer price;
+	private String orderStatus;
 
 	public static OrderInfoListDTO of(final OrderInfo orderInfo) {
 		return OrderInfoListDTO.builder()
@@ -29,6 +30,7 @@ public class OrderInfoListDTO {
 			.storeId(orderInfo.getStore().getId())
 			.storeName(orderInfo.getStore().getName())
 			.price(orderInfo.getPrice())
+			.orderStatus(orderInfo.getOrderStatus().getStatus())
 			.build();
 	}
 }
