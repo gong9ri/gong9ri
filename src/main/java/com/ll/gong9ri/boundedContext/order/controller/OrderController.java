@@ -77,16 +77,6 @@ public class OrderController {
 		final OrderStatus currentStatus = rsOrder.getData().getOrderStatus();
 		model.addAttribute("orderId", orderId);
 		model.addAttribute("currentStatus", currentStatus);
-
-		// TODO: 이 로직을 html에서 처리하는 대신, spring 에서 처리, 동작하지 않는다면 html에 이부분 추가
-		if (currentStatus == OrderStatus.GROUP_BUY_CREATED) {
-			model.addAttribute("confirmOrder", "/order/confirm/" + orderId);
-		}
-
-		if (currentStatus == OrderStatus.CREATED) {
-			model.addAttribute("createPayment", "/order/confirm/" + orderId);
-		}
-
 		final Optional<OrderLog> oOrderLog = orderLogService.findById(rsOrder.getData().getRecentOrderLogId());
 		oOrderLog.ifPresent(orderLog -> model.addAttribute("order", orderLog));
 

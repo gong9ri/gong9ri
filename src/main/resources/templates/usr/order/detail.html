@@ -59,9 +59,50 @@
         </tr>
     </table>
     <a th:href="@{|/order/list|}" th:text="목록으로"></a>
-    <!-- 주문의 상태에 따라 이동할 수 있는 링크를 controller에서 평문으로 전달하여 action에 적용, 실제 적용되는지? -->
-    <button th:action="@{|${confirmOrder}|}" th:if="${confirmOrder != null}" th:method="PUT" th:text="옵션 선택"></button>
-    <button th:action="@{|${createPayment}|}" th:if="${createPayment != null}" th:method="POST" th:text="결제"></button>
+
+    <form th:action="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).GROUP_BUY_CREATED}" th:method="PUT">
+        <button type="submit">옵션 선택</button>
+    </form>
+
+    <form th:action="@{|/order/confirm/${orderId}|}" th:if="${currentStatus == T(com.ll.gong9ri.boundedContext.order.entity.OrderStatus).CREATED}" th:method="POST">
+        <button type="submit">결제</button>
+    </form>
+
+    <script>
+        document.getElementById("createPaymentAction").addEventListener("click", function() {
+            const orderId = document.querySelector("td div[th\\:text='order.orderId']").textContent;
+            const currentStatus = document.querySelector("td div[th\\:text='order.currentStatus']").textContent;
+            const orderName = document.querySelector("td span[th\\:text='order.name']").textContent;
+            const storeName = document.querySelector("td a span[th\\:text='order.storeName']").textContent;
+            const productName = document.querySelector("td a span[th\\:text='order.productName']").textContent;
+            const price = document.querySelector("td div[th\\:text='order.price']").textContent;
+            const salePrice = document.querySelector("td div[th\\:text='order.salePrice']").textContent;
+            const recipient = document.querySelector("td[th\\:text='order.recipient']").textContent;
+            const mainAddress = document.querySelector("td[th\\:text='order.mainAddress']").textContent;
+            const subAddress = document.querySelector("td[th\\:text='order.subAddress']").textContent;
+            const totalPrice = document.querySelector("td[th\\:text='order.totalPrice']").textContent;
+
+            axios.post('${createPayment}', {
+                orderId: orderId,
+                currentStatus: currentStatus,
+                orderName: orderName,
+                storeName: storeName,
+                productName: productName,
+                price: price,
+                salePrice: salePrice,
+                recipient: recipient,
+                mainAddress: mainAddress,
+                subAddress: subAddress,
+                totalPrice: totalPrice
+            })
+                .then(function (response) {
+                    // 결제 페이지로 이동
+                    window.location.href = response.data.payment_url;
+                    location.href = `/order/detail/${res.data}`;
+                })
+
+        });
+    </script>
 </main>
 </body>
 </html>
