@@ -132,7 +132,7 @@ public class GroupBuyController {
 		if (groupBuyChatRoom.isEmpty()) {
 			return rq.historyBack("잘못된 접근입니다.");
 		}
-		final Long chatRoomId = groupBuyChatRoom.orElseThrow().getId();
+		final Long chatRoomId = groupBuyChatRoom.get().getId();
 		model.addAttribute("chatRoomId", chatRoomId);
 
 		model.addAttribute("groupBuy", groupBuyDetailDTO);
