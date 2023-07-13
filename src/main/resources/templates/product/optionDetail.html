@@ -44,28 +44,56 @@
 
             if (confirm('상세 옵션을 추가하시겠습니까?')) {
                 const div = document.createElement('div');
-                div.className = 'optionNames';
+                div.className = 'optionNames w-full flex items-center mb-2';
+
                 const input = document.createElement('input');
-                input.name = `optionName[${optCnt}]`;
-                input.id = `optionName[${optCnt}]`;
+                input.name = `optionName[${optCnt.length}]`;
+                input.id = `optionName[${optCnt.length}]`;
                 input.type = 'text';
+                input.className = 'w-full px-2 py-1 border rounded input input-bordered input-primary';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn ml-2 mb-2 px-2 py-0.5 text-red-500 font-bold';
+                deleteButton.type = 'button';
+                deleteButton.innerText = 'X';
+                deleteButton.onclick = () => deleteOptionRow(deleteButton);
+
                 div.appendChild(input);
+                div.appendChild(deleteButton);
                 details.appendChild(div);
-                optCnt++;
             }
+        }
+
+        function deleteOptionRow(row) {
+            const parentDiv = row.parentNode;
+            parentDiv.remove();
         }
     </script>
     <form onsubmit="submitOptionForm(); return false;">
-        <div class="options">
-            <label>상세 옵션명</label>
-            <button class="btn p-1" type="button" onclick="addDetailOptionRow()" value="+"></button>
-            <div class="optionNames" th:each="option, optionIdx : ${options}">
-                <input th:if="${options == null}" type="text" name="optionName[0]">
-                <input th:name="'optionName[' + ${optionIdx.index} + ']'" type="text" th:value="${option.optionDetail}">
+        <div class="flex-grow flex items-center justify-center">
+            <div class="max-w-2xl bg-white p-6 rounded shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="text-sm font-medium">상세 옵션명</label>
+                    <button class="btn px-4 py-1" type="button" onclick="addDetailOptionRow()">+</button>
+                </div>
+                <div class="options flex flex-col items-center mb-4">
+                    <div class="optionNames w-full flex items-center" th:each="option, optionIdx : ${options}">
+                        <input th:if="${options == null}" type="text" name="optionName[0]"
+                               class="w-full px-2 py-1 mb-2 rounded input input-primary">
+                        <input th:name="'optionName[' + ${optionIdx.index} + ']'" type="text"
+                               th:value="${option.optionDetail}"
+                               class="w-full px-2 py-1 mb-2 rounded input input-primary">
+                        <button class="btn ml-2 mb-2 px-2 py-0.5 text-red-500 font-bold" type="button"
+                                onclick="deleteOptionRow(this);">X
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="btn btn-primary mr-2">저장</button>
+                    <a class="btn" th:href="|/manage/product/${productId}/detail|">취소</a>
+                </div>
             </div>
         </div>
-        <button class="btn">저장</button>
-        <a class="btn" href="/product/list">상품 목록</a>
     </form>
 </main>
 </body>

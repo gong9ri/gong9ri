@@ -7,37 +7,37 @@
 <body>
 <main layout:fragment="main">
     <form th:action method="post">
-        <table>
-            <tr>
-                <th>상품명</th>
-                <td><input name="name" th:value="${product.name}"></td>
-            </tr>
-            <tr>
-                <th>가격</th>
-                <td><input name="price" type="text" th:value="${product.price}"></td>
-            </tr>
-            <tr>
-                <th>옵션</th>
-                <td><a class="btn btn-primary" th:href="@{|/manage/product/${productId}/option|}">옵션 관리</a></td>
-            </tr>
-            <tr>
-                <th>공동구매 할인</th>
-                <td><a class="btn btn-primary" th:href="@{|/manage/product/${productId}/discount|}">할인 관리</a></td>
-            </tr>
-        </table>
-        <button class="btn">저장</button>
-        <button type="reset" class="btn">취소</button>
-    </form>
+        <div class="flex-grow flex items-center justify-center">
+            <div class="max-w-2xl bg-white p-6 rounded shadow">
+                <div class="text-2xl font-bold mb-6">상품 상세 정보</div>
+                <div class="mb-4">
+                    <label for="name" class="text-sm font-medium">상품명</label>
+                    <input name="name" id="name" th:value="${product.name}"
+                           class="w-full px-2 py-1 border rounded input input-bordered input-primary w-full">
+                </div>
+                <div class="mb-4">
+                    <label for="price" class="text-sm font-medium">가격</label>
+                    <input name="price" id="price" type="text" th:value="${product.price}"
+                           class="w-full px-2 py-1 border rounded input input-bordered input-primary w-full">
+                </div>
+                <div class="mb-4">
+                    <label class="text-sm font-medium">옵션</label>
+                    <a class="btn btn-primary flex justify-center items-center h-full"
+                       th:href="@{|/manage/product/${productId}/option|}">옵션 관리</a>
+                </div>
 
-    <!--    공동구매 버튼-->
-    <div class="flex justify-center mx-auto">
-        <form method="post" th:action="@{|/groupbuy/make/${product.id}|}">
-            <button class="btn btn-light border" href="/list" onclick="return confirm('공동구매를 생성하시겠습니까?')"
-                    type="submit">
-                총대되기
-            </button>
-        </form>
-    </div>
+                <div class="mb-4">
+                    <label class="text-sm font-medium">공동구매 할인</label>
+                    <a class="btn btn-primary flex justify-center items-center h-full"
+                       th:href="@{|/manage/product/${productId}/discount|}">할인 관리</a>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn btn-primary mr-2">저장</button>
+                    <a class="btn" href="/product/list">취소</a>
+                </div>
+            </div>
+        </div>
+    </form>
 </main>
 </body>
 </html>

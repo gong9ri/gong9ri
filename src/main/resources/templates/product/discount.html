@@ -59,29 +59,25 @@
             const tableRow = document.createElement('tr');
             tableRow.className = 'discountInfo';
 
-            const createInputCell = () => {
+            const createInputCell = (name) => {
                 const cell = document.createElement('td');
                 const input = document.createElement('input');
                 input.type = 'text';
+                input.name = name;
+                input.className = 'w-full px-2 py-1 mb-2 rounded input input-primary';
                 cell.appendChild(input);
                 return cell;
             };
 
-            const headCountsTd = createInputCell();
-            headCountsTd.firstChild.name = 'headCount';
-
-            const salePricesTd = createInputCell();
-            salePricesTd.firstChild.name = 'salePrice';
+            const headCountsTd = createInputCell('headCount');
+            const salePricesTd = createInputCell('salePrice');
 
             const buttonTd = document.createElement('td');
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
+            deleteButton.className = 'btn px-2 py-0.5 text-red-500 font-bold';
             deleteButton.addEventListener('click', deleteTableRow);
             buttonTd.appendChild(deleteButton);
-
-            const firstColumnTd = detailTable.querySelector('.discountInfo td:first-child');
-            const currentRowSpan = parseInt(firstColumnTd.getAttribute('rowspan'));
-            firstColumnTd.rowSpan = currentRowSpan + 1;
 
             tableRow.appendChild(headCountsTd);
             tableRow.appendChild(salePricesTd);
@@ -91,35 +87,47 @@
         }
     </script>
     <form onsubmit="submitForm(); return false;">
-        <table id="detailTable">
-            <tr>
-                <td></td>
-                <td>인원</td>
-                <td>할인가격</td>
-                <td>
-                    <button class="btn" type="button" onclick="addDiscountRow()">+</button>
-                </td>
-            </tr>
-            <tr class="discountInfo" th:if="${product.productDiscounts.size() == 0}">
-                <td rowspan="2">공동구매 할인</td>
-                <td><input name="headCount" type="text"></td>
-                <td><input name="salePrice" type="text"></td>
-            </tr>
-            <tr class="discountInfo" th:each="discount, discountIdx : ${product.productDiscounts}">
-                <td th:if="${discountIdx.index == 0}" th:rowspan="${product.productDiscounts.size()}">
-                    공동구매 할인
-                </td>
-                <th:block th:if="${not discount.deleteStatus}">
-                    <td><input name="headCount" type="text" th:value="${discount.getHeadCount()}"></td>
-                    <td><input name="salePrice" type="text" th:value="${discount.getSalePrice()}"></td>
-                    <td th:if="${discountIdx.index != 0}">
-                        <button type="button" onclick="deleteTableRow.call(this, event)">X</button>
-                    </td>
-                </th:block>
-            </tr>
-        </table>
-        <button class="btn">저장</button>
-        <button type="reset" class="btn">취소</button>
+        <div class="flex-grow flex items-center justify-center">
+            <div class="max-w-2xl bg-white p-6 rounded shadow">
+                <div class="text-xl mb-4">공동구매 할인</div>
+                <table id="detailTable" class="w-full">
+                    <thead>
+                    <tr>
+                        <td>인원</td>
+                        <td>할인가격</td>
+                        <td>
+                            <button class="btn" type="button" onclick="addDiscountRow()">+</button>
+                        </td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="discountInfo" th:if="${product.productDiscounts.size() == 0}">
+                        <td><input name="headCount" type="text"
+                                   class="w-full px-2 py-1 mb-2 rounded input input-primary"></td>
+                        <td><input name="salePrice" type="text"
+                                   class="w-full px-2 py-1 mb-2 rounded input input-primary"></td>
+                    </tr>
+                    <tr class="discountInfo" th:each="discount, discountIdx : ${product.productDiscounts}">
+                        <th:block th:if="${not discount.deleteStatus}">
+                            <td><input name="headCount" type="text" th:value="${discount.getHeadCount()}"
+                                       class="w-full px-2 py-1 mb-2 rounded input input-primary"></td>
+                            <td><input name="salePrice" type="text" th:value="${discount.getSalePrice()}"
+                                       class="w-full px-2 py-1 mb-2 rounded input input-primary"></td>
+                            <td th:if="${discountIdx.index != 0}">
+                                <button type="button" onclick="deleteTableRow.call(this, event)"
+                                        class="btn px-2 py-0.5 text-red-500 font-bold">X
+                                </button>
+                            </td>
+                        </th:block>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="mt-4 flex justify-end">
+                    <button class="btn btn-primary mr-2">저장</button>
+                    <a class="btn" th:href="|/manage/product/${productId}/detail|">취소</a>
+                </div>
+            </div>
+        </div>
     </form>
 </main>
 </body>
