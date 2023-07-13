@@ -88,4 +88,7 @@ function addChatBubble(isOwnChat, sender, content, chatType) {
 
     chatContainer.append(chatHeader, chatBubble);
     ChatMessageUl.appendChild(chatContainer);
+
+    // 현재 스크롤 위치를 마지막 채팅 메시지 위치로 이동
+    ChatMessageUl.scrollTop = ChatMessageUl.scrollHeight;
 }

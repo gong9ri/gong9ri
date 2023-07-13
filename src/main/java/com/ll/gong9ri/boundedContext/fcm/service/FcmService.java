@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.fcm.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
+import com.ll.gong9ri.base.event.EventAfterUpdateToken;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.fcm.dto.TokenDTO;
 import com.ll.gong9ri.boundedContext.fcm.repository.TokenRepository;
@@ -24,12 +26,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FcmService {
 	private final TokenRepository tokenRepository;
+	private final ApplicationEventPublisher publisher;
 
 	@Transactional
 	public RsData<Token> saveToken(TokenDTO tokenDTO, Member member) {
 		Optional<Token> existingToken = tokenRepository.findByMemberId(member.getId());
 		if (existingToken.isPresent()) {
-			return update(tokenDTO, existingToken.get());
+			return update(tokenDTO, existingToken.get(), member);
 		}
 
 		Token newToken = Token.builder()
@@ -42,12 +45,14 @@ public class FcmService {
 		return RsData.of("S-1", "token 이 저장되었습니다.", newToken);
 	}
 
-	private RsData<Token> update(final TokenDTO tokenDTO, final Token existingToken) {
+	private RsData<Token> update(final TokenDTO tokenDTO, final Token existingToken, Member member) {
 		final Token token = existingToken.toBuilder()
 			.tokenString(tokenDTO.getTokenString())
 			.build();
 
 		tokenRepository.save(token);
+
+		publisher.publishEvent(new EventAfterUpdateToken(token.getTokenString(), member.getId()));
 
 		return RsData.of("S-2", "token 이 저장되었습니다.", token);
 	}
@@ -75,7 +80,7 @@ public class FcmService {
 		}
 	}
 
-	public Token findByMemberId(Long id) {
-		return tokenRepository.findByMemberId(id).orElseThrow();
+	public Optional<Token> findByMemberId(Long id) {
+		return tokenRepository.findByMemberId(id);
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ll.gong9ri.base.event.EventAfterGroupBuyCreated;
+import com.ll.gong9ri.base.event.EventAfterParticipateChatRoom;
 import com.ll.gong9ri.base.event.EventGroupBuyProgress;
 import com.ll.gong9ri.base.rsData.RsData;
 import com.ll.gong9ri.boundedContext.groupBuy.dto.GroupBuyDetailDTO;
@@ -23,6 +24,8 @@ import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuy;
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepository;
 import com.ll.gong9ri.boundedContext.groupBuy.repository.GroupBuyRepositoryImpl;
+import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
+import com.ll.gong9ri.boundedContext.member.entity.Member;
 import com.ll.gong9ri.boundedContext.product.entity.Product;
 import com.ll.gong9ri.boundedContext.product.entity.ProductDiscount;
 
@@ -184,5 +187,9 @@ public class GroupBuyService {
 			.build();
 
 		return RsData.successOf(groupBuyRepository.save(groupBuy));
+	}
+
+	public void participateChatRoom(Member member, GroupBuyChatRoom groupBuyChatRoom) {
+		publisher.publishEvent(new EventAfterParticipateChatRoom(member, groupBuyChatRoom));
 	}
 }

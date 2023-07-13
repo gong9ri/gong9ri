@@ -95,13 +95,13 @@
     <!--    공동구매 참여 버튼-->
     <div class="flex flex-col justify-center items-center">
         <form method="post" th:if="${groupBuy.isParticipate eq false}"
-              th:action="@{|/groupBuy/${groupBuy.id}/participate|}" th:href="@{|detail/${groupBuy.id}|}">
+              th:action="@{|/groupbuy/${groupBuy.id}/participate|}" th:href="@{|detail/${groupBuy.id}|}">
             <button class="btn btn-primary border" onclick="return confirm('공동구매에 참여하시겠습니까?')"
                     type="submit">
                 공동구매 참여하기
             </button>
         </form>
-        <form method="post" th:if="${groupBuy.isParticipate eq true}" th:action="@{|/groupBuy/${groupBuy.id}/cancel|}"
+        <form method="post" th:action="@{|/groupbuy/${groupBuy.id}/cancel|}" th:if="${groupBuy.isParticipate eq true}"
               th:href="@{|detail/${groupBuy.id}|}">
             <button class="btn btn-primary border" onclick="return confirm('공동구매 참여를 취소하시겠습니까?')"
                     type="submit">
