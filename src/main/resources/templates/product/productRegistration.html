@@ -13,21 +13,6 @@
                 form.submit();
             }
         }
-
-        <!--TODO: 열 삭제 기능 추가하기-->
-        function addInputRow() {
-            if (confirm('인원별 할인율을 추가하시겠습니까?')) {
-                const discountRow = document.getElementById("discountRow");
-                const newTableRow = document.createElement('tr');
-                let newTableData = document.createElement('td');
-                const headCountInput = document.createElement('input');
-
-                headCountInput.name = 'headCounts';
-                headCountInput.type = 'text';
-                const discountRateInput = document.createElement('input');
-                discountRateInput.name = 'discountRates';
-            }
-        }
     </script>
     <form th:object="${productRegisterDTO}" th:action="@{/manage/product/registration}" method="post"
           onsubmit="submitRegistrationForm(this); return false;" enctype="multipart/form-data">

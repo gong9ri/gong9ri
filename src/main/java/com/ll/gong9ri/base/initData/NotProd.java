@@ -52,7 +52,6 @@ public class NotProd {
 			ProductOptionDetailDTO defaultOption = productOptionService.getProductOptions(products[0].getId()).get(0);
 
 			productService.addOptions(products[0].getId(), ProductOptionDTO.builder()
-				.optionName("")
 				.optionDetails(
 					LongStream.range(1L, 3L)
 						.mapToObj(i -> ProductOptionDetailDTO.builder()
@@ -72,7 +71,6 @@ public class NotProd {
 				);
 
 			productService.addOptions(products[1].getId(), ProductOptionDTO.builder()
-				.optionName("")
 				.optionDetails(
 					LongStream.range(1L, 3L)
 						.mapToObj(i -> ProductOptionDetailDTO.builder()
@@ -92,7 +90,6 @@ public class NotProd {
 				);
 
 			productService.addOptions(products[2].getId(), ProductOptionDTO.builder()
-				.optionName("")
 				.optionDetails(
 					LongStream.range(1L, 3L)
 						.mapToObj(i -> ProductOptionDetailDTO.builder()

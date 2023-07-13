@@ -111,7 +111,6 @@ public class ProductService {
 		List<ProductOption> options = optionService.writeOptions(unModifiedProduct.get(), productOptionDTO);
 
 		Product product = unModifiedProduct.get().toBuilder()
-			.optionName(productOptionDTO.getOptionName())
 			.productOptions(options)
 			.build();
 

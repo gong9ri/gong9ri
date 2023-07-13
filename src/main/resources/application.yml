@@ -60,6 +60,7 @@ logging:
     com.ll.gong9ri: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.web: DEBUG
 custom:
   image:
     upload-dir: THIS_DIRECTORY_MAYBE_NOT_SAFE
