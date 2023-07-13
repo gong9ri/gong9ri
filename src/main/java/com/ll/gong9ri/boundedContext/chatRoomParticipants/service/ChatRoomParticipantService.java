@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.entity.ChatRoomParticipant;
 import com.ll.gong9ri.boundedContext.chatRoomParticipants.repository.ChatRoomParticipantRepository;
 import com.ll.gong9ri.boundedContext.fcm.service.FcmService;
+import com.ll.gong9ri.boundedContext.fcm.token.Token;
 import com.ll.gong9ri.boundedContext.groupBuyChatRoom.entity.GroupBuyChatRoom;
 import com.ll.gong9ri.boundedContext.member.entity.Member;
 
@@ -24,11 +25,13 @@ public class ChatRoomParticipantService {
 	@Transactional
 	public ChatRoomParticipant createNewParticipant(GroupBuyChatRoom groupBuyChatRoom, Member member) {
 
+		Optional<Token> optionalToken = fcmService.findByMemberId(member.getId());
+
 		ChatRoomParticipant chatRoomParticipant = ChatRoomParticipant.builder()
 			.groupBuyChatRoom(groupBuyChatRoom)
 			.member(member)
 			.chatOffset("000000000000000000000000")
-			.token(fcmService.findByMemberId(member.getId()).getTokenString())
+			.token(optionalToken.isPresent() ? optionalToken.get().getTokenString() : "noToken")
 			.build();
 
 		return chatRoomParticipantRepository.save(chatRoomParticipant);
@@ -57,5 +60,15 @@ public class ChatRoomParticipantService {
 			.stream()
 			.map(ChatRoomParticipant::getToken)
 			.toList();
+	}
+
+	@Transactional
+	public void updateToken(ChatRoomParticipant chatRoomParticipant, String tokenString) {
+
+		ChatRoomParticipant participant = chatRoomParticipant.toBuilder()
+			.token(tokenString)
+			.build();
+
+		chatRoomParticipantRepository.save(participant);
 	}
 }
