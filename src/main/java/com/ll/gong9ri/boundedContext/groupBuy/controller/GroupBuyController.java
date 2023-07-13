@@ -1,6 +1,5 @@
 package com.ll.gong9ri.boundedContext.groupBuy.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -31,7 +29,7 @@ import com.ll.gong9ri.boundedContext.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/groupBuy")
+@RequestMapping("/groupbuy")
 @RequiredArgsConstructor
 public class GroupBuyController {
 	private final GroupBuyService groupBuyService;
@@ -58,7 +56,7 @@ public class GroupBuyController {
 		groupBuyMemberService.addLeader(rq.getMember(), rsGroupBuy.getData());
 		groupBuyMemberService.addStore(optionalProduct.get().getStore().getMember(), rsGroupBuy.getData());
 
-		return rq.redirectWithMsg("/groupBuy/list", rsGroupBuy);
+		return rq.redirectWithMsg("/groupbuy/list", rsGroupBuy);
 	}
 
 	@GetMapping("/list")
@@ -110,7 +108,7 @@ public class GroupBuyController {
 
 		groupBuyService.updateDiscount(rsGroupBuy.getData());
 
-		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
+		return rq.redirectWithMsg("/groupbuy/detail/" + groupBuyId, rsGroupBuyMember);
 	}
 
 	@PostMapping("/{groupBuyId}/cancel")
@@ -129,7 +127,7 @@ public class GroupBuyController {
 			return rq.historyBack(rsGroupBuyMember);
 		}
 
-		return rq.redirectWithMsg("/groupBuy/detail/" + groupBuyId, rsGroupBuyMember);
+		return rq.redirectWithMsg("/groupbuy/detail/" + groupBuyId, rsGroupBuyMember);
 	}
 
 	@GetMapping("/detail/{groupBuyId}")
