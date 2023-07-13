@@ -56,15 +56,13 @@
                              th:if="${groupBuy.product.images.size() ne 0}" th:src="${groupBuy.product.images.get(0).getURL()}"/>
                     </figure>
 
-                    <!-- 상품 이름, 내용 -->
                     <div class="card-body">
                         <p class="text-black text-lg font-semibold" th:text="${groupBuy.name}"></p>
-                        <p th:text="${'정상가 ' + groupBuy.price}"></p>
-                        <p th:text="${'현재 가격' + groupBuy.currentSalePrice + '원'}"></p>
-                        <p th:text="${'현재 참여 인원 ' + groupBuy.currentMemberCount}"></p>
-                        <p th:text="${'종료 시간 ' + #temporals.format(groupBuy.endDate, 'MM-dd HH:mm')}"></p>
-                        <p th:text="${'정상가 ' + groupBuy.price}"></p>
-                        <p th:text="${groupBuy.nextMemberCount + '명 달성 시' + groupBuy.nextSalePrice + '원에 구매 가능!'}"></p>
+                        <p class="text-xs text-gray-500 text-right" th:text="${groupBuy.currentMemberCount + ' 명 참여중'}"></p>
+                        <p class="text-lg font-bold text-purple-500" th:text="${groupBuy.nextMemberCount + '명 달성 시' + groupBuy.nextSalePrice + '원에 구매 가능!'}"></p>
+                        <p class="text-sm text-gray-500" th:text="${'정상가 : ' + groupBuy.price}"></p>
+                        <p class="text-base font-bold text-red-500" th:text="${'현재 가격 : ' + groupBuy.currentSalePrice + '원'}"></p>
+                        <p th:text="${'종료 시간 : ' + #temporals.format(groupBuy.endDate, 'MM-dd HH:mm')}"></p>
                     </div>
                 </div>
             </a>

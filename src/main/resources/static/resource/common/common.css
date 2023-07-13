@@ -29,6 +29,7 @@ html > body .label-text {
     top: 100%;
     left: -10px;
     display: none;
+    z-index: 9999;
 }
 
 .dropdown:hover .dropdown-content {
