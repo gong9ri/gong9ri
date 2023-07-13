@@ -175,25 +175,6 @@ public class ManageProductController {
 		return ResponseEntity.ok().body(productRs.getData().getId());
 	}
 
-/*	@GetMapping("/{productId}/image")
-	public String showProductImageForm(@PathVariable Long productId, Model model) {
-		List<ProductImageDTO> images = imageService.getProductImages(productId);
-
-		model.addAttribute("images", images);
-
-		return "product/image";
-	}
-
-	@PutMapping("/{productId}/image")
-	public String addProductImages(@PathVariable Long productId, @Valid List<ProductImageDTO> dtos) {
-		RsData<Product> productRs = productService.addImages(productId, dtos);
-		if (productRs.isFail()) {
-			return rq.historyBack(productRs);
-		}
-
-		return rq.redirectWithMsg("/manage/product/%d/detail".formatted(productRs.getData().getId()), productRs);
-	}*/
-
 	@GetMapping("/{productId}/discount")
 	public String showProductDiscountForm(@PathVariable Long productId, Model model) {
 		List<ProductDiscountDTO> discounts = discountService.getProductDiscounts(productId);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ll.gong9ri.base.rq.Rq;
 import com.ll.gong9ri.base.rsData.RsData;
+import com.ll.gong9ri.boundedContext.groupBuy.service.GroupBuyService;
 import com.ll.gong9ri.boundedContext.product.dto.DetailDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDTO;
 import com.ll.gong9ri.boundedContext.product.dto.ProductDetailDTO;
@@ -28,6 +29,7 @@ public class ProductController {
 	private static final String PRODUCTS = "products";
 	private static final String PRODUCT = "product";
 	private final ProductService productService;
+	private final GroupBuyService groupBuyService;
 	private final Rq rq;
 
 	private void sendProductListToView(Model model, RsData<List<Product>> rsData) {
@@ -85,8 +87,9 @@ public class ProductController {
 		}
 
 		final ProductDetailDTO dto = ProductDetailDTO.of(optionalProduct.get());
-
+		final boolean canCreate = groupBuyService.canCreate(id);
 		model.addAttribute(PRODUCT, dto);
+		model.addAttribute("canCreate", canCreate);
 
 		return "product/productDetail";
 	}

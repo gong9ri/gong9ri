@@ -16,8 +16,4 @@ public interface GroupBuyRepository extends JpaRepository<GroupBuy, Long> {
 	Boolean existsByProductIdAndStatus(final Long productId, final GroupBuyStatus status);
 
 	List<GroupBuy> findByStatusAndEndDateBefore(GroupBuyStatus status, LocalDateTime endDate);
-/*
-	@Query("SELECT g FROM GroupBuy g WHERE g.name LIKE %:keyword%")
-
-	Page<GroupBuy>findByKeyword(@Param("keyword") String keyword, Pageable pageable);*/
 }
