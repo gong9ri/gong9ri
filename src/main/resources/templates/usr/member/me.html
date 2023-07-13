@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<main layout:fragment="main" class="bg-gray-100">
+<main class="bg-gray-100 max-w-2xl mx-auto" layout:fragment="main">
     <header class="bg-white py-4 px-6">
         <div class="flex items-center justify-between">
             <a class="text-xl font-bold">마이페이지</a>
@@ -22,7 +22,7 @@
         <!-- 프로필 정보 -->
         <div class="flex items-center mb-6">
             <!--                프로필 이미지-->
-            <div class="w-16 h-16 rounded-full overflow-hidden">
+            <div class="w-16 h-16 rounded-full overflow-hidden m-1">
                 <div th:if="${profileImage eq null}">
                     <img src="/images/default-profile.jpg" alt="Default Profile Image">
                 </div>
@@ -31,11 +31,11 @@
                 </div>
             </div>
             <!--                닉네임-->
-            <div class="ml-4">
+            <div class="m-2">
                 <h2 class="text-2xl font-bold" th:utext="${@rq.member.nickname}"></h2>
             </div>
             <button id="edit-profile-btn"
-                    class="ml-auto bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">
+                    class="ml-auto bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded m-2">
                 프로필 변경
             </button>
         </div>
@@ -78,7 +78,7 @@
         </div>
 
         <!-- 내 주문 목록 -->
-        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4" href="/order/list">
+        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 m-2" href="/order/list">
             <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
                 <i class="fas fa-shopping-cart text-2xl"></i>
             </div>
@@ -86,7 +86,7 @@
         </a>
 
         <!-- 내 공동구매 -->
-        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4" href="/groupBuy/mylist">
+        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 m-2" href="/groupBuy/mylist">
             <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
                 <i class="fas fa-users text-2xl"></i>
             </div>
@@ -94,7 +94,7 @@
         </a>
 
         <!-- 1:1 문의 -->
-        <a href="/inquiry" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 m-2" href="/inquiry">
             <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
                 <i class="fas fa-comments text-2xl"></i>
             </div>
@@ -102,7 +102,7 @@
         </a>
 
         <!-- 채팅방 -->
-        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4" href="/groupbuy/mychatrooms">
+        <a class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 m-2" href="/groupbuy/mychatrooms">
             <div class="bg-gray-200 w-12 h-12 rounded-lg flex items-center justify-center">
                 <i class="fas fa-comments text-2xl"></i>
             </div>

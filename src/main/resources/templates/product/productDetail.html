@@ -25,7 +25,7 @@
             </div>
 
             <!--   번호 -->
-            <div class="flex w-full gap-2 justify-center items-center">
+            <div class="flex w-full gap-2 justify-center items-center my-2">
                 <div class="flex-col" th:each="image, i : *{product.images}">
                     <a class="btn btn-xs btn-primary a__move" th:href="${'#slide' + i}" th:text="${i.count}">index</a>
                 </div>
@@ -33,12 +33,12 @@
             <!-- 이미지 슬라이드 끝 -->
 
             <!-- 상품 정보 -->
-            <div class="product flex flex-col">
+            <div class="product flex flex-col my-3">
                 <span class="product-name" th:text="*{product.name}"></span>
-                <div class="fs-5 has-text-black text-left">
+                <div class="fs-5 has-text-black text-left my-3">
                     <span th:text="${product.description}"></span>
                 </div>
-                <div class="discounts">
+                <div class="discounts my-2">
                     <ul>
                         <li th:each="discount : *{product.discounts}">
                             <p><span th:text="*{discount.headCount}"></span>명 모일 시</p>
@@ -46,7 +46,7 @@
                         </li>
                     </ul>
                 </div>
-                <a class="store-info" th:href="@{|/store/${product.storeId}|}"
+                <a class="store-info my-2" th:href="@{|/store/${product.storeId}|}"
                    th:text="${'스토어 : '+product.storeName}"></a>
             </div>
 
