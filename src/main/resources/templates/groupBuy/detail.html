@@ -8,6 +8,43 @@
 <main layout:fragment="main">
     <div class="container max-w-2xl mx-auto">
         <div class="form-container form-control border-0">
+  <!--          &lt;!&ndash; 이미지 슬라이드 &ndash;&gt;
+            <div class="carousel w-full max-w-md mx-auto" th:if="${groupBuy.product.images.isEmpty()}">
+                <img alt="이미지가 없습니다." class="h-full w-full object-cover"
+                     src="/images/noImg.png">
+            </div>
+            <div class="carousel w-full max-w-md mx-auto" th:if="${!groupBuy.product.images.isEmpty()}">
+                <div class="carousel-item w-full flex justify-center" th:each="image, idx : *{groupBuy.product.images}"
+                     th:id="${'slide' + idx}">
+                    <img class="w-full" th:src="${image}"/>
+                </div>
+            </div>
+
+            &lt;!&ndash;   번호 &ndash;&gt;
+            <div class="flex w-full gap-2 justify-center items-center">
+                <div class="flex-col" th:each="image, i : *{groupBuy.product.images}">
+                    <a class="btn btn-xs btn-primary a__move" th:href="${'#slide' + i}" th:text="${i.count}">index</a>
+                </div>
+            </div>
+            &lt;!&ndash; 이미지 슬라이드 끝 &ndash;&gt;
+            &lt;!&ndash; 상품 정보 &ndash;&gt;
+            <div class="product flex flex-col">
+                <span class="product-name" th:text="*{groupBuy.name}"></span>
+                <div class="fs-5 has-text-black text-left">
+                    <span th:text="${groupBuy.description}"></span>
+                </div>
+                <div class="discounts">
+                    <ul>
+                        <li th:each="discount : *{product.discounts}">
+                            <p><span th:text="*{discount.headCount}"></span>명 모일 시</p>
+                            <p><span th:text="*{discount.salePrice}"></span> 원 </p>
+                        </li>
+                    </ul>
+                </div>
+                <a class="store-info" th:href="@{|/store/${product.storeId}|}"
+                   th:text="${'스토어 : '+groupBuy.product.storeName}"></a>
+            </div>
+-->
             <table class="table">
                 <tr>
                     <th>상품명</th>

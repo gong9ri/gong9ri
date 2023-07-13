@@ -3,6 +3,7 @@ package com.ll.gong9ri.boundedContext.groupBuy.dto;
 import java.time.LocalDateTime;
 
 import com.ll.gong9ri.boundedContext.groupBuy.entity.GroupBuyStatus;
+import com.ll.gong9ri.boundedContext.product.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,5 @@ public class GroupBuyDetailDTO {
 	private Integer currentSalePrice;
 	private Integer nextSalePrice;
 	private Boolean isParticipate;
+	private Product product;
 }

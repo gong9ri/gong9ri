@@ -51,7 +51,7 @@
                     <!-- 이미지 -->
                     <figure class="flex flex-row w-36">
                         <img alt="이미지가 없습니다." class="h-full w-full object-cover"
-                             src="https://via.placeholder.com/150" th:if="${groupBuy.product.images.size() eq 0}"/>
+                             src="/images/noImg.png" th:if="${groupBuy.product.images.size() eq 0}"/>
                         <img alt="상품 이미지" class="h-full w-full object-cover"
                              th:if="${groupBuy.product.images.size() ne 0}" th:src="${groupBuy.product.images.get(0).getURL()}"/>
                     </figure>

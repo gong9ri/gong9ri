@@ -15,7 +15,7 @@
             <!-- 이미지 슬라이드 -->
             <div class="carousel w-full max-w-md mx-auto" th:if="${product.images.isEmpty()}">
                 <img alt="이미지가 없습니다." class="h-full w-full object-cover"
-                     src="https://via.placeholder.com/150"/>
+                     src="/images/noImg.png">
             </div>
             <div class="carousel w-full max-w-md mx-auto" th:if="${!product.images.isEmpty()}">
                 <div class="carousel-item w-full flex justify-center" th:each="image, idx : *{product.images}"

@@ -6,7 +6,8 @@
 <body class="bg-gray-100">
 <main class="container max-w-2xl mx-auto" layout:fragment="main">
     <div class="p-4">
-        <a class="btn btn-primary mb-4" href="/manage/product/registration">상품 등록</a>
+        <a th:if="${(@rq.login) and (@rq.getMember().authLevel ne T(com.ll.gong9ri.boundedContext.member.entity.AuthLevel).MEMBER)}"
+           class="btn btn-primary mb-4" href="/manage/product/registration">상품 등록</a>
     </div>
     <!-- 상품 목록 -->
     <div class="p-4 grid grid-cols-1 gap-4">
@@ -15,12 +16,12 @@
 
             <!-- card 시작 -->
             <a class="flex flex-col" th:href="@{|detail/${product.id}|}">
-                <div class="card card-side  bg-base-100 shadow-lg">
+                <div class="card card-side card relative  bg-base-100 shadow-lg">
 
                     <!-- 이미지 -->
                     <figure class="flex flex-row w-36">
                         <img alt="이미지가 없습니다." class="h-full w-full object-cover"
-                             src="https://via.placeholder.com/150" th:if="${product.images.size() eq 0}"/>
+                             src="/images/noImg.png" th:if="${product.images.size() eq 0}"/>
                         <img alt="상품 이미지" class="h-full w-full object-cover"
                              th:if="${product.images.size() ne 0}" th:src="${product.images.get(0).getURL()}"/>
                     </figure>

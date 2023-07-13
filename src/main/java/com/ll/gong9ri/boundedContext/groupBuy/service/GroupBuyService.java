@@ -52,17 +52,9 @@ public class GroupBuyService {
 	}
 
 	public Page<GroupBuyListDTO> searchGroupBuyList(GroupBuyStatus status, Long memberId, int page) {
-		Pageable pageable = PageRequest.of(page, 10);
+		Pageable pageable = PageRequest.of(page, 5);
 		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId, pageable);
 	}
-
-/*
-	public Page<GroupBuyListDTO> searchGroupBuyListByKeyword(String keyword, GroupBuyStatus status, Long memberId, int page) {
-		Pageable pageable = PageRequest.of(page, 10);
-		return groupBuyRepositoryImpl.searchGroupBuyListDTO(status, memberId, pageable);
-	}
-*/
-
 
 	public GroupBuyDetailDTO getGroupBuyDetailDTO(final Long id, final Long memberId) {
 		return groupBuyRepositoryImpl.getGroupBuyDetailDTO(id, memberId);
@@ -91,7 +83,7 @@ public class GroupBuyService {
 
 		GroupBuy groupBuy = GroupBuy.builder()
 			.product(product)
-			.name(product.getName())
+			.name("[공동구매] " + product.getName())
 			.startDate(LocalDateTime.now())
 			// 종료 시간을 현재 시간의 '시'만 가져와서 25시간을 더한 값으로 설정
 			.endDate(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(25))

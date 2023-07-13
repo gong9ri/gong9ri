@@ -165,7 +165,7 @@
 <body>
 
 <main class="min-h-screen flex flex-col">
-    <header class="sticky top-0">
+    <header class="sticky top-0 z-50">
         <div class="navbar max-w-2xl mx-auto bg-base-100">
 
             <!-- 목록 드롭다운 시작 -->
@@ -198,7 +198,8 @@
                         <li><a href="/product/list" style="color: black;">상품 목록</a></li>
                         <li><a href="/groupBuy/list" style="color: black;">공동구매 목록</a></li>
                         <li><a href="/member/me" style="color: black;" th:if="${@rq.login}">마이페이지</a></li>
-                        <li><a href="/manage/store/" style="color: black;" th:if="${@rq.isLogin()}">스토어 관리 페이지</a></li>
+                        <li><a href="/manage/store/" style="color: black;" th:if="${(@rq.login) and (@rq.getMember().authLevel ne T(com.ll.gong9ri.boundedContext.member.entity.AuthLevel).MEMBER)}">
+                            스토어 관리 페이지</a></li>
                     </ul>
                 </div>
             </div>
@@ -230,7 +231,7 @@
         </div>
     </header>
 
-    <main layout:fragment="main" class="container max-w-2xl mx-auto"></main>
+    <main layout:fragment="main" class="container max-w-2xl mx-auto relative"></main>
 </main>
 </body>
 </html>

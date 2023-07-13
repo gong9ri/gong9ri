@@ -1,5 +1,6 @@
 package com.ll.gong9ri.boundedContext.groupBuy.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -82,8 +83,8 @@ public class GroupBuyController {
 	}
 
 	@GetMapping("/mylist")
-	public String groupBuyList(Model model) {
-		final List<GroupBuyListDTO> dtos = groupBuyService.getAllGroupBuyListDTO(null, rq.getMember().getId());
+	public String groupBuyList(@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+		final Page<GroupBuyListDTO> dtos = groupBuyService.searchGroupBuyList(null, rq.getMember().getId(), page);
 		model.addAttribute("groupBuyStatus", GroupBuyStatus.values());
 		model.addAttribute("groupBuyList", dtos);
 
