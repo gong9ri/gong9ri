@@ -104,7 +104,9 @@ public class GroupBuyController {
 		if (rsGroupBuyMember.isFail()) {
 			return rq.historyBack(rsGroupBuyMember);
 		}
-		groupBuyService.participateChatRoom(rsGroupBuy.getData());
+		Optional<GroupBuyChatRoom> chatRoom = groupBuyChatRoomService.findByGroupBuyId(groupBuyId);
+
+		groupBuyService.participateChatRoom(rq.getMember(), chatRoom.get());
 
 		groupBuyService.updateDiscount(rsGroupBuy.getData());
 
